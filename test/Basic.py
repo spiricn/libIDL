@@ -1,8 +1,11 @@
 from idl.IDLModule import IDLModule 
 from idl.IDLMethod import IDLMethod
 from idl.IDLType import IDLType
-
+from idl.Project import Project
 import unittest
+import os
+
+RESOURCE_DIR = './rsrc'
 
 class Basic(unittest.TestCase):
     def setUp(self):
@@ -112,6 +115,39 @@ param2 = value2;
         self.assertEqual(module.params['param1'], 'value1')
         
         self.assertEqual(module.params['param2'], 'value2')
+        
+        
+    def test_project(self):
+        '''
+        Basic project management test.
+        '''
+        
+        project = Project()
+        
+        # Add first module
+        project.addModule(os.path.join(RESOURCE_DIR, 'module1.idl'))
+        
+        # Add second module
+        project.addModule(os.path.join(RESOURCE_DIR, 'module2.idl'))
+        
+        try:
+            # Attempt to add second module again (should fail)
+            project.addModule(os.path.join(RESOURCE_DIR, 'module2.idl'))
+            self.fail()
+        except:
+            pass
+        
+        # Check number of added modules
+        self.assertEqual(len(project.modules), 2)
+        
+        # Check the first module
+        self.assertTrue('Module1' in project.modules)
+        self.assertEqual(len(project.modules['Module1'].methods), 1)
+        
+        # Check the second module
+        self.assertTrue('Module2' in project.modules)
+        self.assertEqual(len(project.modules['Module2'].methods), 4)
+        
 
 if __name__ == '__main__':
     unittest.main()

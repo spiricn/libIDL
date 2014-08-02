@@ -1,0 +1,9 @@
+interface = Module2;
+
+void method1(int32 arg1);
+
+void callback1() callback;
+
+void setter1(callback1 arg1) callback_register;
+
+void setter2() callback_unregister;
