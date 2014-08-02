@@ -93,7 +93,7 @@ void callbackMethod(int32 arg1) callback;
  
 void callbackRegister(callbackMethod arg1) callback_register;
  
-void callbackUnregister() callback_unregister;
+void callbackUnregister(callbackMethod arg1) callback_unregister;
  
 float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
 '''
@@ -110,10 +110,20 @@ float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
         # Check the callback register
         callbackReg = module.getMethods(IDLMethod.TYPE_CALLBACK_REGISTER)
         self.assertEqual(len(callbackReg), 1)
+        
+        callbackReg = callbackReg[0]
+        self.assertTrue(callbackReg != None)
+        
+        self.assertTrue(callbackReg.callbackType.name == 'callbackMethod')
          
         # Check the callback unregister
         callbackUnreg = module.getMethods(IDLMethod.TYPE_CALLBACK_UNREGISTER)
         self.assertEqual(len(callbackUnreg), 1)
+        
+        callbackUnreg = callbackUnreg[0]
+        self.assertTrue(callbackUnreg != None)
+        
+        self.assertTrue(callbackUnreg.callbackType.name == 'callbackMethod')
          
         # Check the method
         method = module.getMethods(IDLMethod.TYPE_METHOD)

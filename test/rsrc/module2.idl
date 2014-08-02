@@ -6,4 +6,4 @@ void callback1() callback;
 
 void setter1(callback1 arg1) callback_register;
 
-void setter2() callback_unregister;
+void setter2(callback1 arg1) callback_unregister;

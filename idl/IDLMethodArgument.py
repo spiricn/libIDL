@@ -4,4 +4,4 @@ class IDLMethodArgument(object):
         self.name = name
         
     def __str__(self):
-        return '<IDLMethodArgument type=%d name="%s"' % (self.type, self.name)
+        return '<IDLMethodArgument type=%s name="%s"' % (self.type, self.name)

@@ -49,24 +49,28 @@ class IDLMethod(object):
         self.name = rawMethod.name
         
         # Method return type
-        self.returnType = IDLType.fromString(rawMethod.returnType)
+        self.returnType = IDLType(rawMethod.returnType)
         
         if self.returnType == IDLType.INVALID:
             raise RuntimeError('Invalid method return type "%s"' % rawMethod.returnType)
         
         self.rawMethod = rawMethod
+        
+        # Only valid if we're a callback register/unregister methods
+        self.callbackType = None
 
     def createArgList(self):
         self.args = []
         
         for arg in self.rawMethod.args:
-            argType = IDLType.fromString(arg.type)
+            argType = IDLType(arg.type)
+            
             if argType == IDLType.INVALID:
                 # Is it a callback?
                 for method in self.parent.getMethods(IDLMethod.TYPE_CALLBACK_DECLARATION):
                     if method.name == arg.type:
                         # It's a callback
-                        argType = IDLType.CALLBACK
+                        argType = IDLType(IDLType.CALLBACK, method)
                         break
                
                 if argType == IDLType.INVALID:     
@@ -74,5 +78,17 @@ class IDLMethod(object):
                 
             self.args.append( IDLMethodArgument(argType, arg.name) )
     
+        # Deduce callback type from method arguments
+        if self.type in [IDLMethod.TYPE_CALLBACK_REGISTER, IDLMethod.TYPE_CALLBACK_UNREGISTER]:
+            numCallbackTypes = 0
+            
+            for arg in self.args:
+                if arg.type == IDLType.CALLBACK:
+                    numCallbackTypes += 1
+                    self.callbackType = arg.type.associatedMethod
+                    
+            if numCallbackTypes != 1:
+                raise RuntimeError('Could not deduce callback type from arguments list in method "%s"' % self.rawMethod.body)
+            
     def __str__(self):
         return '<IDLMethod name="%s" type=%d>' % (self.name, self.type)
