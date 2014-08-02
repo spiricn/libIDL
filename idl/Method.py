@@ -8,26 +8,24 @@ class Method(object):
         body = fragment.body
         
         # Method return type
-        self.returnType = re.compile('[^ \t]*').search(body).group(0)
+        self.returnType = re.compile(r'[^ \t]*').search(body).group(0)
 
         # Method name
         self.name = re.compile(
                 # Whitespace splitting the return value from name
-                '(' + WHITESPACE_SPLIT_MATCH + ')' +
+                r'(' + WHITESPACE_SPLIT_MATCH + r')' +
                 # Function name
-                '(' + PARAM_NAME_MATCH + ')' +
+                r'(' + PARAM_NAME_MATCH + r')' +
                 # Potential whitespace between the openning bracket, and the bracket itself
-                '(' + WHITESPACE_MATCH + '[(]{1})'
+                r'(' + WHITESPACE_MATCH + r'[(]{1})'
                 ).search(body).group(2)
                 
         # Method arguments
-        args = re.compile(
-                '[(]{1}(.*)[)]{1}').search(body).group(1)
+        args = re.compile('[(]{1}(.*)[)]{1}').search(body).group(1)
         self.__parseArguments(args)
                 
         # Method modifiers
-        modifiers = re.compile(
-                '[)]{1}(.*);').search(body).group(1)
+        modifiers = re.compile(r'[)]{1}(.*);').search(body).group(1)
         self.__parseModifiers(modifiers)
         
         # Entire method body

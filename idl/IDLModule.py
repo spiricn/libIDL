@@ -25,9 +25,6 @@ class IDLModule:
                 
         # Process the methods
         self.__processMethods()
-        
-        # Process the parameters
-        self.__processParams()
 
     def __processMethods(self):
         # Check for duplicate methods
@@ -42,12 +39,6 @@ class IDLModule:
         for method in self.methods:
             method.createArgList()
             
-    def __processParams(self):
-        if IDLModule.PARAM_INTERFACE_NAME not in self.params:
-            raise RuntimeError('Malformed IDL module; missing "%s" parameter' % IDLModule.PARAM_INTERFACE_NAME)
-        else:
-            self.interfaceName = self.params[IDLModule.PARAM_INTERFACE_NAME]
-    
     def getMethods(self, methodType):
         return [i for i in self.methods if i.type == methodType]
 

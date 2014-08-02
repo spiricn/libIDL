@@ -2,7 +2,6 @@ from idl.FragmentType import FragmentType
 from idl.MethodFragment import MethodFragment
 from idl.ParameterFragment import ParameterFragment
 from idl.Utils import *
-
 import re
 
 class Processor:
@@ -40,9 +39,22 @@ class Processor:
         
         res = ''
         
+        # Remove comment blocks
+        blockComment = re.compile(  r'/\*' + r'.*?' + r'\*/', re.DOTALL )
+        
+        match = True
+        
+        while match:
+            match = blockComment.search(string)
+            
+            if match:
+                span = match.span()
+                
+                string = string[:span[0]] + string[span[1]:]
+
         for line in string.split('\n'):
             # Remove comments
-            commentStart = line.find('#')
+            commentStart = line.find('//')
             
             if commentStart != -1:
                 line = line[:commentStart]
@@ -50,12 +62,12 @@ class Processor:
             # Remove empty lines
             if re.compile(WHITESPACE_LINE_MATCH).match(line):
                 continue
-                            
+
             res += '%s\n' % line
-            
+
         # Remove ending new line
         res = res[:-1]
-                
+
         return res
             
     @staticmethod   
@@ -70,31 +82,24 @@ class Processor:
             # Parameter
             FragmentType(\
                 # Parameter name
-                '^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH +
-                '[=]{1}' + 
+                r'^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH +
+                r'[=]{1}' + 
                 # Parameter value
                 WHITESPACE_MATCH + PARAM_VALUE_MATCH +
                 # Trailing whitespace & semicolon
-                WHITESPACE_MATCH + ';' + WHITESPACE_MATCH + '$',
+                WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$',
                 FragmentType.PARAMETER, ParameterFragment),
             
             # Method
             FragmentType(\
                # Method return value
-               '^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + \
+               r'^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + \
                # Method name
                WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH  + WHITESPACE_MATCH + \
                # Method arguments
-               '[(]{1}' + '[^)]*' + '[)]{1}' + \
+               r'[(]{1}' + r'[^)]*' + r'[)]{1}' + \
                # Modifiers
-               '(' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + ')*' +
+               r'(' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + r')*' +
                # Trailing whitespace & semicolon
-               WHITESPACE_MATCH + ';' + WHITESPACE_MATCH + '$', FragmentType.METHOD, MethodFragment)
+               WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$', FragmentType.METHOD, MethodFragment)
     ]
-    
- 
-
-# import re
-
-# print( re.compile('^(' + PARAM_NAME_MATCH + WHITESPACE_MATCH + '){3}$').match('asdf23   asfji213 asf') )
-

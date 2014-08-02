@@ -4,7 +4,7 @@ class Project:
     def __init__(self):
         self.modules = {}
     
-    def addModule(self, path):
+    def addModule(self, name, path):
         # Read the source from a file
         try:
             file = open(path, 'r')
@@ -21,8 +21,8 @@ class Project:
         except Exception as e:
             raise RuntimeError('Error parsing IDL file "%s"; reason "%s"' % (path, str(e)))
         
-        if module.interfaceName in self.modules:
-            raise RuntimeError('Interface with name "%s" already added to the project' % module.interfaceName)
+        if name in self.modules:
+            raise RuntimeError('Interface with name "%s" already added to the project' % name)
         
         # Save the parsed module
-        self.modules[module.interfaceName] = module
+        self.modules[name] = module
