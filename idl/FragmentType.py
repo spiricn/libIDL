@@ -4,7 +4,10 @@ class FragmentType(object):
     # Fragment types
     METHOD, \
     PARAMETER, \
-    = range(2)
+    STRUCT_BEGIN, \
+    CLOSING_BRACKET, \
+    STRUCT_FIELD, \
+    = range(5)
     
     def __init__(self, pattern, fragmentType, fragmentClass):
         self.pattern = re.compile(pattern)
@@ -17,6 +20,19 @@ class FragmentType(object):
     
     def instantiate(self, body):
         return self.fragmentClass(self.type, body)
+    
+    def __eq__(self, other):
+        if isinstance(other, FragmentType):
+            return self == other.type
+        
+        elif isinstance(other, int):
+            return self.type == other
+        
+        elif other is None:
+            return False
+        
+        else:
+            raise NotImplementedError()
     
     def __str__(self):
         return '<FragmentType pattern="%s">' % self.patternString

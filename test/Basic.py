@@ -33,9 +33,11 @@ void methodName(int32 arg1, uint32 arg2, /* comment block 1 */string arg3);
         
         self.assertEqual(module.params['interface'], 'BasicInterface')
         
-        self.assertEqual(len(module.methods), 1)
+        methods = module.getTypes(IDLType.METHOD)
         
-        self.assertEqual(module.methods[0].name, 'methodName')
+        self.assertEqual(len(methods), 1)
+        
+        self.assertEqual(methods[0].name, 'methodName')
      
     def test_basic(self):
         '''
@@ -54,7 +56,7 @@ void methodName(int32 arg1, uint32 arg2, string arg3);
         self.assertEqual('BasicInterface', module.params['interface'])
          
         # Check the method
-        method = module.getMethods(IDLMethod.TYPE_METHOD)
+        method = module.getTypes(IDLType.METHOD)
         self.assertEqual(len(method), 1)
          
         method = method[0]
@@ -104,11 +106,11 @@ float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
         self.assertEqual('InterfaceName', module.params['interface'])
          
         # Check the callback declaration
-        calblackDec = module.getMethods(IDLMethod.TYPE_CALLBACK_DECLARATION)
+        calblackDec = module.getTypes(IDLType.CALLBACK)
         self.assertEqual(len(calblackDec), 1)
          
         # Check the callback register
-        callbackReg = module.getMethods(IDLMethod.TYPE_CALLBACK_REGISTER)
+        callbackReg = module.getTypes(IDLType.CALLBACK_REGISTER)
         self.assertEqual(len(callbackReg), 1)
         
         callbackReg = callbackReg[0]
@@ -117,7 +119,7 @@ float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
         self.assertTrue(callbackReg.callbackType.name == 'callbackMethod')
          
         # Check the callback unregister
-        callbackUnreg = module.getMethods(IDLMethod.TYPE_CALLBACK_UNREGISTER)
+        callbackUnreg = module.getTypes(IDLType.CALLBACK_UNREGISTER)
         self.assertEqual(len(callbackUnreg), 1)
         
         callbackUnreg = callbackUnreg[0]
@@ -126,7 +128,7 @@ float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
         self.assertTrue(callbackUnreg.callbackType.name == 'callbackMethod')
          
         # Check the method
-        method = module.getMethods(IDLMethod.TYPE_METHOD)
+        method = module.getTypes(IDLType.METHOD)
         self.assertEqual(len(method), 1)
          
     def test_params(self):
@@ -178,11 +180,99 @@ param2 = value2;
 
         # Check the first module
         self.assertTrue('module1' in project.modules)
-        self.assertEqual(len(project.modules['module1'].methods), 1)
+        methods = project.modules['module1'].getTypes(IDLType.METHOD)
+        self.assertEqual(len(methods), 1)
          
         # Check the second module
         self.assertTrue('module2' in project.modules)
-        self.assertEqual(len(project.modules['module2'].methods), 4)
+        methods = project.modules['module2'].getTypes(IDLType.METHOD)
+        self.assertEqual(len(methods), 1)
+        
+    def test_structures(self):
+        '''
+        Basic structures test.
+        '''
+        
+        source = '''\
+// First structure
+struct Struct1 {
+    int32 f1;
+    float64 f2;
+};
+
+// Second structure containing the first one
+struct Struct2 {
+    float32 f3;
+    string f4;
+    Struct1 f5;
+};
+
+// Method taking structure arguments
+void testMethod(Struct1 arg1, Struct2 arg2, int32 arg3);
+
+'''
+        module = IDLModule(source)
+        
+        # Structure number
+        structs = module.getTypes(IDLType.STRUCTURE)
+        self.assertEqual(len(structs), 2)
+        s1,s2= structs
+        f1,f2 = s1.fields, s2.fields
+        
+        # Verify first structure
+        self.assertEqual(s1.name, 'Struct1')
+        
+        # Field number
+        self.assertEqual(len(f1), 2)
+        
+        # Fields
+        self.assertEqual(f1[0].type, IDLType.INT32)
+        self.assertEqual(f1[0].name, 'f1')
+        
+        self.assertEqual(f1[1].type, IDLType.FLOAT64)
+        self.assertEqual(f1[1].name, 'f2')
+        
+        
+        # Verify second structure
+        self.assertEqual(s2.name, 'Struct2')
+
+        # Field number
+        self.assertEqual(len(f2), 3)
+        
+        # Fields
+        self.assertEqual(f2[0].type, IDLType.FLOAT32)
+        self.assertEqual(f2[0].name, 'f3')
+        
+        self.assertEqual(f2[1].type, IDLType.STRING)
+        self.assertEqual(f2[1].name, 'f4')
+        
+        self.assertEqual(f2[2].type, IDLType.STRUCTURE)
+        self.assertEqual(f2[2].name, 'f5')
+        self.assertEqual(f2[2].type.name, 'Struct1')
+        
+        
+        # Verify method
+        methods = module.getTypes(IDLType.METHOD)
+        self.assertEqual(len(methods), 1)
+        
+        method = methods[0]
+
+        # Name        
+        self.assertEqual(method.name, 'testMethod')
+        
+        # Arguments
+        args = method.args
+        self.assertEqual(len(args), 3)
+        
+        self.assertEqual(args[0].type, IDLType.STRUCTURE)
+        self.assertEqual(args[0].type.name, 'Struct1')
+        
+        
+        self.assertEqual(args[1].type, IDLType.STRUCTURE)
+        self.assertEqual(args[1].type.name, 'Struct2')
+        
+        self.assertEqual(args[2].type, IDLType.INT32)
+
 
 if __name__ == '__main__':
     unittest.main()

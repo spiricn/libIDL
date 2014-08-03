@@ -11,14 +11,17 @@ class IDLType(object):
     FLOAT64, \
     VOID, \
     STRING, \
+    METHOD, \
     CALLBACK, \
+    CALLBACK_REGISTER, \
+    CALLBACK_UNREGISTER, \
+    STRUCTURE, \
     INVALID, \
-    = range(14)
+    = range(18)
     
-    def __init__(self, t, associatedMethod=None):
-        self.associatedMethod = associatedMethod
-        
+    def __init__(self, t):
         if isinstance(t, str):
+            # Primitive types
             stringToType = {
                'int64' : IDLType.INT64,
                'uint64' : IDLType.UINT64,

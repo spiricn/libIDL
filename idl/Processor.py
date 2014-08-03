@@ -1,6 +1,8 @@
 from idl.FragmentType import FragmentType
 from idl.MethodFragment import MethodFragment
 from idl.ParameterFragment import ParameterFragment
+from idl.StructBeginFragment import StructBeginFragment
+from idl.Fragment import Fragment
 from idl.Utils import *
 import re
 
@@ -19,6 +21,10 @@ class Processor:
     @staticmethod
     def __fragment(string):
         fragments = []
+        
+        # Empty string?
+        if not string:
+            return fragments
         
         lines = string.split('\n')
         
@@ -101,5 +107,21 @@ class Processor:
                # Modifiers
                r'(' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + r')*' +
                # Trailing whitespace & semicolon
-               WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$', FragmentType.METHOD, MethodFragment)
+               WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$', FragmentType.METHOD, MethodFragment),
+                       
+            FragmentType(\
+               WHITESPACE_MATCH + 'struct' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
+               FragmentType.STRUCT_BEGIN, StructBeginFragment),
+                       
+            FragmentType(\
+               WHITESPACE_MATCH + '}' + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH + '$',
+               FragmentType.CLOSING_BRACKET, Fragment),
+                       
+            FragmentType(\
+               WHITESPACE_MATCH + \
+               # Field type
+               PARAM_NAME_MATCH + WHITESPACE_SPLIT_MATCH + \
+               # Field name
+               PARAM_NAME_MATCH + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH,
+               FragmentType.STRUCT_FIELD, Fragment),
     ]

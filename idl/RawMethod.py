@@ -1,9 +1,9 @@
 from idl.Utils import *
-from idl.Argument import Argument
+from idl.RawVariable import RawVariable
 
 import re
     
-class Method(object):
+class RawMethod(object):
     def __init__(self, fragment):
         body = fragment.body
         
@@ -38,7 +38,7 @@ class Method(object):
             for arg in [i for i in args.split(',') if i]:
                 argType, argVlaue = [i for i in arg.replace('\t', '').split(' ') if i]
                 
-                self.args.append( Argument(argType, argVlaue) )
+                self.args.append( RawVariable(argType, argVlaue) )
         except:
             raise RuntimeError('Malformed method argument list "%s"' % args)
     
@@ -46,4 +46,4 @@ class Method(object):
         self.mods = [i for i in mods.replace('\t', '').split(' ') if i]
         
     def __str__(self):
-        return '<Method name="%s" args="%s" mods="%s" return="%s">' % (self.name, self.args, self.mods, self.returnType)
+        return '<RawMethod name="%s" args="%s" mods="%s" return="%s">' % (self.name, self.args, self.mods, self.returnType)
