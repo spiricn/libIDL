@@ -1,4 +1,4 @@
-class IDLVariable(object):
+class Variable(object):
     def __init__(self, argType, name):
         self.type = argType
         self.name = name

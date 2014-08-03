@@ -1,4 +1,4 @@
-from idl.IDLModule import IDLModule
+from idl.Module import Module
 
 class Project:
     def __init__(self):
@@ -17,7 +17,7 @@ class Project:
         
         # Try to parse it
         try:
-            module = IDLModule(source)
+            module = Module(source)
         except Exception as e:
             raise RuntimeError('Error parsing IDL file "%s"; reason "%s"' % (path, str(e)))
         

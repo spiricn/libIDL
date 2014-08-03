@@ -1,21 +1,19 @@
-from idl.Processor import Processor
-from idl.FragmentType import FragmentType
-from idl.IDLMethod import IDLMethod
-from idl.IDLType import IDLType
-from idl.IDLVariable import IDLVariable
-from idl.RawVariable import RawVariable
-from idl.IDLStruct import IDLStruct
-from idl.Interface import IDLInterface
-from idl.Utils import *
+from idl.lexer.Lexer import Lexer
+from idl.lexer.TokenType import TokenType
+from idl.Method import Method
+from idl.Type import Type
+from idl.Variable import Variable
+from idl.lexer.VariableToken import VariableToken
+from idl.Struct import Struct
+from idl.Interface import Interface
+from idl.lexer.Utils import *
 
-# TODO each interface should have it's local methods (at the moment no two interfaces can have the same named method)
-
-class IDLModule:
+class Module:
     PARAM_INTERFACE_NAME = 'interface'
     
     def __init__(self, source):
         # Create fragments from source
-        fragments = Processor.process(source)
+        fragments = Lexer.tokenize(source)
         
         # Using list instead of dict since ordering is important (think of a better way prehaps?)
         self.types = []
@@ -37,43 +35,43 @@ class IDLModule:
         while fragments:
             fragment = fragments[0]
             
-            if fragment.type == FragmentType.PARAMETER:
+            if fragment.type == TokenType.PARAMETER:
                 self.__addParam(fragment)
                 fragments.pop(0)
             
-            elif fragment.type == FragmentType.STRUCT_BEGIN:
-                self.__createStruct(fragments)
+            elif fragment.type == TokenType.STRUCT_BEGIN:
+                self.__addType( Struct.generate(self, fragments) )
                 
-            elif fragment.type == FragmentType.INTERFACE_BEGIN:
+            elif fragment.type == TokenType.INTERFACE_BEGIN:
                 self.__createInterface(fragments)
                 
-            elif fragment.type == FragmentType.CLOSING_BRACKET:
+            elif fragment.type == TokenType.CLOSING_BRACKET:
                 raise RuntimeError('Unexpected closing bracket')
             
-            elif fragment.type == FragmentType.METHOD:
+            elif fragment.type == TokenType.METHOD:
                 raise RuntimeError('Method found outside interface body "%s"' % fragment.body)
                 
             else:
                 raise RuntimeError('Unhandled fragment type %d', fragment.type)
             
     def __createInterface(self, fragments):
-        interface = IDLInterface(self, fragments)
+        interface = Interface(self, fragments)
         
         self.__addType(interface)
         
     def createVariable(self, context, rawArg):
-        argType = IDLType(rawArg.type)
+        argType = Type(rawArg.type)
             
         # Not a primitive type ?
-        if argType == IDLType.INVALID:
+        if argType == Type.INVALID:
             # If it's not a primitive, it can only be a structure in module's context
-            for struct in self.getTypes(IDLType.STRUCTURE):
+            for struct in self.getTypes(Type.STRUCTURE):
                 if struct.name == rawArg.type:
                     # It's a structure
                     argType = struct
                     break
                 
-            if isinstance(context, IDLInterface):
+            if isinstance(context, Interface):
                 # If it's not a primitive, it can be a callback in interface context
                 for method in context.methods:
                     if method.name == rawArg.type:
@@ -81,17 +79,17 @@ class IDLModule:
                         argType = method
                         break
             
-            if argType == IDLType.INVALID:
+            if argType == Type.INVALID:
                 # Could not resolve type
                 return None
 
-        return IDLVariable(argType, rawArg.name)
+        return Variable(argType, rawArg.name)
     
     def getInterface(self, name):
-        return self.getType(name, IDLType.INTERFACE)
+        return self.getType(name, Type.INTERFACE)
         
     def getStructure(self, name):
-        return self.getType(name, IDLType.STRUCTURE)
+        return self.getType(name, Type.STRUCTURE)
 
     def getType(self, name, typeID):
         for i in self.types:
@@ -99,36 +97,13 @@ class IDLModule:
                 return i
             
         return None
-            
-    def __createStruct(self, fragments):
-        begin = fragments.pop(0)
-        
-        # Sanity check
-        assert(begin.type == FragmentType.STRUCT_BEGIN)
-
-        fields = []
-        
-        while fragments:
-            fragment = fragments.pop(0)
-            
-            if fragment.type == FragmentType.CLOSING_BRACKET:
-                # Reached end
-                break
-            
-            elif fragment.type == FragmentType.STRUCT_FIELD:
-                fields.append(fragment)
-            
-            else:
-                raise RuntimeError('Unexpected fragment found whlie parsing structure: "%s"' % fragment.body)
-            
-        self.__addType( IDLStruct(self, begin, fields) )
 
     def __processMethods(self):
         # Create argument list for each method.
         # This has to be done after the initial method list compile since certain methods
         # may depend on other ones.
-        for type in self.types:
-            type.create()
+        for i in self.types:
+            i.create()
             
     def getTypes(self, type):
         return [i for i in self.types if i.type == type]

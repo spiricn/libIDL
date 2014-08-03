@@ -1,6 +1,6 @@
-from idl.IDLModule import IDLModule 
-from idl.IDLMethod import IDLMethod
-from idl.IDLType import IDLType
+from idl.Module import Module 
+from idl.Method import Method
+from idl.Type import Type
 from idl.Project import Project
 import unittest
 import os
@@ -31,11 +31,11 @@ interface TestInterface{
 };
 // Comment 2
 '''
-        module = IDLModule(source)
+        module = Module(source)
         
         self.assertEqual(module.params['interface'], 'BasicInterface')
         
-        interfaces = module.getTypes(IDLType.INTERFACE)
+        interfaces = module.getTypes(Type.INTERFACE)
         
         self.assertEqual(len(interfaces), 1)
         
@@ -56,10 +56,10 @@ interface BasicInterface{
 };
 '''
          
-        module = IDLModule(source)
+        module = Module(source)
          
         # Check the interface name
-        interface = module.getTypes(IDLType.INTERFACE)
+        interface = module.getTypes(Type.INTERFACE)
         self.assertEqual(len(interface), 1)
         
         interface = interface[0]
@@ -86,12 +86,12 @@ interface BasicInterface{
         self.assertEqual(arg2.name, "arg2")
         self.assertEqual(arg3.name, "arg3")
          
-        self.assertEqual(arg1.type, IDLType.INT32)
-        self.assertEqual(arg2.type, IDLType.UINT32)
-        self.assertEqual(arg3.type, IDLType.STRING)
+        self.assertEqual(arg1.type, Type.INT32)
+        self.assertEqual(arg2.type, Type.UINT32)
+        self.assertEqual(arg3.type, Type.STRING)
          
         # Return value
-        self.assertEqual(method.returnType, IDLType.VOID)
+        self.assertEqual(method.returnType, Type.VOID)
          
          
     def test_callback(self):
@@ -112,7 +112,7 @@ interface TestInterface{
 }; // </TestInterace>
 '''
  
-        module = IDLModule(source)
+        module = Module(source)
         
         interface = module.getInterface("TestInterface")
         self.assertTrue( interface != None )
@@ -120,17 +120,17 @@ interface TestInterface{
         # Check the callback declaration
         calblackDec = interface.getMethod('callbackMethod')
         self.assertTrue( calblackDec != None )
-        self.assertTrue(calblackDec.type == IDLType.CALLBACK)
+        self.assertTrue(calblackDec.type == Type.CALLBACK)
          
         # Check the callback register
         callbackReg = interface.getMethod('callbackRegister')
         self.assertTrue( callbackReg != None )
-        self.assertTrue(callbackReg.type == IDLType.CALLBACK_REGISTER)
+        self.assertTrue(callbackReg.type == Type.CALLBACK_REGISTER)
         
         # Check the callback unregister
         callbackUnreg = interface.getMethod('callbackUnregister')
         self.assertTrue(callbackUnreg != None)
-        self.assertTrue(callbackUnreg.type == IDLType.CALLBACK_UNREGISTER)
+        self.assertTrue(callbackUnreg.type == Type.CALLBACK_UNREGISTER)
         
         # Check the method
         method = interface.getMethod('method')
@@ -149,7 +149,7 @@ param1 = value1;
 param2 = value2;
 '''
 
-        module = IDLModule(source)
+        module = Module(source)
          
         self.assertEqual(len(module.params), 3)
          
@@ -185,12 +185,12 @@ param2 = value2;
 
         # Check the first module
         self.assertTrue('module1' in project.modules)
-        interface = project.modules['module1'].getTypes(IDLType.INTERFACE)[0]
+        interface = project.modules['module1'].getTypes(Type.INTERFACE)[0]
         self.assertEqual(len(interface.methods), 1)
          
         # Check the second module
         self.assertTrue('module2' in project.modules)
-        interface = project.modules['module2'].getTypes(IDLType.INTERFACE)[0]
+        interface = project.modules['module2'].getTypes(Type.INTERFACE)[0]
         self.assertEqual(len(interface.methods), 4)
         
     def test_structures(self):
@@ -218,10 +218,10 @@ interface TestInterface{
 }; // </TestInterface>
 
 '''
-        module = IDLModule(source)
+        module = Module(source)
         
         # Structure number
-        structs = module.getTypes(IDLType.STRUCTURE)
+        structs = module.getTypes(Type.STRUCTURE)
         self.assertEqual(len(structs), 2)
         s1,s2= structs
         f1,f2 = s1.fields, s2.fields
@@ -233,10 +233,10 @@ interface TestInterface{
         self.assertEqual(len(f1), 2)
         
         # Fields
-        self.assertEqual(f1[0].type, IDLType.INT32)
+        self.assertEqual(f1[0].type, Type.INT32)
         self.assertEqual(f1[0].name, 'f1')
         
-        self.assertEqual(f1[1].type, IDLType.FLOAT64)
+        self.assertEqual(f1[1].type, Type.FLOAT64)
         self.assertEqual(f1[1].name, 'f2')
         
         
@@ -247,19 +247,19 @@ interface TestInterface{
         self.assertEqual(len(f2), 3)
         
         # Fields
-        self.assertEqual(f2[0].type, IDLType.FLOAT32)
+        self.assertEqual(f2[0].type, Type.FLOAT32)
         self.assertEqual(f2[0].name, 'f3')
         
-        self.assertEqual(f2[1].type, IDLType.STRING)
+        self.assertEqual(f2[1].type, Type.STRING)
         self.assertEqual(f2[1].name, 'f4')
         
-        self.assertEqual(f2[2].type, IDLType.STRUCTURE)
+        self.assertEqual(f2[2].type, Type.STRUCTURE)
         self.assertEqual(f2[2].name, 'f5')
         self.assertEqual(f2[2].type.name, 'Struct1')
         
         
         # Verify method
-        interface = module.getTypes(IDLType.INTERFACE)[0]
+        interface = module.getTypes(Type.INTERFACE)[0]
         
         methods = interface.methods
         self.assertEqual(len(methods), 1)
@@ -273,14 +273,14 @@ interface TestInterface{
         args = method.args
         self.assertEqual(len(args), 3)
         
-        self.assertEqual(args[0].type, IDLType.STRUCTURE)
+        self.assertEqual(args[0].type, Type.STRUCTURE)
         self.assertEqual(args[0].type.name, 'Struct1')
         
         
-        self.assertEqual(args[1].type, IDLType.STRUCTURE)
+        self.assertEqual(args[1].type, Type.STRUCTURE)
         self.assertEqual(args[1].type.name, 'Struct2')
         
-        self.assertEqual(args[2].type, IDLType.INT32)
+        self.assertEqual(args[2].type, Type.INT32)
 
 
     def test_multiInterface(self):
@@ -298,7 +298,7 @@ interface B{
     void method();
 };
 '''
-        module = IDLModule(source)
+        module = Module(source)
         
         i1 = module.getInterface('A')
         self.assertTrue(i1 != None)

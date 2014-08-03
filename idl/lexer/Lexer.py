@@ -1,26 +1,26 @@
-from idl.FragmentType import FragmentType
-from idl.MethodFragment import MethodFragment
-from idl.ParameterFragment import ParameterFragment
-from idl.StructBeginFragment import StructBeginFragment
-from idl.InterfaceBeginFragment import InterfaceBeginFragment
-from idl.Fragment import Fragment
-from idl.Utils import *
+from idl.lexer.TokenType import TokenType
+from idl.lexer.MethodToken import MethodToken
+from idl.lexer.ParameterToken import ParameterToken
+from idl.lexer.StructBeginToken import StructBeginToken
+from idl.lexer.InterfaceBeginToken import InterfaceBeginToken
+from idl.lexer.Token import Token
+from idl.lexer.Utils import *
 import re
 
-class Processor:
+class Lexer:
     def __init__(self, source):
         pass
 
     @staticmethod
-    def process(source):
+    def tokenize(source):
         # Preprocess source
-        source = Processor.__preprocess(source)
+        source = Lexer.__preprocess(source)
         
-        # Fragment it
-        return Processor.__fragment(source)
+        # Tokenize it
+        return Lexer.__tokenize(source)
     
     @staticmethod
-    def __fragment(string):
+    def __tokenize(string):
         fragments = []
         
         # Empty string?
@@ -30,12 +30,12 @@ class Processor:
         lines = string.split('\n')
         
         for line in lines:
-            fragmentType = Processor.__getFragmentType(line)
+            TokenType = Lexer.__getFragmentType(line)
             
-            if fragmentType == None:
+            if TokenType == None:
                 raise RuntimeError('Unrecognized fragment \"%s\"' % line)
             else:
-                fragments.append( fragmentType.instantiate(line) )
+                fragments.append( TokenType.instantiate(line) )
                 
         return fragments
         
@@ -79,15 +79,15 @@ class Processor:
             
     @staticmethod   
     def __getFragmentType(body):
-        for fragmentType in Processor.__fragmentTypes:
-            if fragmentType.matches(body):
-                return fragmentType
+        for TokenType in Lexer.__fragmentTypes:
+            if TokenType.matches(body):
+                return TokenType
 
         return None
             
     __fragmentTypes = [
             # Parameter
-            FragmentType(\
+            TokenType(\
                 # Parameter name
                 r'^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH +
                 r'[=]{1}' + 
@@ -95,10 +95,10 @@ class Processor:
                 WHITESPACE_MATCH + PARAM_VALUE_MATCH +
                 # Trailing whitespace & semicolon
                 WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$',
-                FragmentType.PARAMETER, ParameterFragment),
+                TokenType.PARAMETER, ParameterToken),
             
             # Method
-            FragmentType(\
+            TokenType(\
                # Method return value
                r'^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + \
                # Method name
@@ -108,25 +108,25 @@ class Processor:
                # Modifiers
                r'(' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + r')*' +
                # Trailing whitespace & semicolon
-               WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$', FragmentType.METHOD, MethodFragment),
+               WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$', TokenType.METHOD, MethodToken),
                        
-            FragmentType(\
+            TokenType(\
                WHITESPACE_MATCH + 'struct' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
-               FragmentType.STRUCT_BEGIN, StructBeginFragment),
+               TokenType.STRUCT_BEGIN, StructBeginToken),
                        
-            FragmentType(\
+            TokenType(\
                WHITESPACE_MATCH + '}' + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH + '$',
-               FragmentType.CLOSING_BRACKET, Fragment),
+               TokenType.CLOSING_BRACKET, Token),
                        
-            FragmentType(\
+            TokenType(\
                WHITESPACE_MATCH + \
                # Field type
                PARAM_NAME_MATCH + WHITESPACE_SPLIT_MATCH + \
                # Field name
                PARAM_NAME_MATCH + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH,
-               FragmentType.STRUCT_FIELD, Fragment),
+               TokenType.STRUCT_FIELD, Token),
                        
-             FragmentType(\
+             TokenType(\
                WHITESPACE_MATCH + 'interface' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
-               FragmentType.INTERFACE_BEGIN, InterfaceBeginFragment),
+               TokenType.INTERFACE_BEGIN, InterfaceBeginToken),
     ]

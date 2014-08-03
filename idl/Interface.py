@@ -1,19 +1,19 @@
-from idl.IDLType import IDLType
-from idl.Utils import *
-from idl.FragmentType import FragmentType
-from idl.IDLMethod import IDLMethod
+from idl.Type import Type
+from idl.lexer.Utils import *
+from idl.lexer.TokenType import TokenType
+from idl.Method import Method
 
 import re
 
-class IDLInterface(IDLType):
+class Interface(Type):
     def __init__(self, module, fragments):
-        IDLType.__init__(self, IDLType.INTERFACE)
+        Type.__init__(self, Type.INTERFACE)
         
         self.module = module
         
         header = fragments.pop(0)
         # Sanity check
-        assert(header.type == FragmentType.INTERFACE_BEGIN)
+        assert(header.type == TokenType.INTERFACE_BEGIN)
         
         # Parse interface name
         r = re.compile(WHITESPACE_MATCH + 'interface' + WHITESPACE_SPLIT_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_MATCH + '{')
@@ -25,12 +25,12 @@ class IDLInterface(IDLType):
         while fragments:
             fragment = fragments[0]
             
-            if fragment.type == FragmentType.METHOD:
+            if fragment.type == TokenType.METHOD:
                 method = self.createMethod(fragments)
                 
                 self.methods.append( method )
             
-            elif fragment.type == FragmentType.CLOSING_BRACKET:
+            elif fragment.type == TokenType.CLOSING_BRACKET:
                 fragments.pop(0)
                 break
             
@@ -48,9 +48,9 @@ class IDLInterface(IDLType):
         fragment = fragments.pop(0)
         
         # Sanity check
-        assert(fragment.type == FragmentType.METHOD)
+        assert(fragment.type == TokenType.METHOD)
         
-        method = IDLMethod(self, self.module, fragment)
+        method = Method(self, self.module, fragment)
         
         return method 
     
