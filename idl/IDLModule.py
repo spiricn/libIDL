@@ -57,67 +57,49 @@ class IDLModule:
                 raise RuntimeError('Unhandled fragment type %d', fragment.type)
             
     def __createInterface(self, fragments):
-        header = fragments.pop(0)
-        # Sanity check
-        assert(header.type == FragmentType.INTERFACE_BEGIN)
+        interface = IDLInterface(self, fragments)
         
-        interface = IDLInterface(header)
-        
-        while fragments:
-            fragment = fragments[0]
-            
-            if fragment.type == FragmentType.METHOD:
-                method = self.createMethod(fragments)
-                
-                interface.methods.append( method )
-            
-            elif fragment.type == FragmentType.CLOSING_BRACKET:
-                fragments.pop(0)
-                break
-            
-            else:
-                raise RuntimeError('Unexpected fragment type found while parsing interface: "%s"' % fragment.body)
-            
         self.__addType(interface)
-            
-    def createMethod(self, fragments):
-        fragment = fragments.pop(0)
         
-        # Sanity check
-        assert(fragment.type == FragmentType.METHOD)
-        
-        method = IDLMethod(self, fragment)
-        
-        self.__addType( method )
-        
-        return method 
-        
-    def createVariable(self, rawArg):
+    def createVariable(self, context, rawArg):
         argType = IDLType(rawArg.type)
             
         # Not a primitive type ?
         if argType == IDLType.INVALID:
-            # Is it a callback?
-            for method in self.getTypes(IDLType.CALLBACK):
-                if method.name == rawArg.type:
-                    # It's a callback
-                    argType = method
+            # If it's not a primitive, it can only be a structure in module's context
+            for struct in self.getTypes(IDLType.STRUCTURE):
+                if struct.name == rawArg.type:
+                    # It's a structure
+                    argType = struct
                     break
                 
-            # Is it a structure ?
-            if argType == IDLType.INVALID:
-                for struct in self.getTypes(IDLType.STRUCTURE):
-                    if struct.name == rawArg.type:
-                        # It's a structure
-                        argType = struct
+            if isinstance(context, IDLInterface):
+                # If it's not a primitive, it can be a callback in interface context
+                for method in context.methods:
+                    if method.name == rawArg.type:
+                        # It's a callback
+                        argType = method
                         break
-                        
+            
             if argType == IDLType.INVALID:
                 # Could not resolve type
                 return None
 
         return IDLVariable(argType, rawArg.name)
+    
+    def getInterface(self, name):
+        return self.getType(name, IDLType.INTERFACE)
+        
+    def getStructure(self, name):
+        return self.getType(name, IDLType.STRUCTURE)
 
+    def getType(self, name, typeID):
+        for i in self.types:
+            if i.name == name and i.type == typeID:
+                return i
+            
+        return None
+            
     def __createStruct(self, fragments):
         begin = fragments.pop(0)
         

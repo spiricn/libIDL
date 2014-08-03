@@ -7,10 +7,12 @@ class IDLMethod(IDLType):
     MOD_CALLBACK_REGISTER = 'callback_register'
     MOD_CALLBACK_UNREGISTER = 'callback_unregister'
     
-    def __init__(self, parent, fragment):
+    def __init__(self, interface, module, fragment):
         IDLType.__init__(self, IDLType.INVALID)
         
-        self.parent = parent
+        self.interface = interface
+        
+        self.module = module
         
         # Create a method from the fragment
         try:
@@ -59,7 +61,7 @@ class IDLMethod(IDLType):
         self.args = []
         
         for rawArg in self.rawMethod.args:
-            var = self.parent.createVariable(rawArg)
+            var = self.module.createVariable(self.interface, rawArg)
             if var == None:
                 raise RuntimeError('Invalid method arrgument type method="%s"; argument="%s"' % (self.rawMethod.body, rawArg.type))
             

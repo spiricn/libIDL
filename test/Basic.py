@@ -35,11 +35,15 @@ interface TestInterface{
         
         self.assertEqual(module.params['interface'], 'BasicInterface')
         
-        methods = module.getTypes(IDLType.METHOD)
+        interfaces = module.getTypes(IDLType.INTERFACE)
         
-        self.assertEqual(len(methods), 1)
+        self.assertEqual(len(interfaces), 1)
         
-        self.assertEqual(methods[0].name, 'methodName')
+        interface = interfaces[0]
+        
+        self.assertEqual(len(interface.methods), 1)
+        
+        self.assertEqual(interface.methods[0].name, 'methodName')
      
     def test_basic(self):
         '''
@@ -109,32 +113,28 @@ interface TestInterface{
 '''
  
         module = IDLModule(source)
+        
+        interface = module.getInterface("TestInterface")
+        self.assertTrue( interface != None )
          
         # Check the callback declaration
-        calblackDec = module.getTypes(IDLType.CALLBACK)
-        self.assertEqual(len(calblackDec), 1)
+        calblackDec = interface.getMethod('callbackMethod')
+        self.assertTrue( calblackDec != None )
+        self.assertTrue(calblackDec.type == IDLType.CALLBACK)
          
         # Check the callback register
-        callbackReg = module.getTypes(IDLType.CALLBACK_REGISTER)
-        self.assertEqual(len(callbackReg), 1)
+        callbackReg = interface.getMethod('callbackRegister')
+        self.assertTrue( callbackReg != None )
+        self.assertTrue(callbackReg.type == IDLType.CALLBACK_REGISTER)
         
-        callbackReg = callbackReg[0]
-        self.assertTrue(callbackReg != None)
-        
-        self.assertTrue(callbackReg.callbackType.name == 'callbackMethod')
-         
         # Check the callback unregister
-        callbackUnreg = module.getTypes(IDLType.CALLBACK_UNREGISTER)
-        self.assertEqual(len(callbackUnreg), 1)
-        
-        callbackUnreg = callbackUnreg[0]
+        callbackUnreg = interface.getMethod('callbackUnregister')
         self.assertTrue(callbackUnreg != None)
+        self.assertTrue(callbackUnreg.type == IDLType.CALLBACK_UNREGISTER)
         
-        self.assertTrue(callbackUnreg.callbackType.name == 'callbackMethod')
-         
         # Check the method
-        method = module.getTypes(IDLType.METHOD)
-        self.assertEqual(len(method), 1)
+        method = interface.getMethod('method')
+        self.assertTrue(method != None)
          
     def test_params(self):
         '''
@@ -185,13 +185,13 @@ param2 = value2;
 
         # Check the first module
         self.assertTrue('module1' in project.modules)
-        methods = project.modules['module1'].getTypes(IDLType.METHOD)
-        self.assertEqual(len(methods), 1)
+        interface = project.modules['module1'].getTypes(IDLType.INTERFACE)[0]
+        self.assertEqual(len(interface.methods), 1)
          
         # Check the second module
         self.assertTrue('module2' in project.modules)
-        methods = project.modules['module2'].getTypes(IDLType.METHOD)
-        self.assertEqual(len(methods), 1)
+        interface = project.modules['module2'].getTypes(IDLType.INTERFACE)[0]
+        self.assertEqual(len(interface.methods), 4)
         
     def test_structures(self):
         '''
@@ -282,6 +282,32 @@ interface TestInterface{
         
         self.assertEqual(args[2].type, IDLType.INT32)
 
+
+    def test_multiInterface(self):
+        '''
+        Same method names in different interfaces test. 
+        '''
+        
+        source = '''\
+interface A{
+    void method();
+};
+
+
+interface B{
+    void method();
+};
+'''
+        module = IDLModule(source)
+        
+        i1 = module.getInterface('A')
+        self.assertTrue(i1 != None)
+        
+        i2 = module.getInterface('B')
+        self.assertTrue(i2 != None)
+        
+        self.assertEqual(i1.methods[0].name, i2.methods[0].name)
+        
 
 if __name__ == '__main__':
     unittest.main()
