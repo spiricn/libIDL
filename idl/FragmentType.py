@@ -7,7 +7,8 @@ class FragmentType(object):
     STRUCT_BEGIN, \
     CLOSING_BRACKET, \
     STRUCT_FIELD, \
-    = range(5)
+    INTERFACE_BEGIN, \
+    = range(6)
     
     def __init__(self, pattern, fragmentType, fragmentClass):
         self.pattern = re.compile(pattern)

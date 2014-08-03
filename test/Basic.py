@@ -26,7 +26,9 @@ test
 */
 
 // Comment 1
-void methodName(int32 arg1, uint32 arg2, /* comment block 1 */string arg3);
+interface TestInterface{
+    void methodName(int32 arg1, uint32 arg2, /* comment block 1 */string arg3);
+};
 // Comment 2
 '''
         module = IDLModule(source)
@@ -45,18 +47,24 @@ void methodName(int32 arg1, uint32 arg2, /* comment block 1 */string arg3);
         '''
          
         source = '''\
-interface = BasicInterface;
- 
-void methodName(int32 arg1, uint32 arg2, string arg3);
+interface BasicInterface{
+    void methodName(int32 arg1, uint32 arg2, string arg3);
+};
 '''
          
         module = IDLModule(source)
          
         # Check the interface name
-        self.assertEqual('BasicInterface', module.params['interface'])
+        interface = module.getTypes(IDLType.INTERFACE)
+        self.assertEqual(len(interface), 1)
+        
+        interface = interface[0]
+        
+        
+        self.assertEqual(interface.name, 'BasicInterface')
          
         # Check the method
-        method = module.getTypes(IDLType.METHOD)
+        method = interface.methods
         self.assertEqual(len(method), 1)
          
         method = method[0]
@@ -89,21 +97,18 @@ void methodName(int32 arg1, uint32 arg2, string arg3);
 
         source = '''\
          
-interface = InterfaceName;
- 
-void callbackMethod(int32 arg1) callback;
- 
-void callbackRegister(callbackMethod arg1) callback_register;
- 
-void callbackUnregister(callbackMethod arg1) callback_unregister;
- 
-float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
+interface TestInterface{
+    void callbackMethod(int32 arg1) callback;
+     
+    void callbackRegister(callbackMethod arg1) callback_register;
+     
+    void callbackUnregister(callbackMethod arg1) callback_unregister;
+     
+    float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
+}; // </TestInterace>
 '''
  
         module = IDLModule(source)
-         
-        # Check the interface name
-        self.assertEqual('InterfaceName', module.params['interface'])
          
         # Check the callback declaration
         calblackDec = module.getTypes(IDLType.CALLBACK)
@@ -207,8 +212,10 @@ struct Struct2 {
     Struct1 f5;
 };
 
-// Method taking structure arguments
-void testMethod(Struct1 arg1, Struct2 arg2, int32 arg3);
+interface TestInterface{
+    // Method taking structure arguments
+    void testMethod(Struct1 arg1, Struct2 arg2, int32 arg3);
+}; // </TestInterface>
 
 '''
         module = IDLModule(source)
@@ -252,7 +259,9 @@ void testMethod(Struct1 arg1, Struct2 arg2, int32 arg3);
         
         
         # Verify method
-        methods = module.getTypes(IDLType.METHOD)
+        interface = module.getTypes(IDLType.INTERFACE)[0]
+        
+        methods = interface.methods
         self.assertEqual(len(methods), 1)
         
         method = methods[0]

@@ -8,8 +8,8 @@ class RawMethod(object):
         body = fragment.body
         
         # Method return type
-        self.returnType = re.compile(r'[^ \t]*').search(body).group(0)
-
+        self.returnType = re.compile(WHITESPACE_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_SPLIT_MATCH).search(body).group(1)
+        
         # Method name
         self.name = re.compile(
                 # Whitespace splitting the return value from name

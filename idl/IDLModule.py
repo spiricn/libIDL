@@ -5,7 +5,10 @@ from idl.IDLType import IDLType
 from idl.IDLVariable import IDLVariable
 from idl.RawVariable import RawVariable
 from idl.IDLStruct import IDLStruct
+from idl.Interface import IDLInterface
 from idl.Utils import *
+
+# TODO each interface should have it's local methods (at the moment no two interfaces can have the same named method)
 
 class IDLModule:
     PARAM_INTERFACE_NAME = 'interface'
@@ -34,23 +37,61 @@ class IDLModule:
         while fragments:
             fragment = fragments[0]
             
-            if fragment.type == FragmentType.METHOD:
-                self.__addType( IDLMethod(self, fragment ) )
-                fragments.pop(0)
-                
-            elif fragment.type == FragmentType.PARAMETER:
+            if fragment.type == FragmentType.PARAMETER:
                 self.__addParam(fragment)
                 fragments.pop(0)
             
             elif fragment.type == FragmentType.STRUCT_BEGIN:
                 self.__createStruct(fragments)
                 
+            elif fragment.type == FragmentType.INTERFACE_BEGIN:
+                self.__createInterface(fragments)
+                
             elif fragment.type == FragmentType.CLOSING_BRACKET:
                 raise RuntimeError('Unexpected closing bracket')
+            
+            elif fragment.type == FragmentType.METHOD:
+                raise RuntimeError('Method found outside interface body "%s"' % fragment.body)
                 
             else:
                 raise RuntimeError('Unhandled fragment type %d', fragment.type)
             
+    def __createInterface(self, fragments):
+        header = fragments.pop(0)
+        # Sanity check
+        assert(header.type == FragmentType.INTERFACE_BEGIN)
+        
+        interface = IDLInterface(header)
+        
+        while fragments:
+            fragment = fragments[0]
+            
+            if fragment.type == FragmentType.METHOD:
+                method = self.createMethod(fragments)
+                
+                interface.methods.append( method )
+            
+            elif fragment.type == FragmentType.CLOSING_BRACKET:
+                fragments.pop(0)
+                break
+            
+            else:
+                raise RuntimeError('Unexpected fragment type found while parsing interface: "%s"' % fragment.body)
+            
+        self.__addType(interface)
+            
+    def createMethod(self, fragments):
+        fragment = fragments.pop(0)
+        
+        # Sanity check
+        assert(fragment.type == FragmentType.METHOD)
+        
+        method = IDLMethod(self, fragment)
+        
+        self.__addType( method )
+        
+        return method 
+        
     def createVariable(self, rawArg):
         argType = IDLType(rawArg.type)
             

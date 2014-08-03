@@ -2,6 +2,7 @@ from idl.FragmentType import FragmentType
 from idl.MethodFragment import MethodFragment
 from idl.ParameterFragment import ParameterFragment
 from idl.StructBeginFragment import StructBeginFragment
+from idl.InterfaceBeginFragment import InterfaceBeginFragment
 from idl.Fragment import Fragment
 from idl.Utils import *
 import re
@@ -124,4 +125,8 @@ class Processor:
                # Field name
                PARAM_NAME_MATCH + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH,
                FragmentType.STRUCT_FIELD, Fragment),
+                       
+             FragmentType(\
+               WHITESPACE_MATCH + 'interface' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
+               FragmentType.INTERFACE_BEGIN, InterfaceBeginFragment),
     ]

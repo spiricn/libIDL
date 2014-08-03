@@ -1,3 +1,5 @@
-interface = Module1;
+interface Module1Interface {
 
-void method1(int32 arg1);
+	void method1(int32 arg1);
+
+}; // </Module1Interface>

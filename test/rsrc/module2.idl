@@ -1,9 +1,11 @@
-interface = Module2;
+interface Module2Interface {
+	
+	void method1(int32 arg1);
+	
+	void callback1() callback;
+	
+	void setter1(callback1 arg1) callback_register;
+	
+	void setter2(callback1 arg1) callback_unregister;
 
-void method1(int32 arg1);
-
-void callback1() callback;
-
-void setter1(callback1 arg1) callback_register;
-
-void setter2(callback1 arg1) callback_unregister;
+}; // </Module2Interface>

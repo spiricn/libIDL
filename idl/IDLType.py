@@ -16,8 +16,9 @@ class IDLType(object):
     CALLBACK_REGISTER, \
     CALLBACK_UNREGISTER, \
     STRUCTURE, \
+    INTERFACE, \
     INVALID, \
-    = range(18)
+    = range(19)
     
     def __init__(self, t):
         if isinstance(t, str):
