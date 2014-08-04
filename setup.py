@@ -15,5 +15,5 @@ setup(
       
       package_dir = {'idl' : 'idl'},
       
-      packages = ['idl'],
+      packages = ['idl', 'idl.lexer'],
 )
