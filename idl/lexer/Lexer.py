@@ -99,16 +99,7 @@ class Lexer:
             
             # Method
             TokenType(\
-               # Method return value
-               r'^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + \
-               # Method name
-               WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH  + WHITESPACE_MATCH + \
-               # Method arguments
-               r'[(]{1}' + r'[^)]*' + r'[)]{1}' + \
-               # Modifiers
-               r'(' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + r')*' +
-               # Trailing whitespace & semicolon
-               WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$', TokenType.METHOD, MethodToken),
+               '^[^(]+[(]{1}[^)]*[)]{1}[^;]*;$', TokenType.METHOD, MethodToken),
                        
             TokenType(\
                WHITESPACE_MATCH + 'struct' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
