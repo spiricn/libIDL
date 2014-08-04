@@ -1,4 +1,5 @@
 class Type(object):
+    BOOL, \
     INT64, \
     UINT64, \
     INT32, \
@@ -36,6 +37,7 @@ class Type(object):
                'float64' : Type.FLOAT64,
                'void' : Type.VOID,
                'string' : Type.STRING,
+               'bool' : Type.BOOL,
                }
             
             if t in stringToType:
