@@ -37,7 +37,7 @@ class Type(object):
                'float64' : Type.FLOAT64,
                'void' : Type.VOID,
                'string' : Type.STRING,
-               'bool' : Type.BOOL,
+               'boolean' : Type.BOOL,
                }
             
             if t in stringToType:
