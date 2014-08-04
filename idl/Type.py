@@ -19,7 +19,7 @@ class Type(object):
     STRUCTURE, \
     INTERFACE, \
     INVALID, \
-    = range(19)
+    = range(20)
     
     def __init__(self, t):
         if isinstance(t, str):
