@@ -58,6 +58,9 @@ class Type(object):
             return self.type == other
         else:
             return NotImplemented
+        
+    def __ne__(self, other):
+        return not self == other
 
     def __str__(self):
         return '<Type id=%d>' % self.type
