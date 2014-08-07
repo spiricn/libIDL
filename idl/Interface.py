@@ -6,12 +6,12 @@ from idl.Method import Method
 import re
 
 class Interface(Type):
-    def __init__(self, module, fragments):
+    def __init__(self, module, tokens):
         Type.__init__(self, Type.INTERFACE)
         
         self.module = module
         
-        header = fragments.pop(0)
+        header = tokens.pop(0)
         # Sanity check
         assert(header.type == TokenType.INTERFACE_BEGIN)
         
@@ -22,20 +22,20 @@ class Interface(Type):
         
         self.methods = []
         
-        while fragments:
-            fragment = fragments[0]
+        while tokens:
+            token = tokens[0]
             
-            if fragment.type == TokenType.METHOD:
-                method = self.createMethod(fragments)
+            if token.type == TokenType.METHOD:
+                method = self.createMethod(tokens)
                 
                 self.methods.append( method )
             
-            elif fragment.type == TokenType.CLOSING_BRACKET:
-                fragments.pop(0)
+            elif token.type == TokenType.CLOSING_BRACKET:
+                tokens.pop(0)
                 break
             
             else:
-                raise RuntimeError('Unexpected fragment type found while parsing interface: "%s"' % fragment.body)
+                raise RuntimeError('Unexpected token type found while parsing interface: "%s"' % token.body)
             
     def getMethod(self, name):
         for i in self.methods:
@@ -44,13 +44,13 @@ class Interface(Type):
             
         return None
         
-    def createMethod(self, fragments):
-        fragment = fragments.pop(0)
+    def createMethod(self, tokens):
+        token = tokens.pop(0)
         
         # Sanity check
-        assert(fragment.type == TokenType.METHOD)
+        assert(token.type == TokenType.METHOD)
         
-        method = Method(self, self.module, fragment)
+        method = Method(self, self.module, token)
         
         return method 
     

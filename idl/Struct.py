@@ -35,17 +35,17 @@ class Struct(Type):
         fields = []
         
         while tokens:
-            fragment = tokens.pop(0)
+            token = tokens.pop(0)
             
-            if fragment.type == TokenType.CLOSING_BRACKET:
+            if token.type == TokenType.CLOSING_BRACKET:
                 # Reached end
                 break
             
-            elif fragment.type == TokenType.STRUCT_FIELD:
-                fields.append(fragment)
+            elif token.type == TokenType.STRUCT_FIELD:
+                fields.append(token)
             
             else:
-                raise RuntimeError('Unexpected fragment found whlie parsing structure: "%s"' % fragment.body)
+                raise RuntimeError('Unexpected token found whlie parsing structure: "%s"' % token.body)
 
         # Parse struct name
         r = re.compile(WHITESPACE_MATCH + 'struct' + WHITESPACE_SPLIT_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_MATCH + '{')
@@ -55,8 +55,8 @@ class Struct(Type):
         # Parse struct fields        
         rawFields = []
 
-        for fragment in fields:
-            fieldType, fieldName = [i for i in fragment.body.replace('\t', '').replace(';', '').split(' ') if i]
+        for token in fields:
+            fieldType, fieldName = [i for i in token.body.replace('\t', '').replace(';', '').split(' ') if i]
               
             rawFields.append( VariableToken(fieldType, fieldName) )
             

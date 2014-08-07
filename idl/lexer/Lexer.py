@@ -21,23 +21,23 @@ class Lexer:
     
     @staticmethod
     def __tokenize(string):
-        fragments = []
+        tokens = []
         
         # Empty string?
         if not string:
-            return fragments
+            return tokens
         
         lines = string.split('\n')
         
         for line in lines:
-            TokenType = Lexer.__getFragmentType(line)
+            TokenType = Lexer.__getTokenType(line)
             
             if TokenType == None:
-                raise RuntimeError('Unrecognized fragment \"%s\"' % line)
+                raise RuntimeError('Unrecognized token \"%s\"' % line)
             else:
-                fragments.append( TokenType.instantiate(line) )
+                tokens.append( TokenType.instantiate(line) )
                 
-        return fragments
+        return tokens
         
     @staticmethod
     def __preprocess(string):
@@ -78,14 +78,14 @@ class Lexer:
         return res
             
     @staticmethod   
-    def __getFragmentType(body):
-        for TokenType in Lexer.__fragmentTypes:
+    def __getTokenType(body):
+        for TokenType in Lexer.__tokenTypes:
             if TokenType.matches(body):
                 return TokenType
 
         return None
             
-    __fragmentTypes = [
+    __tokenTypes = [
             # Parameter
             TokenType(\
                 # Parameter name

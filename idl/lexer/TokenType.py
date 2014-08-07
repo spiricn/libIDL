@@ -13,17 +13,17 @@ class TokenType(object):
     ARG_LIST_END, \
     = range(9)
     
-    def __init__(self, pattern, tokenType, fragmentClass):
+    def __init__(self, pattern, tokenType, tokenClass):
         self.pattern = re.compile(pattern)
         self.patternString = pattern
         self.type = tokenType
-        self.fragmentClass = fragmentClass
+        self.tokenClass = tokenClass
     
     def matches(self, string):
         return self.pattern.match(string)
     
     def instantiate(self, body):
-        return self.fragmentClass(self.type, body)
+        return self.tokenClass(self.type, body)
     
     def __eq__(self, other):
         if isinstance(other, TokenType):

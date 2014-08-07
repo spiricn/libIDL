@@ -12,15 +12,15 @@ class Module:
     PARAM_INTERFACE_NAME = 'interface'
     
     def __init__(self, source):
-        # Create fragments from source
-        fragments = Lexer.tokenize(source)
+        # Create tokens from source
+        tokens = Lexer.tokenize(source)
         
         # Using list instead of dict since ordering is important (think of a better way prehaps?)
         self.types = []
         
         self.params = {}
         
-        self.__processFragments(fragments)
+        self.__processTokens(tokens)
                 
         # Process the methods
         self.__processMethods()
@@ -31,31 +31,37 @@ class Module:
         
         self.types.append( type )
         
-    def __processFragments(self, fragments):
-        while fragments:
-            fragment = fragments[0]
+    def __processTokens(self, tokens):
+        '''
+        Process generated tokens.
+        '''
+        
+        while tokens:
+            token = tokens[0]
             
-            if fragment.type == TokenType.PARAMETER:
-                self.__addParam(fragment)
-                fragments.pop(0)
+            if token.type == TokenType.PARAMETER:
+                # Add a parameter
+                self.__addParam(token)
+                tokens.pop(0)
             
-            elif fragment.type == TokenType.STRUCT_BEGIN:
-                self.__addType( Struct.generate(self, fragments) )
+            elif token.type == TokenType.STRUCT_BEGIN:
+                # Create a struct
+                self.__addType( Struct.generate(self, tokens) )
                 
-            elif fragment.type == TokenType.INTERFACE_BEGIN:
-                self.__createInterface(fragments)
+            elif token.type == TokenType.INTERFACE_BEGIN:
+                self.__createInterface(tokens)
                 
-            elif fragment.type == TokenType.CLOSING_BRACKET:
+            elif token.type == TokenType.CLOSING_BRACKET:
                 raise RuntimeError('Unexpected closing bracket')
             
-            elif fragment.type == TokenType.METHOD:
-                raise RuntimeError('Method found outside interface body "%s"' % fragment.body)
+            elif token.type == TokenType.METHOD:
+                raise RuntimeError('Method found outside interface body "%s"' % token.body)
                 
             else:
-                raise RuntimeError('Unhandled fragment type %d', fragment.type)
+                raise RuntimeError('Unhandled token type %d', token.type)
             
-    def __createInterface(self, fragments):
-        interface = Interface(self, fragments)
+    def __createInterface(self, tokens):
+        interface = Interface(self, tokens)
         
         self.__addType(interface)
         
@@ -108,7 +114,7 @@ class Module:
     def getTypes(self, type):
         return [i for i in self.types if i.type == type]
 
-    def __addParam(self, fragment):
-        key, value = fragment.body.split('=')
+    def __addParam(self, token):
+        key, value = token.body.split('=')
         
         self.params[key.strip()] = value.split(';')[0].strip()
