@@ -20,21 +20,25 @@ class Interface(Type):
         
         self.name = r.search(header.body).group(1)
         
+        # Parse methods
         self.methods = []
         
         while tokens:
             token = tokens[0]
             
             if token.type == TokenType.METHOD:
+                # Start of method token
                 method = self.createMethod(tokens)
                 
                 self.methods.append( method )
             
             elif token.type == TokenType.CLOSING_BRACKET:
+                # End of interface token
                 tokens.pop(0)
                 break
             
             else:
+                # Unexpected token
                 raise RuntimeError('Unexpected token type found while parsing interface: "%s"' % token.body)
             
     def getMethod(self, name):
