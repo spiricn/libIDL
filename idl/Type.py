@@ -54,8 +54,10 @@ class Type(object):
     def __eq__(self, other):
         if isinstance(other, Type):
             return self.id == other.id
+        
         elif isinstance(other, int):
             return self.id == other
+        
         else:
             return NotImplemented
         
