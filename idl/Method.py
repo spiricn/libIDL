@@ -15,7 +15,7 @@ class Method(Type):
         
         if not token.mods:
             # No modifier, it's a regular method
-            self.type = Type.METHOD
+            self.id = Type.METHOD
             
         elif len(token.mods) > 1:
             raise RuntimeError('Malformed method declaration "%s"; reason="%s"' % (token.body, "Unrecognized method modifier"))
@@ -24,13 +24,13 @@ class Method(Type):
             mod = token.mods[0]
             
             if mod == Method.MOD_CALLBACK_DECLARATION:
-                self.type = Type.CALLBACK
+                self.id = Type.CALLBACK
                 
             elif mod == Method.MOD_CALLBACK_REGISTER:
-                self.type = Type.CALLBACK_REGISTER
+                self.id = Type.CALLBACK_REGISTER
                  
             elif mod == Method.MOD_CALLBACK_UNREGISTER:
-                self.type = Type.CALLBACK_UNREGISTER
+                self.id = Type.CALLBACK_UNREGISTER
                 
             else:
                 raise RuntimeError('Malformed method declaration "%s"; reason="%s"' % (token.body, "Unrecognized method modifier \"%s\"" % mod))
@@ -55,12 +55,12 @@ class Method(Type):
         for rawArg in self.rawMethod.args:
             var = self.module.createVariable(self.interface, rawArg)
             if var == None:
-                raise RuntimeError('Invalid method arrgument type method="%s"; argument="%s"' % (self.rawMethod.body, rawArg.type))
+                raise RuntimeError('Invalid method argument type method="%s"; argument="%s"' % (self.rawMethod.body, rawArg.id))
             
             self.args.append(var)
     
         # Deduce callback type from method arguments
-        if self.type in [Type.CALLBACK_REGISTER, Type.CALLBACK_UNREGISTER]:
+        if self.id in [Type.CALLBACK_REGISTER, Type.CALLBACK_UNREGISTER]:
             numCallbackTypes = 0
             
             for arg in self.args:
@@ -72,4 +72,4 @@ class Method(Type):
                 raise RuntimeError('Could not deduce callback type from arguments list in method "%s"' % self.rawMethod.body)
             
     def __str__(self):
-        return '<IDLMethod name="%s" type=%d>' % (self.name, self.type)
+        return '<IDLMethod name="%s" type=%d>' % (self.name, self.id)

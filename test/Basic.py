@@ -1,5 +1,4 @@
 from idl.Module import Module 
-from idl.Method import Method
 from idl.Type import Type
 from idl.Project import Project
 import unittest
@@ -120,17 +119,17 @@ interface TestInterface{
         # Check the callback declaration
         calblackDec = interface.getMethod('callbackMethod')
         self.assertTrue( calblackDec != None )
-        self.assertTrue(calblackDec.type == Type.CALLBACK)
+        self.assertTrue(calblackDec.id == Type.CALLBACK)
          
         # Check the callback register
         callbackReg = interface.getMethod('callbackRegister')
         self.assertTrue( callbackReg != None )
-        self.assertTrue(callbackReg.type == Type.CALLBACK_REGISTER)
+        self.assertTrue(callbackReg.id == Type.CALLBACK_REGISTER)
         
         # Check the callback unregister
         callbackUnreg = interface.getMethod('callbackUnregister')
         self.assertTrue(callbackUnreg != None)
-        self.assertTrue(callbackUnreg.type == Type.CALLBACK_UNREGISTER)
+        self.assertTrue(callbackUnreg.id == Type.CALLBACK_UNREGISTER)
         
         # Check the method
         method = interface.getMethod('method')

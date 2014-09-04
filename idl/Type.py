@@ -41,21 +41,21 @@ class Type(object):
                }
             
             if t in stringToType:
-                self.type = stringToType[t]
+                self.id = stringToType[t]
             else:
-                self.type = Type.INVALID 
+                self.id = Type.INVALID 
             
         elif isinstance(t, int):
-            self.type = t
+            self.id = t
             
         else:
             raise NotImplementedError('Invalid type id')
         
     def __eq__(self, other):
         if isinstance(other, Type):
-            return self.type == other.type
+            return self.id == other.id
         elif isinstance(other, int):
-            return self.type == other
+            return self.id == other
         else:
             return NotImplemented
         
@@ -63,4 +63,4 @@ class Type(object):
         return not self == other
 
     def __str__(self):
-        return '<Type id=%d>' % self.type
+        return '<Type id=%d>' % self.id

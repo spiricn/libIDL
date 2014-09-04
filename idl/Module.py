@@ -128,7 +128,7 @@ class Module:
         '''
         
         for i in self.types:
-            if i.name == name and i.type == typeID:
+            if i.name == name and i.id == typeID:
                 return i
             
         return None
@@ -150,7 +150,7 @@ class Module:
         Gets a list of all the objects of specific type
         '''
         
-        return [i for i in self.types if i.type == objType]
+        return [i for i in self.types if i.id == objType]
 
     def __addParam(self, token):
         '''

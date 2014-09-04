@@ -71,7 +71,7 @@ def generateClass(interface):
         cppSource += '\t'
         
         # Return type
-        cppSource += idlToCppType(method.returnType.type)
+        cppSource += idlToCppType(method.returnType.id)
         
         # Method name
         cppSource += ' %s' % method.name
@@ -82,7 +82,7 @@ def generateClass(interface):
         
         for arg in method.args:
             # Argument type
-            cppSource += idlToCppType(arg.type.type)
+            cppSource += idlToCppType(arg.type.id)
             
             # Argument name
             cppSource += ' %s, ' % arg.name
