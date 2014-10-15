@@ -41,7 +41,7 @@ class Method(Type):
         # Method return type
         self.returnType = self.module.resolveType(self, token.returnType)
         
-        if self.returnType == Type.INVALID:
+        if  self.returnType == None or self.returnType == Type.INVALID:
             raise RuntimeError('Invalid method return type "%s"' % token.returnType)
         
         self.rawMethod = token
