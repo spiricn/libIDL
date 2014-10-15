@@ -25,7 +25,7 @@ class Enum(Type):
             token = tokens.pop(0)
             
             if token.type == TokenType.ENUM_FIELD:
-                fieldName = token.body.replace(' ', '').split(',')[0]
+                fieldName = token.body.replace(' ', '').replace('\t', '').split(',')[0]
                 
                 self.fields.append(  EnumField(fieldName, len(self.fields))  )
             
