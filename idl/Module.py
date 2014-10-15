@@ -4,6 +4,7 @@ from idl.Type import Type
 from idl.Variable import Variable
 from idl.Struct import Struct
 from idl.Interface import Interface
+from idl.Enum import Enum
 
 class Module:
     PARAM_INTERFACE_NAME = 'interface'
@@ -78,10 +79,18 @@ class Module:
             elif token.type == TokenType.METHOD:
                 raise RuntimeError('Method found outside interface body "%s"' % token.body)
                 
+            elif token.type == TokenType.ENUM_BEGIN:
+                self.__createEnum(tokens)
+            
             # Unrecognized token
             else:
                 raise RuntimeError('Unhandled token type %d', token.type)
             
+    def __createEnum(self, tokens):
+        enum = Enum(tokens)
+        
+        self.__addType(enum)
+    
     def __createInterface(self, tokens):
         '''
         Creates an interface object from the list of

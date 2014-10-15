@@ -11,7 +11,9 @@ class TokenType(object):
     ARG_LIST_BEGIN, \
     ARG, \
     ARG_LIST_END, \
-    = range(9)
+    ENUM_BEGIN, \
+    ENUM_FIELD, \
+    = range(11)
     
     def __init__(self, pattern, tokenType, tokenClass):
         self.pattern = re.compile(pattern)

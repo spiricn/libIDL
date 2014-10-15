@@ -18,8 +18,9 @@ class Type(object):
     CALLBACK_UNREGISTER, \
     STRUCTURE, \
     INTERFACE, \
+    ENUM, \
     INVALID, \
-    = range(20)
+    = range(21)
     
     def __init__(self, t):
         if isinstance(t, str):

@@ -3,6 +3,8 @@ from idl.lexer.MethodToken import MethodToken
 from idl.lexer.ParameterToken import ParameterToken
 from idl.lexer.StructBeginToken import StructBeginToken
 from idl.lexer.InterfaceBeginToken import InterfaceBeginToken
+from idl.lexer.EnumBeginToken import EnumBeginToken
+from idl.lexer.EnumFieldToken import EnumFieldToken
 from idl.lexer.Token import Token
 from idl.lexer.Utils import *
 import re
@@ -101,14 +103,17 @@ class Lexer:
             TokenType(\
                '^[^(]+[(]{1}[^)]*[)]{1}[^;]*;$', TokenType.METHOD, MethodToken),
                        
+            # Structure
             TokenType(\
                WHITESPACE_MATCH + 'struct' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
                TokenType.STRUCT_BEGIN, StructBeginToken),
                        
+            # Closing bracket
             TokenType(\
                WHITESPACE_MATCH + '}' + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH + '$',
                TokenType.CLOSING_BRACKET, Token),
                        
+            # Field
             TokenType(\
                WHITESPACE_MATCH + \
                # Field type
@@ -117,7 +122,20 @@ class Lexer:
                PARAM_NAME_MATCH + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH,
                TokenType.STRUCT_FIELD, Token),
                        
+            # Interface
              TokenType(\
                WHITESPACE_MATCH + 'interface' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
                TokenType.INTERFACE_BEGIN, InterfaceBeginToken),
+                    
+            # Enum
+            TokenType(\
+               WHITESPACE_MATCH + 'enum' + WHITESPACE_SPLIT_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + '{',
+               TokenType.ENUM_BEGIN, EnumBeginToken),
+                    
+            # Enum field
+            TokenType(\
+               WHITESPACE_MATCH + \
+               # Enum name
+               PARAM_NAME_MATCH + WHITESPACE_MATCH + ',' + WHITESPACE_MATCH,
+               TokenType.ENUM_FIELD, EnumFieldToken),
     ]

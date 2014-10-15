@@ -311,6 +311,40 @@ interface B{
         
         self.assertEqual(i1.methods[0].name, i2.methods[0].name)
         
+    def test_enum(self):
+        '''
+        Basic enum test 
+        '''
+        
+        source = '''\
+        enum TestEnum{
+            first,
+            second,
+            third,
+        }; // </TestEnum>
+'''
+        module = Module()
+        
+        types = module.execute(source)
+        
+        self.assertEqual(len(types), 1)
+        
+        enum = types[0]
+        
+        self.assertEqual(enum.id, Type.ENUM);
+        
+        self.assertEqual(enum.name, 'TestEnum')
+        
+        self.assertEqual(len(enum.fields), 3)
+        
+        self.assertEqual(enum.fields[0].name, "first")
+        self.assertEqual(enum.fields[0].value, 0)
+        
+        self.assertEqual(enum.fields[1].name, "second")
+        self.assertEqual(enum.fields[1].value, 1)
+        
+        self.assertEqual(enum.fields[2].name, "third")
+        self.assertEqual(enum.fields[2].value, 2)
 
 if __name__ == '__main__':
     unittest.main()
