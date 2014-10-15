@@ -8,19 +8,28 @@ from idl.Interface import Interface
 class Module:
     PARAM_INTERFACE_NAME = 'interface'
     
-    def __init__(self, source):
-        # Create tokens from source
-        tokens = Lexer.tokenize(source)
-        
+    def __init__(self, source=None):
         # Using list instead of dict since ordering is important (think of a better way prehaps?)
         self.types = []
         
         self.params = {}
         
+        if source:
+            self.execute(source)
+        
+    def execute(self, source):
+        # Types created from this source
+        self.sourceTypes = []
+        
+        # Create tokens from source
+        tokens = Lexer.tokenize(source)
+                
         self.__processTokens(tokens)
                 
         # Process the methods
         self.__processTypes()
+
+        return self.sourceTypes
         
     def __addType(self, typeObj):
         '''
@@ -33,6 +42,8 @@ class Module:
         
         # Store it
         self.types.append( typeObj )
+        
+        self.sourceTypes.append( typeObj )
         
     def __processTokens(self, tokens):
         '''
