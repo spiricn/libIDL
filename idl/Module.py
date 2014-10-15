@@ -118,7 +118,12 @@ class Module:
             return argType
     
     def createVariable(self, context, rawArg):
-        return Variable(self.resolveType(context, rawArg.type), rawArg.name)
+        resolvedType = self.resolveType(context, rawArg.type)
+        
+        if resolvedType == None:
+            return resolvedType
+        else:
+            return Variable(resolvedType, rawArg.name)
     
     def getInterface(self, name):
         '''
