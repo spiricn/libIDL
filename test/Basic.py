@@ -322,12 +322,19 @@ interface B{
             second,
             third,
         }; // </TestEnum>
+        
+        
+        interface TestInterface{
+            void method1(TestEnum arg1, int32 arg2);
+            
+            TestEnum method2(int32 arg2);
+        };
 '''
         module = Module()
         
         types = module.execute(source)
         
-        self.assertEqual(len(types), 1)
+        self.assertEqual(len(types), 2)
         
         enum = types[0]
         

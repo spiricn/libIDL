@@ -113,6 +113,12 @@ class Module:
                     return struct
                     break
                 
+            for enum in self.getTypes(Type.ENUM):
+                if enum.name == typeName:
+                    # It's a structure
+                    return enum
+                    break
+                
             if isinstance(context, Interface):
                 # If it's not a primitive, it can be a callback in interface context
                 for method in context.methods:
