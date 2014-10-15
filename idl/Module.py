@@ -92,31 +92,33 @@ class Module:
         
         self.__addType(interface)
         
-    def createVariable(self, context, rawArg):
-        argType = Type(rawArg.type)
+    def resolveType(self, context, typeName):
+        argType = Type(typeName)
             
         # Not a primitive type ?
         if argType == Type.INVALID:
             # If it's not a primitive, it can only be a structure in module's context
             for struct in self.getTypes(Type.STRUCTURE):
-                if struct.name == rawArg.type:
+                if struct.name == typeName:
                     # It's a structure
-                    argType = struct
+                    return struct
                     break
                 
             if isinstance(context, Interface):
                 # If it's not a primitive, it can be a callback in interface context
                 for method in context.methods:
-                    if method.name == rawArg.type:
+                    if method.name == typeName:
                         # It's a callback
-                        argType = method
-                        break
+                        return method
             
             if argType == Type.INVALID:
-                # Could not resolve type
+                # Could not resolve 
                 return None
-
-        return Variable(argType, rawArg.name)
+        else:
+            return argType
+    
+    def createVariable(self, context, rawArg):
+        return Variable(self.resolveType(context, rawArg.type), rawArg.name)
     
     def getInterface(self, name):
         '''

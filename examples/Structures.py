@@ -37,7 +37,7 @@ def sampleMain():
     // Interface using previously defined structure as a method argument
     interface SampleInterface{
     
-        void testMethod( SampleStruct2 arg1 );
+        SampleStruct1 testMethod( SampleStruct2 arg1 );
         
     };
     

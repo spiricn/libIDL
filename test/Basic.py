@@ -213,7 +213,7 @@ struct Struct2 {
 
 interface TestInterface{
     // Method taking structure arguments
-    void testMethod(Struct1 arg1, Struct2 arg2, int32 arg3);
+    Struct1 testMethod(Struct1 arg1, Struct2 arg2, int32 arg3);
 }; // </TestInterface>
 
 '''
@@ -267,7 +267,11 @@ interface TestInterface{
 
         # Name        
         self.assertEqual(method.name, 'testMethod')
-        
+
+        # Return type
+        self.assertEqual(method.returnType, Type.STRUCTURE)
+        self.assertEqual(method.returnType.name, "Struct1")
+                
         # Arguments
         args = method.args
         self.assertEqual(len(args), 3)
