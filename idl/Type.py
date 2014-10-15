@@ -51,6 +51,23 @@ class Type(object):
         else:
             raise NotImplementedError('Invalid type id')
         
+    def isPrimitive(self):
+        return self.id in [
+               Type.INT64,
+               Type.UINT64,
+               Type.INT32,
+               Type.UINT32,
+               Type.INT16,
+               Type.UINT16,
+               Type.INT8,
+               Type.UINT8,
+               Type.FLOAT32,
+               Type.FLOAT64,
+               Type.VOID,
+               Type.STRING,
+               Type.BOOL
+        ]
+        
     def __eq__(self, other):
         if isinstance(other, Type):
             return self.id == other.id
