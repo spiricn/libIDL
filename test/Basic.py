@@ -389,6 +389,30 @@ interface TestInterface{
 
         # Can enums be struct fields ?
         self.assertEqual(struct.fields[1].type.id, Type.ENUM)
+        
+    def test_typedef(self):
+        '''
+        Basic typedef test
+        '''
+        
+        src = '''\
+        typedef DummyType1;
+        typedef DummyType2;
+        '''
+        
+        module = Module()
+        
+        types = module.execute(src)
+        
+        self.assertEqual(len(types), 2)
+        
+        self.assertEqual(types[0].id, Type.TYPEDEF)
+        self.assertEqual(types[0].name, "DummyType1")
+        
+        self.assertEqual(types[1].id, Type.TYPEDEF)
+        self.assertEqual(types[1].name, "DummyType2")
+
+        
 
 if __name__ == '__main__':
     unittest.main()

@@ -6,7 +6,7 @@ import re
 
 class Typedef(Type):
     def __init__(self, tokens):
-        Type.__init__(self, Type.ENUM)
+        Type.__init__(self, Type.TYPEDEF)
         
         # Sanity  check
         assert(tokens[0].type == TokenType.TYPEDEF)
