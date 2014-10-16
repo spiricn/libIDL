@@ -56,7 +56,7 @@ class Method(Type):
             var = self.module.createVariable(self.interface, rawArg)
             
             if var == None:
-                raise RuntimeError('Invalid method argument type method="%s"; argument="%s"' % (self.rawMethod.body, rawArg.id))
+                raise RuntimeError('Invalid method argument type method="%s"; argument="%s"' % (self.rawMethod.body, rawArg.name))
             
             self.args.append(var)
     
