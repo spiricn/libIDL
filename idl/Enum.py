@@ -25,9 +25,28 @@ class Enum(Type):
             token = tokens.pop(0)
             
             if token.type == TokenType.ENUM_FIELD:
-                fieldName = token.body.replace(' ', '').replace('\t', '').split(',')[0]
-                
-                self.fields.append(  EnumField(fieldName, len(self.fields))  )
+                if '(' in token.body:
+                    fieldName = token.body.split('(')[0].strip()
+                    fieldValue = int(token.body.split('(')[1].split(')')[0])
+                else:
+                    fieldName = token.body.strip().split(',')[0]
+                    
+                    fieldValue = 0
+                    
+                    while True:
+                        valueTaken = False
+                        for i in self.fields:
+                            if i.value == fieldValue:
+                                fieldValue += 1
+                                valueTaken = True
+                                break
+                            
+                        if not valueTaken:
+                            break
+                        
+                        
+                    
+                self.fields.append(  EnumField(fieldName, fieldValue)  )
             
             elif token.type == TokenType.CLOSING_BRACKET:
                 # End of enum

@@ -10,6 +10,9 @@ WHITESPACE_MATCH = r'[ \t]*'
 # Matches one or more consecutive tabs and/or spaces
 WHITESPACE_SPLIT_MATCH = r'[ \t]+'
 
+# Matches single number
+NUMBER_MATCH = r'([0-9]*)'
+
 WHITESPACE_LINE_MATCH = r'^' + WHITESPACE_MATCH + r'$'
 
 def dprint(obj):

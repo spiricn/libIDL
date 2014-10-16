@@ -338,6 +338,7 @@ interface TestInterface{
             first,
             second,
             third,
+            fourth(42),
         }; // </TestEnum>
         
         struct TestStruct{
@@ -363,7 +364,7 @@ interface TestInterface{
         
         self.assertEqual(enum.name, 'TestEnum')
         
-        self.assertEqual(len(enum.fields), 3)
+        self.assertEqual(len(enum.fields), 4)
         
         self.assertEqual(enum.fields[0].name, "first")
         self.assertEqual(enum.fields[0].value, 0)
@@ -373,6 +374,9 @@ interface TestInterface{
         
         self.assertEqual(enum.fields[2].name, "third")
         self.assertEqual(enum.fields[2].value, 2)
+        
+        self.assertEqual(enum.fields[3].name, "fourth")
+        self.assertEqual(enum.fields[3].value, 42)
         
         # Test interface
         iface = module.getInterface("TestInterface")
@@ -408,7 +412,7 @@ interface TestInterface{
             DummyType1 field1;
         };
 '''
-        
+
         module = Module()
         
         types = module.execute(src)
