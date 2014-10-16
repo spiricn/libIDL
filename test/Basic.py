@@ -323,21 +323,25 @@ interface B{
             third,
         }; // </TestEnum>
         
+        struct TestStruct{
+            int32 field1;
+            TestEnum field2;
+            string field3;
+        }; // </TestStruct>
         
         interface TestInterface{
-            void method1(TestEnum arg1, int32 arg2);
-            
-            TestEnum method2(int32 arg2);
+            TestEnum method1(TestEnum arg1, int32 arg2);
         };
 '''
         module = Module()
         
         types = module.execute(source)
         
-        self.assertEqual(len(types), 2)
+        self.assertEqual(len(types), 3)
         
         enum = types[0]
         
+        # Test enum
         self.assertEqual(enum.id, Type.ENUM);
         
         self.assertEqual(enum.name, 'TestEnum')
@@ -352,6 +356,22 @@ interface B{
         
         self.assertEqual(enum.fields[2].name, "third")
         self.assertEqual(enum.fields[2].value, 2)
+        
+        # Test interface
+        iface = module.getInterface("TestInterface")
+        self.assertNotEqual(iface, None)
+        
+        # Can enums be method args ?
+        self.assertEqual(iface.methods[0].args[0].type.id, Type.ENUM)
+        
+        # Can enums be method return types ?
+        self.assertEqual(iface.methods[0].returnType.id, Type.ENUM)
+        
+        struct = module.getStructure("TestStruct")
+        self.assertNotEqual(struct, None)
+
+        # Can enums be struct fields ?
+        self.assertEqual(struct.fields[1].type.id, Type.ENUM)
 
 if __name__ == '__main__':
     unittest.main()
