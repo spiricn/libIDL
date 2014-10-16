@@ -27,7 +27,9 @@ class Enum(Type):
             if token.type == TokenType.ENUM_FIELD:
                 if '(' in token.body:
                     fieldName = token.body.split('(')[0].strip()
-                    fieldValue = int(token.body.split('(')[1].split(')')[0])
+                    fieldValue = token.body.split('(')[1].split(')')[0].strip()
+                    
+                    fieldValue = int(fieldValue, 16 if fieldValue.startswith('0x') else 10)
                 else:
                     fieldName = token.body.strip().split(',')[0]
                     
