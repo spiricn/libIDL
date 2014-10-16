@@ -111,6 +111,8 @@ class Module:
             
         # Not a primitive type ?
         if argType == Type.INVALID:
+            # TODO refactor this..
+            
             # If it's not a primitive, it can only be a structure in module's context
             for struct in self.getTypes(Type.STRUCTURE):
                 if struct.name == typeName:
@@ -123,6 +125,11 @@ class Module:
                     return enum
                 
             for iface in self.getTypes(Type.INTERFACE):
+                if iface.name == typeName:
+                    # It's an interface
+                    return iface
+                
+            for iface in self.getTypes(Type.TYPEDEF):
                 if iface.name == typeName:
                     # It's an interface
                     return iface
