@@ -99,16 +99,26 @@ interface BasicInterface{
         '''
 
         source = '''\
+        
+        interface CallbackInterface{
+            void onCallback(int32 arg1);
+        };
          
-interface TestInterface{
-    void callbackMethod(int32 arg1) callback;
-     
-    void callbackRegister(callbackMethod arg1) callback_register;
-     
-    void callbackUnregister(callbackMethod arg1) callback_unregister;
-     
-    float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
-}; // </TestInterace>
+        interface TestInterface{
+            void callbackMethod(int32 arg1) callback;
+             
+            void callbackRegister(callbackMethod arg1) callback_register;
+             
+            void callbackUnregister(callbackMethod arg1) callback_unregister;
+             
+            float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
+        }; // </TestInterace>
+        
+        interface TestCallbackInterface{
+            void registerCallback(CallbackInterface arg1) callback_register;
+            
+            void unregisterCallback(CallbackInterface arg1) callback_unregister;
+        };
 '''
  
         module = Module(source)

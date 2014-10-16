@@ -65,7 +65,8 @@ class Method(Type):
             numCallbackTypes = 0
             
             for arg in self.args:
-                if arg.type == Type.CALLBACK:
+                # Callback can be either a callback method or an interface
+                if arg.type in [Type.CALLBACK, Type.INTERFACE]:
                     numCallbackTypes += 1
                     self.callbackType = arg.type
                     
