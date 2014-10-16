@@ -111,13 +111,16 @@ class Module:
                 if struct.name == typeName:
                     # It's a structure
                     return struct
-                    break
                 
             for enum in self.getTypes(Type.ENUM):
                 if enum.name == typeName:
                     # It's a structure
                     return enum
-                    break
+                
+            for iface in self.getTypes(Type.INTERFACE):
+                if iface.name == typeName:
+                    # It's an interface
+                    return iface
                 
             if isinstance(context, Interface):
                 # If it's not a primitive, it can be a callback in interface context
@@ -135,10 +138,11 @@ class Module:
     def createVariable(self, context, rawArg):
         resolvedType = self.resolveType(context, rawArg.type)
         
-        if resolvedType == None:
-            return resolvedType
-        else:
+        if resolvedType:
             return Variable(resolvedType, rawArg.name)
+        else:
+            return None
+            
     
     def getInterface(self, name):
         '''

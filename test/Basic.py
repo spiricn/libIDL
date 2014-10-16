@@ -292,14 +292,18 @@ interface TestInterface{
         '''
         
         source = '''\
-interface A{
-    void method();
-};
-
-
-interface B{
-    void method();
-};
+    interface A{
+        void method();
+    };
+    
+    
+    interface B{
+        void method();
+    };
+    
+    interface C {
+        void method(A arg1);
+    };
 '''
         module = Module(source)
         
@@ -310,6 +314,9 @@ interface B{
         self.assertTrue(i2 != None)
         
         self.assertEqual(i1.methods[0].name, i2.methods[0].name)
+        
+        # Can methods have interfaces as types ?
+        self.assertEqual(module.getInterface("C").methods[0].args[0].type.name, "A")
         
     def test_enum(self):
         '''
