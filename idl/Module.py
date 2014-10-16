@@ -5,6 +5,7 @@ from idl.Variable import Variable
 from idl.Struct import Struct
 from idl.Interface import Interface
 from idl.Enum import Enum
+from idl.Typedef import Typedef
 
 class Module:
     PARAM_INTERFACE_NAME = 'interface'
@@ -81,15 +82,19 @@ class Module:
                 
             elif token.type == TokenType.ENUM_BEGIN:
                 self.__createEnum(tokens)
+                
+            elif token.type == TokenType.TYPEDEF:
+                self.__createTypedef(tokens)
             
             # Unrecognized token
             else:
                 raise RuntimeError('Unhandled token type %d', token.type)
             
+    def __createTypedef(self, tokens):
+        self.__addType( Typedef(tokens) )
+            
     def __createEnum(self, tokens):
-        enum = Enum(tokens)
-        
-        self.__addType(enum)
+        self.__addType( Enum(tokens) )
     
     def __createInterface(self, tokens):
         '''

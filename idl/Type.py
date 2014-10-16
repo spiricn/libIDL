@@ -19,8 +19,9 @@ class Type(object):
     STRUCTURE, \
     INTERFACE, \
     ENUM, \
+    TYPEDEF, \
     INVALID, \
-    = range(21)
+    = range(22)
     
     def __init__(self, t):
         if isinstance(t, str):

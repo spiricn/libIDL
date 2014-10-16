@@ -13,7 +13,8 @@ class TokenType(object):
     ARG_LIST_END, \
     ENUM_BEGIN, \
     ENUM_FIELD, \
-    = range(11)
+    TYPEDEF, \
+    = range(12)
     
     def __init__(self, pattern, tokenType, tokenClass):
         self.pattern = re.compile(pattern)

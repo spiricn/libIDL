@@ -86,8 +86,15 @@ class Lexer:
                 return TokenType
 
         return None
-            
+
     __tokenTypes = [
+            # Typedef
+            TokenType(\
+               WHITESPACE_MATCH + \
+               # Enum name
+               WHITESPACE_MATCH + 'typedef' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + ';',
+               TokenType.TYPEDEF, Token),
+
             # Parameter
             TokenType(\
                 # Parameter name
