@@ -124,7 +124,7 @@ class Lexer:
             TokenType(\
                WHITESPACE_MATCH + \
                # Field type
-               PARAM_NAME_MATCH + WHITESPACE_SPLIT_MATCH + \
+               PARAM_TYPE_MATCH + WHITESPACE_SPLIT_MATCH + \
                # Field name
                PARAM_NAME_MATCH + WHITESPACE_MATCH + ';' + WHITESPACE_MATCH,
                TokenType.STRUCT_FIELD, Token),

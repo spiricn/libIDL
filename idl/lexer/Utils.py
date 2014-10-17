@@ -1,6 +1,8 @@
 # A string of any length, starting with a letter may contain lower or upper case letters including numbers
 PARAM_NAME_MATCH = r'([a-zA-Z]+[a-zA-Z0-9_]*)'
 
+PARAM_TYPE_MATCH = r'([a-zA-Z]+[a-zA-Z0-9_\[\]]*)'
+
 # May be a string containing any letter except ';'
 PARAM_VALUE_MATCH = r'([^;]+)'
 
