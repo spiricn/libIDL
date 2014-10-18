@@ -8,16 +8,12 @@ class Enum(Type):
     def __init__(self, tokens):
         Type.__init__(self, Type.ENUM)
         
-        self.tokens = tokens
-        
-        # Sanity  check
-        assert(tokens[0].type == TokenType.ENUM_BEGIN)
-        
         header = tokens.pop(0)
         
-        r = re.compile(WHITESPACE_MATCH + 'enum' + WHITESPACE_SPLIT_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_MATCH + '{')
+        # Sanity  check
+        assert(header.type == TokenType.ENUM_BEGIN)
         
-        self.name = r.search(header.body).group(1)
+        self.name = header.name
         
         self.fields = []
         
@@ -25,30 +21,21 @@ class Enum(Type):
             token = tokens.pop(0)
             
             if token.type == TokenType.ENUM_FIELD:
-                if '(' in token.body:
-                    fieldName = token.body.split('(')[0].strip()
-                    fieldValue = token.body.split('(')[1].split(')')[0].strip()
-                    
-                    fieldValue = int(fieldValue, 16 if fieldValue.startswith('0x') else 10)
-                else:
-                    fieldName = token.body.strip().split(',')[0]
-                    
+                fieldValue = token.value
+                
+                if fieldValue == -1:
+                    # No value given, assign it one
                     fieldValue = 0
                     
-                    while True:
-                        valueTaken = False
-                        for i in self.fields:
-                            if i.value == fieldValue:
-                                fieldValue += 1
-                                valueTaken = True
-                                break
-                            
-                        if not valueTaken:
-                            break
+                    while fieldValue  in [field.value for field in self.fields]:
+                        fieldValue  += 1
                         
+                elif fieldValue in [field.value for field in self.fields]:
+                    # If a value has been provided, check if it's already taken
+                    raise RuntimeError('Enum field for enum %r with value %d already exists' % (self.name, fieldValue))
                         
-                    
-                self.fields.append(  EnumField(fieldName, fieldValue)  )
+                # Create a new field
+                self.fields.append(  EnumField(token.name, fieldValue)  )
             
             elif token.type == TokenType.CLOSING_BRACKET:
                 # End of enum

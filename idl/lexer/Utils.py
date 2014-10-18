@@ -13,10 +13,12 @@ WHITESPACE_MATCH = r'[ \t]*'
 WHITESPACE_SPLIT_MATCH = r'[ \t]+'
 
 # Matches single decimal number
-NUMBER_MATCH = r'([0-9]*)'
+DEC_NUMBER_MATCH = r'([0-9]*)'
 
 # Matches signle hexadecimal number
-HEXA_NUMBER_MATCH = r'(0x[0-9A-Fa-f]*)'
+HEX_NUMBER_MATCH = r'(0x[0-9A-Fa-f]*)'
+
+NUMBER_MATCH = r'(?:0x[0-9A-Fa-f]*|[0-9]*)'
 
 WHITESPACE_LINE_MATCH = r'^' + WHITESPACE_MATCH + r'$'
 
