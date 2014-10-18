@@ -2,11 +2,10 @@ import os
 import unittest
 
 from idl.Module import Module 
-from idl.Project import Project
 from idl.Type import Type
 
 
-RESOURCE_DIR = './rsrc'
+RESOURCE_DIR = os.path.abspath('./rsrc')
 
 class Basic(unittest.TestCase):
     def setUp(self):
@@ -148,39 +147,6 @@ interface BasicInterface{
         except:
             # Failed as expected
             pass
-        
-    def test_project(self):
-        '''
-        Basic project management test.
-        '''
-
-        project = Project()
-         
-        # Add first module
-        project.addModule('module1', os.path.join(RESOURCE_DIR, 'module1.idl'))
-         
-        # Add second module
-        project.addModule('module2', os.path.join(RESOURCE_DIR, 'module2.idl'))
-         
-        try:
-            # Attempt to add second module again (should fail)
-            project.addModule('module2', os.path.join(RESOURCE_DIR, 'module2.idl'))
-            self.fail()
-        except:
-            pass
-
-        # Check number of added modules
-        self.assertEqual(len(project.modules), 2)
-
-        # Check the first module
-        self.assertTrue('module1' in project.modules)
-        interface = project.modules['module1'].getTypes(Type.INTERFACE)[0]
-        self.assertEqual(len(interface.methods), 1)
-         
-        # Check the second module
-        self.assertTrue('module2' in project.modules)
-        interface = project.modules['module2'].getTypes(Type.INTERFACE)[0]
-        self.assertEqual(len(interface.methods), 1)
         
     def test_structures(self):
         '''
