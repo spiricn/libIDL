@@ -2,9 +2,8 @@
 
 export PYTHONPATH=`pwd`:$PYTHONPATH
 
-pushd ./test
+main() {
+	python -m unittest discover -s `pwd`/test -p "*.py"
+}
 
-python Basic.py
-
-popd
-
+main "$@"

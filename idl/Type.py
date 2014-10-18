@@ -12,15 +12,13 @@ class Type(object):
     FLOAT64, \
     VOID, \
     STRING, \
-    METHOD, \
-    CALLBACK_REGISTER, \
-    CALLBACK_UNREGISTER, \
     STRUCTURE, \
     INTERFACE, \
     ENUM, \
     TYPEDEF, \
+    ARRAY, \
     INVALID, \
-    = range(21)
+    = range(19)
     
     primitives = [
         BOOL, \

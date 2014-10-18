@@ -12,7 +12,7 @@ class MethodToken(Token):
         body = body
         
         # Method return type
-        self.returnType = re.compile(WHITESPACE_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_SPLIT_MATCH).search(body).group(1)
+        self.returnType = re.compile(WHITESPACE_MATCH + '(' + PARAM_TYPE_MATCH + ')' + WHITESPACE_SPLIT_MATCH).search(body).group(1)
         
         # Method name
         self.name = re.compile(

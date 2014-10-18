@@ -3,12 +3,17 @@ from idl.Variable import Variable
 from idl.lexer.TokenType import TokenType
 
 
-class Method(Type):
+class Method():
+    NORMAL, \
+    CALLBACK_REGISTER, \
+    CALLBACK_UNREGISTER, \
+    = range(3)
+    
     MOD_CALLBACK_REGISTER = 'callback_register'
     MOD_CALLBACK_UNREGISTER = 'callback_unregister'
     
     def __init__(self, interface, module, tokens):
-        Type.__init__(self, module, Type.INVALID)
+        self.module = module
         
         token = tokens.pop(0)
         
@@ -19,7 +24,7 @@ class Method(Type):
         
         if not token.mods:
             # No modifier, it's a regular method
-            self.id = Type.METHOD
+            self.id = Method.NORMAL
             
         elif len(token.mods) > 1:
             # TODO add support for multiple custom modifiers ?
@@ -29,10 +34,10 @@ class Method(Type):
             mod = token.mods[0]
             
             if mod == Method.MOD_CALLBACK_REGISTER:
-                self.id = Type.CALLBACK_REGISTER
+                self.id = Method.CALLBACK_REGISTER
                  
             elif mod == Method.MOD_CALLBACK_UNREGISTER:
-                self.id = Type.CALLBACK_UNREGISTER
+                self.id = Method.CALLBACK_UNREGISTER
                 
             else:
                 raise RuntimeError('Malformed method declaration "%s"; reason="%s"' % (token.body, "Unrecognized method modifier \"%s\"" % mod))
@@ -69,7 +74,7 @@ class Method(Type):
             self.args.append(var)
     
         # If this method is a callback register/unregister, attempt to deduce callback interface
-        if self.id in [Type.CALLBACK_REGISTER, Type.CALLBACK_UNREGISTER]:
+        if self.id in [Method.CALLBACK_REGISTER, Method.CALLBACK_UNREGISTER]:
             numCallbackTypes = 0
             
             for arg in self.args:

@@ -8,6 +8,8 @@ from idl.Variable import Variable
 from idl.lexer.Lexer import Lexer
 from idl.lexer.TokenType import TokenType
 
+from idl.Array import Array
+
 
 class Module:
     PARAM_INTERFACE_NAME = 'interface'
@@ -87,6 +89,27 @@ class Module:
         Resovles a type name to a type object
         '''
         
+        # Is it an array ?
+        if typeName.endswith('[]'):
+            # Resolve its base type first
+            baseType = self.resolveType( typeName[:-2] )
+            
+            if not baseType:
+                # Could not resolve base type
+                return None
+            
+            for i in self.types:
+                if i == Type.ARRAY and i.baseType == baseType:
+                    # Array with this base type already exists
+                    return i
+                
+            # Create an array type with this base
+            array = Array(self, baseType)
+            
+            self.__addType( array )
+            
+            return array
+            
         types = self.__findTypesByName(typeName)
         
         if not types:
