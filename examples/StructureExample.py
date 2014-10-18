@@ -5,6 +5,8 @@ Example demonstrating the usage of structures ('struct' type)
 from idl.Module import Module 
 from idl.Type import Type
 
+from idl.Environment import Environment
+
 
 def sampleMain():
     '''
@@ -24,8 +26,11 @@ def sampleMain():
     
     '''
     
-    # Compile the source code into a module
-    module = Module( inputSource )
+    # Create an environment
+    env = Environment()
+    
+    # Compile the IDL source as a module
+    module = env.compile( inputSource )
     
     # Get the structure from the module
     struct = module.getStructure('SampleStruct')
@@ -34,11 +39,9 @@ def sampleMain():
     print('Structure name: %r\n' % struct.name)
     
     # Print its fields
-    
     print('Structure fields:')
     for field in struct.fields:
         print('\tField type=%r ; Field name=%r' % (field.type.name, field.name))
     
-
 if __name__ == '__main__':
     sampleMain()

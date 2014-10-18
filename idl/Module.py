@@ -1,5 +1,7 @@
+from idl.TypeGetter import TypeGetter
 
-class Module(object):
+
+class Module(TypeGetter):
     def __init__(self, env, name):
         self.env = env
         self.name = []

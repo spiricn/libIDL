@@ -5,6 +5,8 @@ Example demonstrating the usage of interfaces ('interface' type).
 from idl.Module import Module 
 from idl.Type import Type
 
+from idl.Environment import Environment
+
 
 def sampleMain():
     '''
@@ -20,8 +22,11 @@ def sampleMain():
     };
     '''
     
-    # Compile the source code into a module
-    module = Module( inputSource )
+    # Create an environment
+    env = Environment()
+    
+    # Compile the IDL source as a module
+    module = env.compile( inputSource )
     
     # Get the interface from the module
     interface = module.getInterface('TestInterface')
@@ -31,6 +36,7 @@ def sampleMain():
     
     # Print the methods
     print('Interface methods:')
+    
     for method in interface.methods:
         # Method name
         print('\tName: %r' % method.name)
@@ -43,7 +49,6 @@ def sampleMain():
             print('\tArg name=%r ; Arg type=%r' % (arg.name, arg.type.name))
             
         print('\n')
-
 
 if __name__ == '__main__':
     sampleMain()

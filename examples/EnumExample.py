@@ -5,6 +5,8 @@ Example demonstrating the usage of enumerations ('enum' type).
 from idl.Module import Module 
 from idl.Type import Type
 
+from idl.Environment import Environment
+
 
 def sampleMain():
     '''
@@ -21,18 +23,23 @@ def sampleMain():
     };
     '''
     
-    # Compile the source code into a module
-    module = Module( inputSource )
+    # Create an environment
+    env = Environment()
     
+    # Compile the IDL source as a module
+    module = env.compile( inputSource )
+    
+    # Get the enum object from the module
     enum = module.getEnum('Animals')
     
+    # Print the enum name
     print('Enum name %r' % enum.name)
     
+    # Print the enum fields
     print('Enum fields:')
     
     for field in enum.fields:
         print( '\t %r = %d' % (field.name, field.value) )
-
 
 if __name__ == '__main__':
     sampleMain()

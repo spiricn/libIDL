@@ -24,7 +24,7 @@ class Method():
         
         if not token.mods:
             # No modifier, it's a regular method
-            self.id = Method.NORMAL
+            self.type = Method.NORMAL
             
         elif len(token.mods) > 1:
             # TODO add support for multiple custom modifiers ?
@@ -34,10 +34,10 @@ class Method():
             mod = token.mods[0]
             
             if mod == Method.MOD_CALLBACK_REGISTER:
-                self.id = Method.CALLBACK_REGISTER
+                self.type = Method.CALLBACK_REGISTER
                  
             elif mod == Method.MOD_CALLBACK_UNREGISTER:
-                self.id = Method.CALLBACK_UNREGISTER
+                self.type = Method.CALLBACK_UNREGISTER
                 
             else:
                 raise RuntimeError('Malformed method declaration "%s"; reason="%s"' % (token.body, "Unrecognized method modifier \"%s\"" % mod))
@@ -74,7 +74,7 @@ class Method():
             self.args.append(var)
     
         # If this method is a callback register/unregister, attempt to deduce callback interface
-        if self.id in [Method.CALLBACK_REGISTER, Method.CALLBACK_UNREGISTER]:
+        if self.type in [Method.CALLBACK_REGISTER, Method.CALLBACK_UNREGISTER]:
             numCallbackTypes = 0
             
             for arg in self.args:
@@ -87,4 +87,4 @@ class Method():
                 raise RuntimeError('Could not deduce callback type from arguments list in method "%s"' % self.rawMethod.body)
             
     def __str__(self):
-        return '<IDLMethod name="%s" type=%d>' % (self.name, self.id)
+        return '<IDLMethod name="%s" type=%d>' % (self.name, self.type)

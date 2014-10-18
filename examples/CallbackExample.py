@@ -2,8 +2,11 @@
 Example demonstrating the usage of callbacks ('callback_register' & 'callback_unregister' method modifiers).
 '''
  
+from idl.Method import Method
 from idl.Module import Module 
 from idl.Type import Type
+
+from idl.Environment import Environment
 
 
 def sampleMain():
@@ -29,23 +32,23 @@ def sampleMain():
     };
     
     '''
+    # Create an environment
+    env = Environment()
     
-    # Compile the source code into a module
-    module = Module( inputSource )
-    
+    # Compile the IDL source as a module
+    module = env.compile( inputSource )
     
     # Get the test interface
     iface = module.getInterface('TestInterface')
     
     # Iterate over the methods and print the callback related ones
     for method in iface.methods:
-        
-        if method == Type.CALLBACK_REGISTER:
+        if method.type == Method.CALLBACK_REGISTER:
             # Found a callback register method
             print('Callback register found (%s): callback interface = %s' % (method.name, method.callbackType.name))
             
         
-        elif method == Type.CALLBACK_UNREGISTER:
+        elif method.type == Method.CALLBACK_UNREGISTER:
             # Found a callback urnegister method
             print('Callback uregister found (%s): callback interface = %s' % (method.name, method.callbackType.name))
 

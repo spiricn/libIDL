@@ -14,9 +14,10 @@ from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import PARAM_NAME_MATCH, NUMBER_MATCH
 
 from idl.Annotation import Annotation
+from idl.TypeGetter import TypeGetter
 
 
-class Environment:
+class Environment(TypeGetter):
     def __init__(self):
         self.types = []
         
@@ -156,40 +157,6 @@ class Environment:
         else:
             return None
             
-    
-    def getEnum(self, name):
-        '''
-        Gets the enum object with given name.
-        '''
-        
-        return self.getType(name, Type.ENUM)
-    
-    def getInterface(self, name):
-        '''
-        Gets the interface object with given name.
-        '''
-        
-        return self.getType(name, Type.INTERFACE)
-        
-    def getStructure(self, name):
-        '''
-        Gets structure object with given name.
-        '''
-        
-        return self.getType(name, Type.STRUCTURE)
-
-    def getType(self, name, typeID=-1):
-        '''
-        Gets object with given type ID and name.
-        Helper function used by getXY()
-        '''
-        
-        for i in self.types:
-            if i.name == name and (typeID == -1 or i.id == typeID):
-                return i
-            
-        return None
-
     def __link(self):
         '''
         Second processing pass.
@@ -201,11 +168,4 @@ class Environment:
         # may depend on other ones.
         for i in self.types:
             i.create()
-            
-    def getTypes(self, objType):
-        '''
-        Gets a list of all the objects of specific type
-        '''
-        
-        return [i for i in self.types if i.id == objType]
 
