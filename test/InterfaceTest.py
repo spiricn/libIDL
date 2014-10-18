@@ -160,7 +160,7 @@ interface BasicInterface{
         };
         
         interface TestInterface2{
-            int32[] testMethod(int32[] arg1, TestInterface1[] arg2);
+            int32[45] testMethod(int32[56] arg1, TestInterface1[] arg2);
         };
         '''
         
@@ -168,7 +168,7 @@ interface BasicInterface{
         
         types = module.execute(source)
         
-        self.assertEqual(len(types), 4)
+        self.assertEqual(len(types), 2)
         
         iface1 = module.getInterface('TestInterface1')
         
@@ -176,9 +176,17 @@ interface BasicInterface{
         
         # Array of interfaces
         self.assertEqual(iface2.methods[0].args[1].type.baseType, iface1)
-        
+
         # Array return type
         self.assertEqual(iface2.methods[0].returnType, Type.ARRAY)
+
+        # Array size test (should probably be moved elswhere)        
+        self.assertEqual(iface2.methods[0].returnType.size, 45)
+        
+        self.assertEqual(iface2.methods[0].args[0].type.size, 56)
+        
+        
+        self.assertEqual(iface2.methods[0].args[1].type.size, -1)
 
 if __name__ == '__main__':
     unittest.main()

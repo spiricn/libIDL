@@ -122,7 +122,7 @@ interface TestInterface{
         types = Module().execute(src)
         
         # Array type created
-        self.assertEqual(len(types), 3)
+        self.assertEqual(len(types), 2)
         
         # Array field created
         self.assertEqual(types[1].fields[0].type, Type.ARRAY)

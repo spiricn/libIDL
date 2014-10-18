@@ -1,4 +1,6 @@
 
+import re
+
 from idl.Enum import Enum
 from idl.Interface import Interface
 from idl.Struct import Struct
@@ -7,6 +9,7 @@ from idl.Typedef import Typedef
 from idl.Variable import Variable
 from idl.lexer.Lexer import Lexer
 from idl.lexer.TokenType import TokenType
+from idl.lexer.Utils import PARAM_NAME_MATCH, NUMBER_MATCH
 
 from idl.Array import Array
 
@@ -90,25 +93,29 @@ class Module:
         '''
         
         # Is it an array ?
-        if typeName.endswith('[]'):
+        if typeName.endswith(']'):
             # Resolve its base type first
-            baseType = self.resolveType( typeName[:-2] )
+            baseTypeName = re.compile(PARAM_NAME_MATCH).search(typeName).group(0)
             
+            baseType = self.resolveType( baseTypeName )
+            
+            # Optional size
+            try:            
+                sizeStr = re.compile('(\[' + NUMBER_MATCH + '\])').search(typeName).group(0)[1:-1]
+            except:
+                raise RuntimeError("Invalid array size %r" % typeName)
+            
+            size = -1
+            
+            if sizeStr:
+                size = int(sizeStr)
+
             if not baseType:
                 # Could not resolve base type
                 return None
             
-            for i in self.types:
-                if i == Type.ARRAY and i.baseType == baseType:
-                    # Array with this base type already exists
-                    return i
-                
             # Create an array type with this base
-            array = Array(self, baseType)
-            
-            self.__addType( array )
-            
-            return array
+            return  Array(self, baseType, size)
             
         types = self.__findTypesByName(typeName)
         

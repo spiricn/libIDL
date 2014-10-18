@@ -7,13 +7,12 @@ from idl.lexer.Utils import *
 
 
 class Array(Type):
-    def __init__(self, module, baseType):
+    def __init__(self, module, baseType, size):
         Type.__init__(self, module, Type.ARRAY)
         
         self.baseType = baseType
         
-    def create(self):
-        pass
-                
-            
+        self.size = size
+        
+        self.name = '%s[]' % baseType.name
     
