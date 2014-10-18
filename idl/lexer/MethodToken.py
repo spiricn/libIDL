@@ -1,7 +1,9 @@
+import re
+
 from idl.lexer.Token import Token
 from idl.lexer.Utils import *
 from idl.lexer.VariableToken import VariableToken
-import re
+
 
 class MethodToken(Token):
     def __init__(self, tokenType, body):

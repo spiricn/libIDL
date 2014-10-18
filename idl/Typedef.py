@@ -1,8 +1,10 @@
-from idl.lexer.TokenType import TokenType
+import re
+
 from idl.EnumField import EnumField
 from idl.Type import Type
+from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import *
-import re
+
 
 class Typedef(Type):
     def __init__(self, module, tokens):

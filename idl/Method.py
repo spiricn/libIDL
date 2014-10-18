@@ -1,13 +1,20 @@
 from idl.Type import Type
 from idl.Variable import Variable
+from idl.lexer.TokenType import TokenType
+
 
 class Method(Type):
     MOD_CALLBACK_DECLARATION = 'callback'
     MOD_CALLBACK_REGISTER = 'callback_register'
     MOD_CALLBACK_UNREGISTER = 'callback_unregister'
     
-    def __init__(self, interface, module, token):
+    def __init__(self, interface, module, tokens):
         Type.__init__(self, module, Type.INVALID)
+        
+        token = tokens.pop(0)
+        
+        # Sanity check
+        assert(token.type == TokenType.METHOD)
         
         self.interface = interface
         

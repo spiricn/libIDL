@@ -1,5 +1,6 @@
 import re
 
+
 class TokenType(object):
     # Token types
     METHOD, \

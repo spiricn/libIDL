@@ -1,5 +1,6 @@
 from idl.Module import Module
 
+
 class Project:
     def __init__(self):
         self.modules = {}

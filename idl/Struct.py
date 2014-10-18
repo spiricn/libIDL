@@ -1,8 +1,10 @@
+import re
+
 from idl.Type import Type
 from idl.lexer.TokenType import TokenType
-import re
-from idl.lexer.VariableToken import VariableToken
 from idl.lexer.Utils import *
+from idl.lexer.VariableToken import VariableToken
+
 
 class Struct(Type):
     def __init__(self, module, tokens):

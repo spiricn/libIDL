@@ -1,6 +1,8 @@
+import re
+
 from idl.lexer.Token import Token
 from idl.lexer.Utils import *
-import re
+
 
 class EnumBeginToken(Token):
     def __init__(self, tokenType, body):

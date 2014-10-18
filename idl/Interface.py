@@ -1,9 +1,10 @@
-from idl.Type import Type
-from idl.lexer.Utils import *
-from idl.lexer.TokenType import TokenType
-from idl.Method import Method
-
 import re
+
+from idl.Method import Method
+from idl.Type import Type
+from idl.lexer.TokenType import TokenType
+from idl.lexer.Utils import *
+
 
 class Interface(Type):
     def __init__(self, module, tokens):
@@ -24,9 +25,7 @@ class Interface(Type):
             
             if token.type == TokenType.METHOD:
                 # Start of method token
-                method = self.createMethod(tokens)
-                
-                self.methods.append( method )
+                self.methods.append(  Method(self, self.module, tokens) )
             
             elif token.type == TokenType.CLOSING_BRACKET:
                 # End of interface token
@@ -43,16 +42,6 @@ class Interface(Type):
                 return i
             
         return None
-        
-    def createMethod(self, tokens):
-        token = tokens.pop(0)
-        
-        # Sanity check
-        assert(token.type == TokenType.METHOD)
-        
-        method = Method(self, self.module, token)
-        
-        return method 
     
     def create(self):
         for method in self.methods:

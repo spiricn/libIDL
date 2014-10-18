@@ -1,6 +1,7 @@
+import re
+
 from idl.lexer.Token import Token
 from idl.lexer.Utils import *
-import re
 
 
 class InterfaceBeginToken(Token):

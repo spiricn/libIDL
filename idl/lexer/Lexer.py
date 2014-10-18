@@ -1,12 +1,14 @@
-from idl.lexer.TokenType import TokenType
-from idl.lexer.MethodToken import MethodToken
-from idl.lexer.StructBeginToken import StructBeginToken
-from idl.lexer.InterfaceBeginToken import InterfaceBeginToken
+import re
+
 from idl.lexer.EnumBeginToken import EnumBeginToken
 from idl.lexer.EnumFieldToken import EnumFieldToken
+from idl.lexer.InterfaceBeginToken import InterfaceBeginToken
+from idl.lexer.MethodToken import MethodToken
+from idl.lexer.StructBeginToken import StructBeginToken
 from idl.lexer.Token import Token
+from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import *
-import re
+
 
 class Lexer:
     def __init__(self, source):

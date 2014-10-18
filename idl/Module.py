@@ -1,11 +1,12 @@
+from idl.Enum import Enum
+from idl.Interface import Interface
+from idl.Struct import Struct
+from idl.Type import Type
+from idl.Typedef import Typedef
+from idl.Variable import Variable
 from idl.lexer.Lexer import Lexer
 from idl.lexer.TokenType import TokenType
-from idl.Type import Type
-from idl.Variable import Variable
-from idl.Struct import Struct
-from idl.Interface import Interface
-from idl.Enum import Enum
-from idl.Typedef import Typedef
+
 
 class Module:
     PARAM_INTERFACE_NAME = 'interface'

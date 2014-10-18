@@ -1,8 +1,10 @@
-from idl.Module import Module 
-from idl.Type import Type
-from idl.Project import Project
-import unittest
 import os
+import unittest
+
+from idl.Module import Module 
+from idl.Project import Project
+from idl.Type import Type
+
 
 RESOURCE_DIR = './rsrc'
 
