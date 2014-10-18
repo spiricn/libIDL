@@ -16,8 +16,6 @@ class Basic(unittest.TestCase):
         '''
         
         source = '''\
-interface = BasicInterface;
-
 /*
 test
 comment block 2
@@ -31,8 +29,6 @@ interface TestInterface{
 // Comment 2
 '''
         module = Module(source)
-        
-        self.assertEqual(module.params['interface'], 'BasicInterface')
         
         interfaces = module.getTypes(Type.INTERFACE)
         
@@ -144,30 +140,6 @@ interface BasicInterface{
         # Check the method
         method = interface.getMethod('method')
         self.assertTrue(method != None)
-         
-    def test_params(self):
-        '''
-        Parameters definition test.
-        '''
-
-        source = '''\
-interface = ParamInterface;
- 
-param1 = value1;
- 
-param2 = value2;
-'''
-
-        module = Module(source)
-         
-        self.assertEqual(len(module.params), 3)
-         
-        self.assertEqual(module.params['interface'], 'ParamInterface')
-         
-        self.assertEqual(module.params['param1'], 'value1')
-         
-        self.assertEqual(module.params['param2'], 'value2')
-         
          
     def test_project(self):
         '''

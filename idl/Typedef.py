@@ -5,8 +5,8 @@ from idl.lexer.Utils import *
 import re
 
 class Typedef(Type):
-    def __init__(self, tokens):
-        Type.__init__(self, Type.TYPEDEF)
+    def __init__(self, module, tokens):
+        Type.__init__(self, module, Type.TYPEDEF)
         
         # Sanity  check
         assert(tokens[0].type == TokenType.TYPEDEF)

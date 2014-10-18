@@ -5,8 +5,8 @@ from idl.lexer.Utils import *
 import re
 
 class Enum(Type):
-    def __init__(self, tokens):
-        Type.__init__(self, Type.ENUM)
+    def __init__(self, module, tokens):
+        Type.__init__(self, module, Type.ENUM)
         
         header = tokens.pop(0)
         

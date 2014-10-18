@@ -7,9 +7,7 @@ import re
 
 class Interface(Type):
     def __init__(self, module, tokens):
-        Type.__init__(self, Type.INTERFACE)
-        
-        self.module = module
+        Type.__init__(self, module, Type.INTERFACE)
         
         header = tokens.pop(0)
         

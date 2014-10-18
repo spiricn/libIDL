@@ -7,11 +7,9 @@ class Method(Type):
     MOD_CALLBACK_UNREGISTER = 'callback_unregister'
     
     def __init__(self, interface, module, token):
-        Type.__init__(self, Type.INVALID)
+        Type.__init__(self, module, Type.INVALID)
         
         self.interface = interface
-        
-        self.module = module
         
         if not token.mods:
             # No modifier, it's a regular method

@@ -23,7 +23,9 @@ class Type(object):
     INVALID, \
     = range(22)
     
-    def __init__(self, t):
+    def __init__(self, module, t):
+        self.module = module
+        
         if isinstance(t, str):
             # Primitive types
             stringToType = {

@@ -3,7 +3,6 @@ import re
 class TokenType(object):
     # Token types
     METHOD, \
-    PARAMETER, \
     STRUCT_BEGIN, \
     CLOSING_BRACKET, \
     STRUCT_FIELD, \
@@ -14,7 +13,7 @@ class TokenType(object):
     ENUM_BEGIN, \
     ENUM_FIELD, \
     TYPEDEF, \
-    = range(12)
+    = range(11)
     
     def __init__(self, pattern, tokenType, tokenClass):
         self.pattern = re.compile(pattern)

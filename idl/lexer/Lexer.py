@@ -1,6 +1,5 @@
 from idl.lexer.TokenType import TokenType
 from idl.lexer.MethodToken import MethodToken
-from idl.lexer.ParameterToken import ParameterToken
 from idl.lexer.StructBeginToken import StructBeginToken
 from idl.lexer.InterfaceBeginToken import InterfaceBeginToken
 from idl.lexer.EnumBeginToken import EnumBeginToken
@@ -95,17 +94,6 @@ class Lexer:
                WHITESPACE_MATCH + 'typedef' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH + ';',
                TokenType.TYPEDEF, Token),
 
-            # Parameter
-            TokenType(\
-                # Parameter name
-                r'^' + WHITESPACE_MATCH + PARAM_NAME_MATCH + WHITESPACE_MATCH +
-                r'[=]{1}' + 
-                # Parameter value
-                WHITESPACE_MATCH + PARAM_VALUE_MATCH +
-                # Trailing whitespace & semicolon
-                WHITESPACE_MATCH + r';' + WHITESPACE_MATCH + r'$',
-                TokenType.PARAMETER, ParameterToken),
-            
             # Method
             TokenType(\
                '^[^(]+[(]{1}[^)]*[)]{1}[^;]*;$', TokenType.METHOD, MethodToken),

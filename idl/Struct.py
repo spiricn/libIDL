@@ -5,28 +5,9 @@ from idl.lexer.VariableToken import VariableToken
 from idl.lexer.Utils import *
 
 class Struct(Type):
-    def __init__(self, module, name, rawFields):
-        Type.__init__(self, Type.STRUCTURE)
+    def __init__(self, module, tokens):
+        Type.__init__(self, module, Type.STRUCTURE)
         
-        self.module = module
-        
-        self.name = name
-        
-        self.rawFields = rawFields
-        
-    def create(self):
-        self.fields = []
-        
-        for rawField in self.rawFields:
-            var = self.module.createVariable(self.module, rawField)
-            
-            if var == None:
-                raise RuntimeError('Could not resolve structure field type "%s"' % rawField.type)
-            
-            self.fields.append(var)
-            
-    @staticmethod
-    def generate(module, tokens):
         header = tokens.pop(0)
         
         # Sanity check
@@ -50,14 +31,25 @@ class Struct(Type):
         # Parse struct name
         r = re.compile(WHITESPACE_MATCH + 'struct' + WHITESPACE_SPLIT_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_MATCH + '{')
          
-        name = r.search(header.body).group(1)
+        self.name = r.search(header.body).group(1)
  
         # Parse struct fields        
-        rawFields = []
+        self.rawFields = []
 
         for token in fields:
             fieldType, fieldName = [i for i in token.body.replace('\t', '').replace(';', '').split(' ') if i]
               
-            rawFields.append( VariableToken(fieldType, fieldName) )
+            self.rawFields.append( VariableToken(fieldType, fieldName) )
             
-        return Struct(module, name, rawFields)
+        
+        
+    def create(self):
+        self.fields = []
+        
+        for rawField in self.rawFields:
+            var = self.module.createVariable(self.module, rawField)
+            
+            if var == None:
+                raise RuntimeError('Could not resolve structure field type "%s"' % rawField.type)
+            
+            self.fields.append(var)
