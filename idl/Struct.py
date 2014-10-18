@@ -5,6 +5,8 @@ from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import *
 from idl.lexer.VariableToken import VariableToken
 
+from idl.Annotation import Annotation
+
 
 class Struct(Type):
     def __init__(self, module, tokens):
@@ -17,15 +19,24 @@ class Struct(Type):
 
         fields = []
         
+        annotations = []
+        
         while tokens:
-            token = tokens.pop(0)
+            token = tokens[0]
             
             if token.type == TokenType.CLOSING_BRACKET:
                 # Reached end
+                tokens.pop(0)
                 break
             
             elif token.type == TokenType.STRUCT_FIELD:
-                fields.append(token)
+                token.annotations = annotations
+                annotations = []
+                
+                fields.append(tokens.pop(0))
+                
+            elif token.type == TokenType.ANNOTATION:
+                annotations.append(Annotation(tokens))
             
             else:
                 raise RuntimeError('Unexpected token of type %d found whlie parsing structure: "%s"' % (token.type, token.body))
@@ -36,7 +47,11 @@ class Struct(Type):
         self.rawFields = []
 
         for rawField in fields:
-            self.rawFields.append( VariableToken(rawField.fieldType, rawField.fieldName) )
+            var = VariableToken(rawField.fieldType, rawField.fieldName)
+            
+            var.annotations = rawField.annotations
+            
+            self.rawFields.append( var )
             
     def create(self):
         self.fields = []
@@ -44,6 +59,8 @@ class Struct(Type):
         # Resolve field types
         for rawField in self.rawFields:
             var = self.module.createVariable(rawField)
+            
+            var.annotations = rawField.annotations
             
             if var == None:
                 raise RuntimeError('Could not resolve structure field type %r of structure %r' % (rawField.type, self.name))

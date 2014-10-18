@@ -5,6 +5,8 @@ from idl.Type import Type
 from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import *
 
+from idl.Annotation import Annotation
+
 
 class Interface(Type):
     def __init__(self, module, tokens):
@@ -20,17 +22,28 @@ class Interface(Type):
         # Parse methods
         self.methods = []
         
+        annotations = []
+        
         while tokens:
             token = tokens[0]
             
             if token.type == TokenType.METHOD:
+                method = Method(self, self.module, tokens)
+                
+                method.annotations = annotations
+                
+                annotations = []
+                
                 # Start of method token
-                self.methods.append(  Method(self, self.module, tokens) )
+                self.methods.append( method )
             
             elif token.type == TokenType.CLOSING_BRACKET:
                 # End of interface token
                 tokens.pop(0)
                 break
+            
+            elif token.type == TokenType.ANNOTATION:
+                annotations.append( Annotation(tokens) )
             
             else:
                 # Unexpected token

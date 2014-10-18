@@ -5,11 +5,12 @@ from idl.lexer.EnumFieldToken import EnumFieldToken
 from idl.lexer.InterfaceBeginToken import InterfaceBeginToken
 from idl.lexer.MethodToken import MethodToken
 from idl.lexer.StructBeginToken import StructBeginToken
+from idl.lexer.StructFieldToken import StructFieldToken
 from idl.lexer.Token import Token
 from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import *
 
-from idl.lexer.StructFieldToken import StructFieldToken
+from idl.lexer.AnnotationToken import AnnotationToken
 
 
 class Lexer:
@@ -151,4 +152,11 @@ class Lexer:
                # Enum name
                PARAM_NAME_MATCH + WHITESPACE_MATCH + '\(' + HEX_NUMBER_MATCH + '\)' + ',' + WHITESPACE_MATCH,
                TokenType.ENUM_FIELD, EnumFieldToken),
+                    
+            # Annotation
+            TokenType(\
+               WHITESPACE_MATCH + \
+               # Enum name
+               '@' + PARAM_NAME_MATCH + WHITESPACE_MATCH,
+               TokenType.ANNOTATION, AnnotationToken),
     ]

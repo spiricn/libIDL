@@ -14,7 +14,8 @@ class TokenType(object):
     ENUM_BEGIN, \
     ENUM_FIELD, \
     TYPEDEF, \
-    = range(11)
+    ANNOTATION, \
+    = range(12)
     
     def __init__(self, pattern, tokenType, tokenClass):
         self.pattern = re.compile(pattern)

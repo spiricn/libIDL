@@ -39,6 +39,8 @@ class Type(object):
     def __init__(self, module, t, name=''):
         self.module = module
         
+        self.annotations = []
+        
         self.name = name
         
         if isinstance(t, str):

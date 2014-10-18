@@ -5,6 +5,8 @@ from idl.Type import Type
 from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import *
 
+from idl.Annotation import Annotation
+
 
 class Enum(Type):
     def __init__(self, module, tokens):
@@ -19,10 +21,14 @@ class Enum(Type):
         
         self.fields = []
         
+        annotations = []
+        
         while True:
-            token = tokens.pop(0)
+            token = tokens[0]
             
             if token.type == TokenType.ENUM_FIELD:
+                tokens.pop(0)
+                
                 fieldValue = token.value
                 
                 if fieldValue == -1:
@@ -37,11 +43,21 @@ class Enum(Type):
                     raise RuntimeError('Enum field for enum %r with value %d already exists' % (self.name, fieldValue))
                         
                 # Create a new field
-                self.fields.append(  EnumField(token.name, fieldValue)  )
+                field = EnumField(token.name, fieldValue)
+                
+                field.annotations = annotations
+                
+                annotations = []
+                 
+                self.fields.append(field)
             
             elif token.type == TokenType.CLOSING_BRACKET:
                 # End of enum
+                tokens.pop(0)
                 break
+            
+            elif token.type == TokenType.ANNOTATION:
+                annotations.append(Annotation(tokens))
             
             else:
                 raise RuntimeError("Unexpected token while parsing enum %d" % token.type)
