@@ -12,13 +12,11 @@ class Interface(Type):
         self.module = module
         
         header = tokens.pop(0)
+        
         # Sanity check
         assert(header.type == TokenType.INTERFACE_BEGIN)
         
-        # Parse interface name
-        r = re.compile(WHITESPACE_MATCH + 'interface' + WHITESPACE_SPLIT_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_MATCH + '{')
-        
-        self.name = r.search(header.body).group(1)
+        self.name = header.name
         
         # Parse methods
         self.methods = []
