@@ -2,7 +2,7 @@ import os
 import unittest
 
 from idl.Method import Method
-from idl.Module import Module 
+from idl.Environment import Environment 
 from idl.Type import Type
 
 
@@ -31,9 +31,9 @@ class TypedefTest(unittest.TestCase):
         };
 '''
 
-        module = Module()
+        env = Environment()
         
-        types = module.execute(src)
+        types = env.compile(src).types
         
         self.assertEqual(len(types), 4)
         
@@ -45,7 +45,7 @@ class TypedefTest(unittest.TestCase):
         self.assertEqual(types[1].id, Type.TYPEDEF)
         self.assertEqual(types[1].name, "DummyType2")
         
-        iface = module.getInterface("TestInterface")
+        iface = env.getInterface("TestInterface")
         
         # Typedefs can be return types ?
         self.assertEqual(iface.methods[0].returnType.id, Type.TYPEDEF)

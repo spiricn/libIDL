@@ -5,6 +5,8 @@ from idl.Method import Method
 from idl.Module import Module 
 from idl.Type import Type
 
+from idl.Environment import Environment
+
 
 RESOURCE_DIR = os.path.abspath('./rsrc')
 
@@ -36,9 +38,9 @@ class EnumTest(unittest.TestCase):
             TestEnum method1(TestEnum arg1, int32 arg2);
         };
 '''
-        module = Module()
+        env = Environment()
         
-        types = module.execute(source)
+        types = env.compile(source).types
         
         self.assertEqual(len(types), 3)
         
@@ -67,7 +69,7 @@ class EnumTest(unittest.TestCase):
         self.assertEqual(enum.fields[4].value, 0xC2Ab3)
         
         # Test interface
-        iface = module.getInterface("TestInterface")
+        iface = env.getInterface("TestInterface")
         self.assertNotEqual(iface, None)
         
         # Can enums be method args ?
@@ -76,7 +78,7 @@ class EnumTest(unittest.TestCase):
         # Can enums be method return types ?
         self.assertEqual(iface.methods[0].returnType.id, Type.ENUM)
         
-        struct = module.getStructure("TestStruct")
+        struct = env.getStructure("TestStruct")
         self.assertNotEqual(struct, None)
 
         # Can enums be struct fields ?

@@ -46,7 +46,7 @@ class Method():
         self.name = token.name
         
         # Method return type
-        self.returnType = self.module.resolveType(token.returnType)
+        self.returnType = self.module.env.resolveType(token.returnType)
         
         if  self.returnType == None or self.returnType == Type.INVALID:
             raise RuntimeError('Invalid method return type "%s"' % token.returnType)
@@ -64,7 +64,7 @@ class Method():
         # Iterate over a list of raw arguments (strings type, name)
         for rawArg in self.rawMethod.args:
             # Resolve the argument type
-            var = self.module.createVariable(rawArg)
+            var = self.module.env.createVariable(rawArg)
             
             if var == None:
                 # Unable to resolve type

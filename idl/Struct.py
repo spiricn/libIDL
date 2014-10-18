@@ -58,7 +58,7 @@ class Struct(Type):
         
         # Resolve field types
         for rawField in self.rawFields:
-            var = self.module.createVariable(rawField)
+            var = self.module.env.createVariable(rawField)
             
             var.annotations = rawField.annotations
             

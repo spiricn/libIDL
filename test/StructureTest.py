@@ -2,7 +2,7 @@ import os
 import unittest
 
 from idl.Method import Method
-from idl.Module import Module 
+from idl.Environment import Environment 
 from idl.Type import Type
 
 
@@ -37,10 +37,12 @@ interface TestInterface{
 }; // </TestInterface>
 
 '''
-        module = Module(source)
+        env = Environment()
+        
+        module = env.compile(source)
         
         # Structure number
-        structs = module.getTypes(Type.STRUCTURE)
+        structs = env.getTypes(Type.STRUCTURE)
         self.assertEqual(len(structs), 2)
         s1,s2= structs
         f1,f2 = s1.fields, s2.fields
@@ -78,7 +80,7 @@ interface TestInterface{
         
         
         # Verify method
-        interface = module.getTypes(Type.INTERFACE)[0]
+        interface = env.getTypes(Type.INTERFACE)[0]
         
         methods = interface.methods
         self.assertEqual(len(methods), 1)
@@ -110,7 +112,7 @@ interface TestInterface{
         Basic arrays in structures test.
         '''
         
-        src = '''\
+        source = '''\
         struct A{
         };
         
@@ -119,7 +121,11 @@ interface TestInterface{
         };
         '''
         
-        types = Module().execute(src)
+        env = Environment()
+        
+        module = env.compile(source)
+        
+        types = module.types
         
         # Array type created
         self.assertEqual(len(types), 2)

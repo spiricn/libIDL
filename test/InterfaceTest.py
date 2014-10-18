@@ -3,6 +3,7 @@ import unittest
 
 from idl.Method import Method
 from idl.Module import Module 
+from idl.Environment import Environment
 from idl.Type import Type
 
 
@@ -30,9 +31,11 @@ interface TestInterface{
 };
 // Comment 2
 '''
-        module = Module(source)
+        env = Environment()
         
-        interfaces = module.getTypes(Type.INTERFACE)
+        env.compile(source)
+        
+        interfaces = env.getTypes(Type.INTERFACE)
         
         self.assertEqual(len(interfaces), 1)
         
@@ -53,10 +56,12 @@ interface BasicInterface{
 };
 '''
          
-        module = Module(source)
+        env = Environment()
+        
+        env.compile(source)
          
         # Check the interface name
-        interface = module.getTypes(Type.INTERFACE)
+        interface = env.getTypes(Type.INTERFACE)
         self.assertEqual(len(interface), 1)
         
         interface = interface[0]
@@ -109,7 +114,7 @@ interface BasicInterface{
         };
 '''
  
-        types = Module().execute(source)
+        types = Environment().compile(source).types 
         
         self.assertEqual(len(types), 2)
         
@@ -164,15 +169,15 @@ interface BasicInterface{
         };
         '''
         
-        module = Module()
+        env = Environment()
         
-        types = module.execute(source)
+        types = env.compile(source).types
         
         self.assertEqual(len(types), 2)
         
-        iface1 = module.getInterface('TestInterface1')
+        iface1 = env.getInterface('TestInterface1')
         
-        iface2 = module.getInterface('TestInterface2')
+        iface2 = env.getInterface('TestInterface2')
         
         # Array of interfaces
         self.assertEqual(iface2.methods[0].args[1].type.baseType, iface1)
