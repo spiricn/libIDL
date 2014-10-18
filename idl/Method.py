@@ -63,7 +63,7 @@ class Method(Type):
             
             if var == None:
                 # Unable to resolve type
-                raise RuntimeError('Invalid method argument type method="%s"; argument="%s"' % (self.rawMethod.body, rawArg.name))
+                raise RuntimeError('Could not resolve method argument type method="%s"; argument="%s %s"' % (self.rawMethod.name, rawArg.type, rawArg.name))
             
             # Type resolved OK, add it to the list
             self.args.append(var)

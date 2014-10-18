@@ -107,6 +107,13 @@ class Module:
             return None
             
     
+    def getEnum(self, name):
+        '''
+        Gets the enum object with given name.
+        '''
+        
+        return self.getType(name, Type.ENUM)
+    
     def getInterface(self, name):
         '''
         Gets the interface object with given name.
