@@ -102,16 +102,6 @@ interface BasicInterface{
             void onCallback(int32 arg1);
         };
          
-        interface TestInterface{
-            void callbackMethod(int32 arg1) callback;
-             
-            void callbackRegister(callbackMethod arg1) callback_register;
-             
-            void callbackUnregister(callbackMethod arg1) callback_unregister;
-             
-            float32 method(int64 arg1, int32 arg2, float32 arg3, string arg4);
-        }; // </TestInterace>
-        
         interface TestCallbackInterface{
             void registerCallback(CallbackInterface arg1) callback_register;
             
@@ -119,30 +109,46 @@ interface BasicInterface{
         };
 '''
  
-        module = Module(source)
+        types = Module().execute(source)
         
-        interface = module.getInterface("TestInterface")
-        self.assertTrue( interface != None )
-         
-        # Check the callback declaration
-        calblackDec = interface.getMethod('callbackMethod')
-        self.assertTrue( calblackDec != None )
-        self.assertTrue(calblackDec.id == Type.CALLBACK)
-         
-        # Check the callback register
-        callbackReg = interface.getMethod('callbackRegister')
-        self.assertTrue( callbackReg != None )
-        self.assertTrue(callbackReg.id == Type.CALLBACK_REGISTER)
+        self.assertEqual(len(types), 2)
         
-        # Check the callback unregister
-        callbackUnreg = interface.getMethod('callbackUnregister')
-        self.assertTrue(callbackUnreg != None)
-        self.assertTrue(callbackUnreg.id == Type.CALLBACK_UNREGISTER)
+        callbackIface, iface = types
         
-        # Check the method
-        method = interface.getMethod('method')
-        self.assertTrue(method != None)
-         
+        # Callback register/unregister methods created
+        self.assertEqual(len(iface.methods), 2)
+        
+        # Register created
+        self.assertEqual(iface.methods[0].id, Type.CALLBACK_REGISTER)
+        
+        # Unregister created
+        self.assertEqual(iface.methods[1].id, Type.CALLBACK_UNREGISTER)
+        
+        # References created
+        self.assertEqual(iface.methods[0].callbackType, callbackIface)
+        self.assertEqual(iface.methods[1].callbackType, callbackIface)
+        
+    def test_callbackDeduction(self):
+        '''
+        Invalid callback type deduction test
+        '''
+        
+        source = '''\
+        
+        interface Test{
+            void brokenRegister(int32 callback) callback_register;
+        };
+        
+        '''
+        
+        try:
+            Module().execute(source)
+            self.fail("Invalid callback type detection failed")
+            
+        except:
+            # Failed as expected
+            pass
+        
     def test_project(self):
         '''
         Basic project management test.
@@ -174,7 +180,7 @@ interface BasicInterface{
         # Check the second module
         self.assertTrue('module2' in project.modules)
         interface = project.modules['module2'].getTypes(Type.INTERFACE)[0]
-        self.assertEqual(len(interface.methods), 4)
+        self.assertEqual(len(interface.methods), 1)
         
     def test_structures(self):
         '''

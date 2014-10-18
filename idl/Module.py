@@ -1,3 +1,4 @@
+
 from idl.Enum import Enum
 from idl.Interface import Interface
 from idl.Struct import Struct
@@ -14,6 +15,9 @@ class Module:
     def __init__(self, source=None):
         # Using list instead of dict since ordering is important (think of a better way prehaps?)
         self.types = []
+        
+        for i in Type.primitives:
+            self.types.append(Type(self, i))
         
         if source:
             self.execute(source)
@@ -37,9 +41,11 @@ class Module:
         Adds a new type object to the list of types 
         '''
         
+        # TODO two types may have the same name (e.g. methods and interfaces) so this check should probably be revised
+        
         # Type already defined ?
-        if [i for i in self.types if i.name == typeObj.name]:
-            raise RuntimeError('Type named "%s" already defined' % typeObj.name)
+#         if [i for i in self.types if i.name == typeObj.name]:
+#             raise RuntimeError('Type named "%s" already defined' % typeObj.name)
         
         # Store it
         self.types.append( typeObj )
@@ -68,49 +74,32 @@ class Module:
             else:
                 raise RuntimeError("Unexpected token type %d" % token.type)
         
-    def resolveType(self, context, typeName):
-        argType = Type(self, typeName)
-            
-        # Not a primitive type ?
-        if argType == Type.INVALID:
-            # TODO refactor this..
-            
-            # If it's not a primitive, it can only be a structure in module's context
-            for struct in self.getTypes(Type.STRUCTURE):
-                if struct.name == typeName:
-                    # It's a structure
-                    return struct
-                
-            for enum in self.getTypes(Type.ENUM):
-                if enum.name == typeName:
-                    # It's a structure
-                    return enum
-                
-            for iface in self.getTypes(Type.INTERFACE):
-                if iface.name == typeName:
-                    # It's an interface
-                    return iface
-                
-            for iface in self.getTypes(Type.TYPEDEF):
-                if iface.name == typeName:
-                    # It's an interface
-                    return iface
-                
-            if isinstance(context, Interface):
-                # If it's not a primitive, it can be a callback in interface context
-                for method in context.methods:
-                    if method.name == typeName:
-                        # It's a callback
-                        return method
-            
-            if argType == Type.INVALID:
-                # Could not resolve 
-                return None
-        else:
-            return argType
+        
+    def __findTypesByName(self, name):
+        '''
+        Find all types with the given name.
+        '''
+        
+        return [i for i in self.types if i.name == name]
     
-    def createVariable(self, context, rawArg):
-        resolvedType = self.resolveType(context, rawArg.type)
+    def resolveType(self, typeName):
+        '''
+        Resovles a type name to a type object
+        '''
+        
+        types = self.__findTypesByName(typeName)
+        
+        if not types:
+            return None
+        
+        if len(types) != 1:
+            # Should this even be allowed to happen ?
+            raise RuntimeError("TODO: Not implemented")
+        
+        return types[0]
+    
+    def createVariable(self, rawArg):
+        resolvedType = self.resolveType(rawArg.type)
         
         if resolvedType:
             return Variable(resolvedType, rawArg.name)

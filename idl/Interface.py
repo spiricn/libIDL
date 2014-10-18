@@ -35,17 +35,7 @@ class Interface(Type):
             else:
                 # Unexpected token
                 raise RuntimeError('Unexpected token type found while parsing interface: "%s"' % token.body)
-            
-    def getMethod(self, name):
-        for i in self.methods:
-            if i.name == name:
-                return i
-            
-        return None
-    
+
     def create(self):
         for method in self.methods:
             method.create()
-            
-    def createVariable(self):
-        return self.parent.createVariable()

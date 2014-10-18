@@ -4,7 +4,6 @@ from idl.lexer.TokenType import TokenType
 
 
 class Method(Type):
-    MOD_CALLBACK_DECLARATION = 'callback'
     MOD_CALLBACK_REGISTER = 'callback_register'
     MOD_CALLBACK_UNREGISTER = 'callback_unregister'
     
@@ -23,15 +22,13 @@ class Method(Type):
             self.id = Type.METHOD
             
         elif len(token.mods) > 1:
+            # TODO add support for multiple custom modifiers ?
             raise RuntimeError('Malformed method declaration "%s"; reason="%s"' % (token.body, "Unrecognized method modifier"))
         
         else:
             mod = token.mods[0]
             
-            if mod == Method.MOD_CALLBACK_DECLARATION:
-                self.id = Type.CALLBACK
-                
-            elif mod == Method.MOD_CALLBACK_REGISTER:
+            if mod == Method.MOD_CALLBACK_REGISTER:
                 self.id = Type.CALLBACK_REGISTER
                  
             elif mod == Method.MOD_CALLBACK_UNREGISTER:
@@ -44,11 +41,13 @@ class Method(Type):
         self.name = token.name
         
         # Method return type
-        self.returnType = self.module.resolveType(self, token.returnType)
+        self.returnType = self.module.resolveType(token.returnType)
         
         if  self.returnType == None or self.returnType == Type.INVALID:
             raise RuntimeError('Invalid method return type "%s"' % token.returnType)
         
+        # Save the method token, until the first pass is complete
+        # Will use it later in 'create'
         self.rawMethod = token
         
         # Only valid if we're a callback register/unregister methods
@@ -57,21 +56,25 @@ class Method(Type):
     def create(self):
         self.args = []
         
+        # Iterate over a list of raw arguments (strings type, name)
         for rawArg in self.rawMethod.args:
-            var = self.module.createVariable(self.interface, rawArg)
+            # Resolve the argument type
+            var = self.module.createVariable(rawArg)
             
             if var == None:
+                # Unable to resolve type
                 raise RuntimeError('Invalid method argument type method="%s"; argument="%s"' % (self.rawMethod.body, rawArg.name))
             
+            # Type resolved OK, add it to the list
             self.args.append(var)
     
-        # Deduce callback type from method arguments
+        # If this method is a callback register/unregister, attempt to deduce callback interface
         if self.id in [Type.CALLBACK_REGISTER, Type.CALLBACK_UNREGISTER]:
             numCallbackTypes = 0
             
             for arg in self.args:
                 # Callback can be either a callback method or an interface
-                if arg.type in [Type.CALLBACK, Type.INTERFACE]:
+                if arg.type == Type.INTERFACE:
                     numCallbackTypes += 1
                     self.callbackType = arg.type
                     

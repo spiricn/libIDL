@@ -28,30 +28,24 @@ class Struct(Type):
                 fields.append(token)
             
             else:
-                raise RuntimeError('Unexpected token found whlie parsing structure: "%s"' % token.body)
+                raise RuntimeError('Unexpected token of type %d found whlie parsing structure: "%s"' % (token.type, token.body))
+            
+        self.name = header.name
 
-        # Parse struct name
-        r = re.compile(WHITESPACE_MATCH + 'struct' + WHITESPACE_SPLIT_MATCH + '(' + PARAM_NAME_MATCH + ')' + WHITESPACE_MATCH + '{')
-         
-        self.name = r.search(header.body).group(1)
- 
         # Parse struct fields        
         self.rawFields = []
 
-        for token in fields:
-            fieldType, fieldName = [i for i in token.body.replace('\t', '').replace(';', '').split(' ') if i]
-              
-            self.rawFields.append( VariableToken(fieldType, fieldName) )
+        for rawField in fields:
+            self.rawFields.append( VariableToken(rawField.fieldType, rawField.fieldName) )
             
-        
-        
     def create(self):
         self.fields = []
         
+        # Resolve field types
         for rawField in self.rawFields:
-            var = self.module.createVariable(self.module, rawField)
+            var = self.module.createVariable(rawField)
             
             if var == None:
-                raise RuntimeError('Could not resolve structure field type "%s"' % rawField.type)
+                raise RuntimeError('Could not resolve structure field type %r of structure %r' % (rawField.type, self.name))
             
             self.fields.append(var)

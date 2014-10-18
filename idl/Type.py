@@ -13,7 +13,6 @@ class Type(object):
     VOID, \
     STRING, \
     METHOD, \
-    CALLBACK, \
     CALLBACK_REGISTER, \
     CALLBACK_UNREGISTER, \
     STRUCTURE, \
@@ -21,10 +20,28 @@ class Type(object):
     ENUM, \
     TYPEDEF, \
     INVALID, \
-    = range(22)
+    = range(21)
     
-    def __init__(self, module, t):
+    primitives = [
+        BOOL, \
+        INT64, \
+        UINT64, \
+        INT32, \
+        UINT32, \
+        INT16, \
+        UINT16, \
+        INT8, \
+        UINT8, \
+        FLOAT32, \
+        FLOAT64, \
+        VOID, \
+        STRING, \
+    ]
+    
+    def __init__(self, module, t, name=''):
         self.module = module
+        
+        self.name = name
         
         if isinstance(t, str):
             # Primitive types
@@ -52,25 +69,30 @@ class Type(object):
         elif isinstance(t, int):
             self.id = t
             
+            if t in Type.primitives:
+                typeToName = {
+                   Type.INT64 : 'int64',
+                   Type.UINT64 : 'uint64',
+                   Type.INT32 : 'int32',
+                   Type.UINT32 : 'uint32',
+                   Type.INT16 : 'int16' ,
+                   Type.UINT16 : 'uint16',
+                   Type.INT8 : 'int8',
+                   Type.UINT8 : 'uint8',
+                   Type.FLOAT32 : 'float32',
+                   Type.FLOAT64 : 'float64',
+                   Type.VOID : 'void',
+                   Type.STRING : 'string',
+                   Type.BOOL : 'boolean',
+                }
+                
+                self.name = typeToName[t]
+            
         else:
             raise NotImplementedError('Invalid type id')
         
     def isPrimitive(self):
-        return self.id in [
-               Type.INT64,
-               Type.UINT64,
-               Type.INT32,
-               Type.UINT32,
-               Type.INT16,
-               Type.UINT16,
-               Type.INT8,
-               Type.UINT8,
-               Type.FLOAT32,
-               Type.FLOAT64,
-               Type.VOID,
-               Type.STRING,
-               Type.BOOL
-        ]
+        return self.id in Type.primitives
         
     def __eq__(self, other):
         if isinstance(other, Type):
@@ -87,3 +109,6 @@ class Type(object):
 
     def __str__(self):
         return '<Type id=%d>' % self.id
+    
+    def create(self):
+        pass
