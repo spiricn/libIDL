@@ -52,6 +52,9 @@ class Lexer:
         
         res = ''
         
+        # Remove escaped new lines
+        string = string.replace('\\\n', '')
+        
         # Remove comment blocks
         blockComment = re.compile(  r'/\*' + r'.*?' + r'\*/', re.DOTALL )
         
