@@ -124,10 +124,10 @@ interface BasicInterface{
         self.assertEqual(len(iface.methods), 2)
         
         # Register created
-        self.assertEqual(iface.methods[0].id, Method.CALLBACK_REGISTER)
+        self.assertEqual(iface.methods[0].type, Method.CALLBACK_REGISTER)
         
         # Unregister created
-        self.assertEqual(iface.methods[1].id, Method.CALLBACK_UNREGISTER)
+        self.assertEqual(iface.methods[1].type, Method.CALLBACK_UNREGISTER)
         
         # References created
         self.assertEqual(iface.methods[0].callbackType, callbackIface)
