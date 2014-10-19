@@ -69,6 +69,8 @@ class Method():
                 # Unable to resolve type
                 raise RuntimeError('Could not resolve method argument type method="%s"; argument="%s %s"' % (self.rawMethod.name, rawArg.type, rawArg.name))
             
+            var.method = self
+            
             # Type resolved OK, add it to the list
             self.args.append(var)
     
