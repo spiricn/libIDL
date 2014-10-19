@@ -3,7 +3,7 @@ import re
 from idl.Type import Type
 from idl.lexer.TokenType import TokenType
 
-from build.lib.idl.lexer.Utils import WHITESPACE_MATCH, WHITESPACE_SPLIT_MATCH, \
+from idl.lexer.Utils import WHITESPACE_MATCH, WHITESPACE_SPLIT_MATCH, \
     PARAM_NAME_MATCH
 
 
