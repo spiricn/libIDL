@@ -35,6 +35,9 @@ class AnnotationTest(unittest.TestCase):
             @Method
             void method();
         };
+        
+        @name=value
+        typedef dummyType;
 
 '''
         env = Environment()
@@ -42,22 +45,26 @@ class AnnotationTest(unittest.TestCase):
         env.compile(source)
         
         # Enum
-        self.assertEqual(env.getType("TestEnum").annotations[0].text, "Enum")
+        self.assertEqual(env.getType("TestEnum").annotations[0].name, "Enum")
         
-        self.assertEqual(env.getType("TestEnum").fields[0].annotations[0].text, "Val")
+        self.assertEqual(env.getType("TestEnum").fields[0].annotations[0].name, "Val")
         
         # Struct
-        self.assertEqual(env.getType("TestStruct").annotations[0].text, "Struct")
+        self.assertEqual(env.getType("TestStruct").annotations[0].name, "Struct")
         
         # Field
-        self.assertEqual(env.getType("TestStruct").fields[0].annotations[0].text, "Field")
+        self.assertEqual(env.getType("TestStruct").fields[0].annotations[0].name, "Field")
         
         # Interface
-        self.assertEqual(env.getType("TestIface").annotations[0].text, "Interface")
+        self.assertEqual(env.getType("TestIface").annotations[0].name, "Interface")
         
         # Method
-        self.assertEqual(env.getType("TestIface").methods[0].annotations[0].text, "Method")
+        self.assertEqual(env.getType("TestIface").methods[0].annotations[0].name, "Method")
         
+        # Annotation values
+        self.assertEqual(env.getType('dummyType').annotations[0].name, "name")
+        
+        self.assertEqual(env.getType('dummyType').annotations[0].value, "value")
         
 if __name__ == '__main__':
     unittest.main()

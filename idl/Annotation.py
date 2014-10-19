@@ -7,4 +7,6 @@ class Annotation(object):
         
         header = tokens.pop(0)
         
-        self.text = header.text
+        self.name = header.name
+        
+        self.value = header.value
