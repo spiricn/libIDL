@@ -1,5 +1,10 @@
-class EnumField(object):
+from idl.Annotatable import Annotatable
+
+
+class EnumField(Annotatable):
     def __init__(self, name, value):
+        Annotatable.__init__(self)
+        
         self.name = name
         self.value = value
         

@@ -1,4 +1,7 @@
-class Type(object):
+from idl.Annotatable import Annotatable
+
+
+class Type(Annotatable):
     BOOL, \
     INT64, \
     UINT64, \
@@ -37,9 +40,9 @@ class Type(object):
     ]
     
     def __init__(self, module, t, name=''):
+        Annotatable.__init__(self)
+                
         self.module = module
-        
-        self.annotations = []
         
         self.name = name
         

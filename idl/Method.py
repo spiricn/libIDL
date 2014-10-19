@@ -1,8 +1,10 @@
 from idl.Type import Type
 from idl.lexer.TokenType import TokenType
 
+from idl.Annotatable import Annotatable
 
-class Method():
+
+class Method(Annotatable):
     NORMAL, \
     CALLBACK_REGISTER, \
     CALLBACK_UNREGISTER, \
@@ -12,6 +14,8 @@ class Method():
     MOD_CALLBACK_UNREGISTER = 'callback_unregister'
     
     def __init__(self, interface, module, tokens):
+        Annotatable.__init__(self)
+
         self.module = module
         
         token = tokens.pop(0)

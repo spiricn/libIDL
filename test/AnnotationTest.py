@@ -66,5 +66,9 @@ class AnnotationTest(unittest.TestCase):
         
         self.assertEqual(env.getType('dummyType').annotations[0].value, "value")
         
+        self.assertEqual(env.getType('dummyType').getAnnotation('name'), env.getType('dummyType').annotations[0])
+        
+        self.assertEqual(env.getType('dummyType').getAnnotationVal('name'), env.getType('dummyType').annotations[0].value)
+        
 if __name__ == '__main__':
     unittest.main()
