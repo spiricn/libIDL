@@ -3,8 +3,6 @@ Example demonstrating the usage of callbacks ('callback_register' & 'callback_un
 '''
  
 from idl.Method import Method
-from idl.Module import Module 
-from idl.Type import Type
 
 from idl.Environment import Environment
 

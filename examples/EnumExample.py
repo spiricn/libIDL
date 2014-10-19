@@ -2,8 +2,6 @@
 Example demonstrating the usage of enumerations ('enum' type).
 '''
  
-from idl.Module import Module 
-from idl.Type import Type
 
 from idl.Environment import Environment
 

@@ -2,8 +2,6 @@
 Example demonstrating the usage of interfaces ('interface' type).
 '''
  
-from idl.Module import Module 
-from idl.Type import Type
 
 from idl.Environment import Environment
 

@@ -1,9 +1,10 @@
 import re
 
-from idl.EnumField import EnumField
 from idl.Type import Type
 from idl.lexer.TokenType import TokenType
-from idl.lexer.Utils import *
+
+from build.lib.idl.lexer.Utils import WHITESPACE_MATCH, WHITESPACE_SPLIT_MATCH, \
+    PARAM_NAME_MATCH
 
 
 class Typedef(Type):

@@ -1,4 +1,5 @@
 
+import os
 import re
 
 from idl.Array import Array
@@ -26,6 +27,21 @@ class Environment(TypeGetter):
             
         self.modules = []
         
+    def compileFile(self, path, moduleName=''):
+        try:
+            fileObj = open(path, 'r')
+        except Exception as e:
+            raise RuntimeError('Error opening idl file %r:\n %s' % (path, str(e)))
+        
+        source = fileObj.read()
+        
+        if not moduleName:
+            moduleName = os.path.basename(path)
+        
+        fileObj.close()
+        
+        return self.compile(source, moduleName)
+
     def compile(self, source, moduleName=''):
         # TODO check module name ?
         

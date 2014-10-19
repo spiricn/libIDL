@@ -1,9 +1,7 @@
 import os
 import unittest
 
-from idl.Method import Method
 from idl.Environment import Environment 
-from idl.Type import Type
 
 
 RESOURCE_DIR = os.path.abspath('./rsrc')

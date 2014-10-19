@@ -1,8 +1,6 @@
 import os
 import unittest
 
-from idl.Method import Method
-from idl.Module import Module 
 from idl.Type import Type
 
 from idl.Environment import Environment

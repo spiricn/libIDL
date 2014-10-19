@@ -1,18 +1,14 @@
-import os
 import unittest
 
 from idl.Method import Method
 from idl.Module import Module 
-from idl.Environment import Environment
 from idl.Type import Type
 
+from idl.Environment import Environment
+from test.TestBase import TestBase
 
-RESOURCE_DIR = os.path.abspath('./rsrc')
 
-class InterfaceTest(unittest.TestCase):
-    def setUp(self):
-        pass
-    
+class InterfaceTest(TestBase):
     def test_comments(self):
         '''
         Basic comment stripping test.

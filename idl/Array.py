@@ -1,9 +1,4 @@
-import re
-
-from idl.EnumField import EnumField
 from idl.Type import Type
-from idl.lexer.TokenType import TokenType
-from idl.lexer.Utils import *
 
 
 class Array(Type):

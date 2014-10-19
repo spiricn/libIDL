@@ -1,5 +1,4 @@
 from idl.Type import Type
-from idl.Variable import Variable
 from idl.lexer.TokenType import TokenType
 
 

@@ -1,8 +1,5 @@
-import re
-
 from idl.Type import Type
 from idl.lexer.TokenType import TokenType
-from idl.lexer.Utils import *
 from idl.lexer.VariableToken import VariableToken
 
 from idl.Annotation import Annotation

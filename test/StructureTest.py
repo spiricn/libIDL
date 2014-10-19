@@ -1,14 +1,12 @@
-import os
 import unittest
 
-from idl.Method import Method
-from idl.Environment import Environment 
 from idl.Type import Type
 
+from idl.Environment import Environment 
+from test.TestBase import TestBase
 
-RESOURCE_DIR = os.path.abspath('./rsrc')
 
-class StructureTest(unittest.TestCase):
+class StructureTest(TestBase):
     def setUp(self):
         pass
     
@@ -39,7 +37,7 @@ interface TestInterface{
 '''
         env = Environment()
         
-        module = env.compile(source)
+        env.compile(source)
         
         # Structure number
         structs = env.getTypes(Type.STRUCTURE)
