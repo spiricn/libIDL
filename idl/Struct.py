@@ -57,9 +57,9 @@ class Struct(Type):
         for rawField in self.rawFields:
             var = self.module.env.createVariable(rawField)
             
-            var.annotations = rawField.annotations
-            
             if var == None:
                 raise RuntimeError('Could not resolve structure field type %r of structure %r' % (rawField.type, self.name))
+            
+            var.annotations = rawField.annotations
             
             self.fields.append(var)
