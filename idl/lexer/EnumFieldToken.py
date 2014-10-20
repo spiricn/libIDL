@@ -14,21 +14,24 @@ class EnumFieldToken(Token):
         # Explicit value enum field ?
         if '(' in bodyStripped:
             
-            r = re.compile( '\((' + NUMBER_MATCH + '\))' )
+            r = re.compile( '\((' + '.*' + '\))' )
             
             # Find the value
             
             try:
-                valueStr = r.search(bodyStripped).group(0)
+                valueExpr = r.search(bodyStripped).group(0)
                 
                 # Strip the brackets
-                valueStr = valueStr[1:-1]
+                valueExpr = valueExpr[1:-1]
                  
-            except:
-                raise RuntimeError("Invalid enum field %r declaration" % self.body)
+            except Exception as e:
+                raise RuntimeError("Invalid enum field %r declaration: %s" % (self.body, str(e)))
 
-            # Prefrom a conversion (either hex or dec based)            
-            self.value = int(valueStr, 16 if valueStr.startswith('0x') else 10)
+            # Preform value evaluation
+            try:
+                self.value = eval(valueExpr)
+            except Exception as e:
+                raise RuntimeError("Error evaluating enum value expression %r: %s" % (valueExpr, str(e)))
             
             try:
                 # Get the name (string before the first bracket

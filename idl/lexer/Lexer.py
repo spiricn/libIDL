@@ -146,7 +146,7 @@ class Lexer:
             TokenType(\
                WHITESPACE_MATCH + \
                # Enum name
-               PARAM_NAME_MATCH + WHITESPACE_MATCH + '\(' + DEC_NUMBER_MATCH + '\)' + ',' + WHITESPACE_MATCH,
+               PARAM_NAME_MATCH + WHITESPACE_MATCH + '\(' +  '.*' + '\)' + ',' + WHITESPACE_MATCH,
                TokenType.ENUM_FIELD, EnumFieldToken),
                     
             # Enum field with explicit hexa number (TODO merge with previous type)

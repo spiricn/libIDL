@@ -24,6 +24,7 @@ class EnumTest(unittest.TestCase):
             third,
             fourth(42),
             sixth(0xC2Ab3),
+            seventh(1 << 5 + 3),
         }; // </TestEnum>
         
         struct TestStruct{
@@ -49,7 +50,7 @@ class EnumTest(unittest.TestCase):
         
         self.assertEqual(enum.name, 'TestEnum')
         
-        self.assertEqual(len(enum.fields), 5)
+        self.assertEqual(len(enum.fields), 6)
         
         self.assertEqual(enum.fields[0].name, "first")
         self.assertEqual(enum.fields[0].value, 0)
@@ -65,6 +66,9 @@ class EnumTest(unittest.TestCase):
         
         self.assertEqual(enum.fields[4].name, "sixth")
         self.assertEqual(enum.fields[4].value, 0xC2Ab3)
+        
+        self.assertEqual(enum.fields[5].name, "seventh")
+        self.assertEqual(enum.fields[5].value, eval('1 << 5 + 3'))
         
         # Test interface
         iface = env.getInterface("TestInterface")
