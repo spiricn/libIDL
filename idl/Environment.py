@@ -1,21 +1,20 @@
 
-import os
-import re
-
+from idl.Annotation import Annotation
 from idl.Array import Array
 from idl.Enum import Enum
 from idl.Interface import Interface
 from idl.Module import Module
 from idl.Struct import Struct
 from idl.Type import Type
+from idl.TypeGetter import TypeGetter
 from idl.Typedef import Typedef
 from idl.Variable import Variable
 from idl.lexer.Lexer import Lexer
 from idl.lexer.TokenType import TokenType
 from idl.lexer.Utils import PARAM_NAME_MATCH, NUMBER_MATCH
-
-from idl.Annotation import Annotation
-from idl.TypeGetter import TypeGetter
+import os
+import re
+import traceback
 
 
 class Environment(TypeGetter):
@@ -59,7 +58,7 @@ class Environment(TypeGetter):
             
             moduleNames.append(moduleName)
             
-        return self.__build(sources, moduleNames)        
+        return self.__build(sources, moduleNames, paths)        
         
     
     def compileFile(self, path):
@@ -72,27 +71,35 @@ class Environment(TypeGetter):
         
         return modules[0]
     
-    def __build(self, sources, moduleNames):
+    def __build(self, sources, moduleNames, filePaths=None):
         modules = []
         
         if len(sources) == 0:
             assert(0)
-    
+
         for index, source in enumerate(sources):
             # Create a new module
-            self.__currModule = Module(self, moduleNames[index])
-            
-            # Create tokens from source
-            tokens = Lexer.tokenize(source)
-                    
-            # Create types
-            self.__compile(tokens)
-            
+            self.__currModule = Module(self, moduleNames[index], None if not filePaths else filePaths[index])
+
+            try:
+                # Create tokens from source
+                tokens = Lexer.tokenize(source)
+
+                # Create types
+                self.__compile(tokens)
+
+            except Exception as e:
+                raise RuntimeError("Error linking module\n\t%r\n\t%r\n%s" % (self.__currModule.name, self.__currModule.filePath, str(e)))
+
             modules.append(self.__currModule)
-        
+
         for module in modules:
-            # Link types
-            self.__link(module)
+            try:
+                # Link types
+                self.__link(module)
+
+            except Exception as e:
+                raise RuntimeError("Error linking module\n\t%r\n\t%r\n%s" % (module.name, module.filePath, str(e)))
             
             # Store the newly created module
             self.modules.append(module)
