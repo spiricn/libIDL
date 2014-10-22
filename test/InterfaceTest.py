@@ -29,7 +29,7 @@ interface TestInterface{
 '''
         env = Environment()
         
-        env.compile(source)
+        env.compileSource(source)
         
         interfaces = env.getTypes(Type.INTERFACE)
         
@@ -54,7 +54,7 @@ interface BasicInterface{
          
         env = Environment()
         
-        env.compile(source)
+        env.compileSource(source)
          
         # Check the interface name
         interface = env.getTypes(Type.INTERFACE)
@@ -110,7 +110,7 @@ interface BasicInterface{
         };
 '''
  
-        types = Environment().compile(source).types 
+        types = Environment().compileSource(source).types 
         
         self.assertEqual(len(types), 2)
         
@@ -167,7 +167,7 @@ interface BasicInterface{
         
         env = Environment()
         
-        types = env.compile(source).types
+        types = env.compileSource(source).types
         
         self.assertEqual(len(types), 2)
         

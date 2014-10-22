@@ -27,44 +27,79 @@ class Environment(TypeGetter):
             
         self.modules = []
         
-    def compileFile(self, path, moduleName=''):
-        try:
-            fileObj = open(path, 'r')
-        except Exception as e:
-            raise RuntimeError('Error opening idl file %r:\n %s' % (path, str(e)))
+    def getModuleByName(self, name):
+        for i in self.modules:
+            if i.name == name:
+                return i
+            
+        return None
+    
+    def compileFiles(self, paths):
+        sources = []
         
-        source = fileObj.read()
+        moduleNames = []
         
-        if not moduleName:
+        for path in paths:
+            try:
+                fileObj = open(path, 'r')
+            except Exception as e:
+                raise RuntimeError('Error opening idl file %r:\n %s' % (path, str(e)))
+            
+            source = fileObj.read()
+            
+            sources.append(source)
+            
+            fileObj.close()
+            
+            # Get file name
             moduleName = os.path.basename(path)
+            
+            # Discard extension
+            moduleName = os.path.splitext(moduleName)[0]
+            
+            moduleNames.append(moduleName)
+            
+        return self.__build(sources, moduleNames)        
         
-        fileObj.close()
+    
+    def compileFile(self, path):
+        modules = self.compileFiles([path])
         
-        return self.compile(source, moduleName)
+        return modules[0]
 
-    def compile(self, source, moduleName=''):
-        # TODO check module name ?
+    def compileSource(self, source, moduleName=''):
+        modules = self.__build([source], [moduleName])
         
-        # Create a new module
-        self.__currModule = Module(self, moduleName)
+        return modules[0]
+    
+    def __build(self, sources, moduleNames):
+        modules = []
         
-        # Create tokens from source
-        tokens = Lexer.tokenize(source)
-                
-        # Create types
-        self.__compile(tokens)
+        if len(sources) == 0:
+            assert(0)
+    
+        for index, source in enumerate(sources):
+            # Create a new module
+            self.__currModule = Module(self, moduleNames[index])
+            
+            # Create tokens from source
+            tokens = Lexer.tokenize(source)
+                    
+            # Create types
+            self.__compile(tokens)
+            
+            modules.append(self.__currModule)
         
-        # Link types
-        self.__link()
-        
-        # Store the newly created module
-        self.modules.append(self.__currModule)
-        
-        res = self.__currModule
-        
-        self.__currModule = None
-        
-        return res
+        for module in modules:
+            # Link types
+            self.__link(module)
+            
+            # Store the newly created module
+            self.modules.append(module)
+            
+            self.__currModule = None
+            
+        return modules
         
     def __addType(self, typeObj):
         '''
@@ -173,7 +208,7 @@ class Environment(TypeGetter):
         else:
             return None
             
-    def __link(self):
+    def __link(self, module):
         '''
         Second processing pass.
         Preforms per-type creation (e.g. type to object linking etc.) 
@@ -182,6 +217,5 @@ class Environment(TypeGetter):
         # Create argument list for each method.
         # This has to be done after the initial method list compile since certain methods
         # may depend on other ones.
-        for i in self.types:
+        for i in module.types:
             i.create()
-

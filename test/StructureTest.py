@@ -37,7 +37,7 @@ interface TestInterface{
 '''
         env = Environment()
         
-        env.compile(source)
+        env.compileSource(source)
         
         # Structure number
         structs = env.getTypes(Type.STRUCTURE)
@@ -121,7 +121,7 @@ interface TestInterface{
         
         env = Environment()
         
-        module = env.compile(source)
+        module = env.compileSource(source)
         
         types = module.types
         

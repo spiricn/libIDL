@@ -39,7 +39,7 @@ class EnumTest(unittest.TestCase):
 '''
         env = Environment()
         
-        types = env.compile(source).types
+        types = env.compileSource(source).types
         
         self.assertEqual(len(types), 3)
         

@@ -9,5 +9,5 @@ class Array(Type):
         
         self.size = size
         
-        self.name = '%s[]' % baseType.name
+        self.name = '%s' % baseType.name
     

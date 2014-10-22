@@ -3,3 +3,5 @@ interface Module2Interface {
 	void method1(int32 arg1);
 
 }; // </Module2Interface>
+
+typedef Module2Type;

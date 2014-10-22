@@ -48,12 +48,6 @@ class Method(Annotatable):
         # Method name
         self.name = token.name
         
-        # Method return type
-        self.returnType = self.module.env.resolveType(token.returnType)
-        
-        if  self.returnType == None or self.returnType == Type.INVALID:
-            raise RuntimeError('Invalid method return type "%s"' % token.returnType)
-        
         # Save the method token, until the first pass is complete
         # Will use it later in 'create'
         self.rawMethod = token
@@ -62,9 +56,15 @@ class Method(Annotatable):
         self.callbackType = None
 
     def create(self):
-        self.args = []
+        # Resolve method return type
+        self.returnType = self.module.env.resolveType(self.rawMethod.returnType)
         
-        # Iterate over a list of raw arguments (strings type, name)
+        if  self.returnType == None or self.returnType == Type.INVALID:
+            raise RuntimeError('Invalid method return type "%s"' % self.rawMethod.returnType)
+
+        # Resolve argument types        
+        self.args = []
+
         for rawArg in self.rawMethod.args:
             # Resolve the argument type
             var = self.module.env.createVariable(rawArg)

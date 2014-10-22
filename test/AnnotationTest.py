@@ -42,7 +42,7 @@ class AnnotationTest(unittest.TestCase):
 '''
         env = Environment()
         
-        env.compile(source)
+        env.compileSource(source)
         
         # Enum
         self.assertEqual(env.getType("TestEnum").annotations[0].name, "Enum")

@@ -28,7 +28,7 @@ class TypedefTest(TestBase):
 
         env = Environment()
         
-        types = env.compile(src).types
+        types = env.compileSource(src).types
         
         self.assertEqual(len(types), 4)
         
