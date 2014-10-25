@@ -1,66 +1,64 @@
-from idl.EnumField import EnumField
+from idl.Annotatable import Annotatable
 from idl.Type import Type
-from idl.lexer.TokenType import TokenType
-
-from idl.Annotation import Annotation
 
 
 class Enum(Type):
-    def __init__(self, module, tokens):
-        Type.__init__(self, module, Type.ENUM)
-        
-        header = tokens.pop(0)
-        
-        # Sanity  check
-        assert(header.type == TokenType.ENUM_BEGIN)
-        
-        self.name = header.name
+    class Field(Annotatable):
+        def __init__(self, enum, name, value):
+            Annotatable.__init__(self)
+            
+            self.enum = enum
+            self.name = name
+            self.value = value
+            
+    def __init__(self, module, info):
+        Type.__init__(self, module, Type.ENUM, info.name)
+
+        self.info = info
         
         self.fields = []
         
-        annotations = []
-        
-        while True:
-            token = tokens[0]
+        for field in self.info.fields:
             
-            if token.type == TokenType.ENUM_FIELD:
-                tokens.pop(0)
+            if field.value:
+                # Evaluate value
+                try:
+                    value = eval(field.value)
+                except Exception as e:
+                    raise RuntimeError('Could not evaluate field %r value %r of enum %r: %s' % (field.name, field.value, self.name, str(e)))
                 
-                fieldValue = token.value
-                
-                if fieldValue == -1:
-                    # No value given, assign it one
-                    fieldValue = 0
-                    
-                    while fieldValue  in [field.value for field in self.fields]:
-                        fieldValue  += 1
-                        
-                elif fieldValue in [field.value for field in self.fields]:
-                    # If a value has been provided, check if it's already taken
-                    raise RuntimeError('Enum field for enum %r with value %d already exists' % (self.name, fieldValue))
-                        
-                # Create a new field
-                field = EnumField(token.name, fieldValue)
-                
-                field.annotations = annotations
-                
-                annotations = []
-                 
-                self.fields.append(field)
-            
-            elif token.type == TokenType.CLOSING_BRACKET:
-                # End of enum
-                tokens.pop(0)
-                break
-            
-            elif token.type == TokenType.ANNOTATION:
-                annotations.append(Annotation(tokens))
-            
             else:
-                raise RuntimeError("Unexpected token while parsing enum %d" % token.type)
+                # Assign value
+                value = 0
+                while True:
+                    taken = False
+                    
+                    for i in self.fields:
+                        if i.value == value:
+                            taken = True
+                            value += 1
+                            break
+                        
+                    if not taken:
+                        break
             
-    def create(self):
-        pass
-                
+            newField = Enum.Field(self, field.name, value)
             
+            # Duplicate check
+            if self.getField(newField.name):
+                raise RuntimeError('Enum %s duplicate field name %r' % (self.name, newField.name))
+            
+            # Annotations
+            newField._assignAnnotations(field.annotations)
+            
+            self.fields.append(newField)
+
+    def getField(self, name):
+        for field in self.fields:
+            if field.name == name:
+                return field
+            
+        return None
     
+    def _link(self):
+        pass

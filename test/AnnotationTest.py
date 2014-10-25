@@ -20,7 +20,7 @@ class AnnotationTest(unittest.TestCase):
         @Enum
         enum TestEnum{
         @Val
-        VAL1,
+        VAL1
         };
         
         @Struct
@@ -46,6 +46,7 @@ class AnnotationTest(unittest.TestCase):
         
         # Enum
         self.assertEqual(env.getType("TestEnum").annotations[0].name, "Enum")
+
         
         self.assertEqual(env.getType("TestEnum").fields[0].annotations[0].name, "Val")
         

@@ -1,8 +1,8 @@
 import re
 
-from idl2.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
+from idl.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
     KEYWORD_TYPEDEF
-from idl2.lexer.Token import Token
+from idl.lexer.Token import Token
 
 
 class TokenSearch:
@@ -30,6 +30,7 @@ class TokenSearch:
                 [re.compile('^' + KEYWORD_STRUCT  + '$'), Token.KEYWORD, True],
                 [re.compile('^' + KEYWORD_TYPEDEF + '$' ), Token.KEYWORD, True],
                 [re.compile('^[a-zA-Z]+[a-zA-Z0-9_]*$'), Token.ID, True],
+                [re.compile('^0x[0-9a-fA-F]+$'), Token.LIT, True],
                 [re.compile('^[0-9]+$'), Token.LIT, True],
     ]
     

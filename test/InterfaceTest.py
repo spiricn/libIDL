@@ -104,9 +104,9 @@ interface BasicInterface{
         };
          
         interface TestCallbackInterface{
-            void registerCallback(CallbackInterface arg1) callback_register;
+            void registerCallback(callback_register CallbackInterface arg1);
             
-            void unregisterCallback(CallbackInterface arg1) callback_unregister;
+            void unregisterCallback(callback_unregister CallbackInterface arg1);
         };
 '''
  
@@ -176,18 +176,18 @@ interface BasicInterface{
         iface2 = env.getInterface('TestInterface2')
         
         # Array of interfaces
-        self.assertEqual(iface2.methods[0].args[1].type.baseType, iface1)
+        self.assertEqual(iface2.methods[0].args[1].type, iface1)
 
         # Array return type
-        self.assertEqual(iface2.methods[0].returnType, Type.ARRAY)
+        self.assertTrue(iface2.methods[0].returnType.isArray)
 
         # Array size test (should probably be moved elswhere)        
-        self.assertEqual(iface2.methods[0].returnType.size, 45)
+        self.assertEqual(iface2.methods[0].returnType.arraySize, 45)
         
-        self.assertEqual(iface2.methods[0].args[0].type.size, 56)
+        self.assertEqual(iface2.methods[0].args[0].type.arraySize, 56)
         
         
-        self.assertEqual(iface2.methods[0].args[1].type.size, -1)
+        self.assertEqual(iface2.methods[0].args[1].type.arraySize, -1)
 
 if __name__ == '__main__':
     unittest.main()

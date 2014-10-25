@@ -1,7 +1,7 @@
-from idl2.lexer.Keywords import KEYWORD_INTERFACE
-from idl2.lexer.Token import Token
-from idl2.parser.MethodParser import MethodParser
-from idl2.parser.Parser import Parser
+from idl.lexer.Keywords import KEYWORD_INTERFACE
+from idl.lexer.Token import Token
+from idl.parser.MethodParser import MethodParser
+from idl.parser.Parser import Parser
 
 
 class InterfaceInfo:

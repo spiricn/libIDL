@@ -1,12 +1,5 @@
-from idl.lexer.TokenType import TokenType
-
 class Annotation(object):
-    def __init__(self, tokens):
-        # Sanity check
-        assert(tokens[0].type == TokenType.ANNOTATION)
+    def __init__(self, info):
+        self.name = info.name
         
-        header = tokens.pop(0)
-        
-        self.name = header.name
-        
-        self.value = header.value
+        self.value = info.value

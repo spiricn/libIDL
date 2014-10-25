@@ -22,9 +22,3 @@ NUMBER_MATCH = r'(?:0x[0-9A-Fa-f]*|[0-9]*)'
 
 WHITESPACE_LINE_MATCH = r'^' + WHITESPACE_MATCH + r'$'
 
-def dprint(obj):
-    string = str(obj)
-    
-    string = string.replace('\n', '\\n').replace('\t', '\\t')
-    
-    print('"%s"' % string)

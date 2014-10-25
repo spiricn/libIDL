@@ -36,9 +36,9 @@ class MiscTest(TestBase):
         
         env.compileFiles(sourceFiles)
         
-        self.assertNotEqual(env.getModuleByName('module3'), None)
+        self.assertNotEqual(env.getModule('module3'), None)
         
-        self.assertNotEqual(env.getModuleByName('module2'), None)
+        self.assertNotEqual(env.getModule('module2'), None)
     
 if __name__ == '__main__':
     unittest.main()

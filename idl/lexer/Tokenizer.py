@@ -2,8 +2,8 @@ import re
 
 from idl.lexer.Utils import WHITESPACE_LINE_MATCH
 
-from idl2.lexer.Token import Token
-from idl2.lexer.TokenSearch import TokenSearch
+from idl.lexer.Token import Token
+from idl.lexer.TokenSearch import TokenSearch
 
 
 class Tokenizer:

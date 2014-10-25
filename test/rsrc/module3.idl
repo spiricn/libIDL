@@ -1,0 +1,5 @@
+interface Module3Interface {
+	
+	void method1(Module2Type arg1);
+
+}; // </Module2Interface>

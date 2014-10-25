@@ -1,42 +1,85 @@
+import os
 
-from idl.Annotation import Annotation
-from idl.Array import Array
-from idl.Enum import Enum
-from idl.Interface import Interface
 from idl.Module import Module
-from idl.Struct import Struct
 from idl.Type import Type
 from idl.TypeGetter import TypeGetter
-from idl.Typedef import Typedef
-from idl.Variable import Variable
-from idl.lexer.Lexer import Lexer
-from idl.lexer.TokenType import TokenType
-from idl.lexer.Utils import PARAM_NAME_MATCH, NUMBER_MATCH
-import os
-import re
-import traceback
+
+from idl.Compiler import Compiler
 
 
 class Environment(TypeGetter):
+    class BuildEntry:
+        def __init__(self, moduleName, source, filePath):
+            self.moduleName = moduleName
+            self.source = source
+            self.filePath = filePath
+            
     def __init__(self):
         self.types = []
         
-        for i in Type.primitives:
-            self.types.append(Type(self, i))
+        # Add primitives to the list
+        for typeId in Type.primitives:
+            self.types.append( Type(self, typeId) )
             
         self.modules = []
+            
+    def _addType(self, typeObj):
+        self.types.append( typeObj )
         
-    def getModuleByName(self, name):
+    def getModule(self, name):
         for i in self.modules:
             if i.name == name:
                 return i
             
         return None
-    
-    def compileFiles(self, paths):
-        sources = []
+
+    def compileSource(self, source, moduleName=None):
+        if not moduleName:
+            # Generate name
+            n = 0
+            
+            while True:
+                moduleName = 'Module%d' % n
+                
+                if self.getModule(moduleName):
+                    n += 1
+                else:
+                    break
+                
+        modules = self._build([Environment.BuildEntry(moduleName, source, None)])
         
-        moduleNames = []
+        return modules[0]
+                
+    def _build(self, entries):
+        createdModules = []
+        
+        for entry in entries:
+            # Duplicate name check
+            if self.getModule(entry.moduleName):
+                raise RuntimeError('Module named %r already exists in environment' % entry.moduleName)
+                        
+            # Create module object
+            module = Module(self, entry.moduleName, entry.filePath)
+        
+            # Add to list
+            self.modules.append(module)
+        
+            # Create compiler
+            entry.compiler = Compiler(module)
+        
+            # Compile
+            entry.compiler.compile(entry.source)
+            
+            createdModules.append( module )
+
+        # Link            
+        for entry in entries:
+            entry.compiler.link()
+            
+        return createdModules
+
+    def compileFiles(self, paths):
+        entries = []
         
         for path in paths:
             try:
@@ -46,8 +89,6 @@ class Environment(TypeGetter):
             
             source = fileObj.read()
             
-            sources.append(source)
-            
             fileObj.close()
             
             # Get file name
@@ -56,173 +97,14 @@ class Environment(TypeGetter):
             # Discard extension
             moduleName = os.path.splitext(moduleName)[0]
             
-            moduleNames.append(moduleName)
+            entries.append( Environment.BuildEntry(moduleName, source, path) )
             
-        return self.__build(sources, moduleNames, paths)        
+            
+        return self._build( entries )        
         
     
     def compileFile(self, path):
         modules = self.compileFiles([path])
         
         return modules[0]
-
-    def compileSource(self, source, moduleName=''):
-        modules = self.__build([source], [moduleName])
-        
-        return modules[0]
     
-    def __build(self, sources, moduleNames, filePaths=None):
-        modules = []
-        
-        if len(sources) == 0:
-            assert(0)
-
-        for index, source in enumerate(sources):
-            # Create a new module
-            self.__currModule = Module(self, moduleNames[index], None if not filePaths else filePaths[index])
-
-            try:
-                # Create tokens from source
-                tokens = Lexer.tokenize(source)
-
-                # Create types
-                self.__compile(tokens)
-
-            except Exception as e:
-                raise RuntimeError("Error linking module\n\t%r\n\t%r\n%s" % (self.__currModule.name, self.__currModule.filePath, str(e)))
-
-            modules.append(self.__currModule)
-
-        for module in modules:
-            try:
-                # Link types
-                self.__link(module)
-
-            except Exception as e:
-                raise RuntimeError("Error linking module\n\t%r\n\t%r\n%s" % (module.name, module.filePath, str(e)))
-            
-            # Store the newly created module
-            self.modules.append(module)
-            
-            self.__currModule = None
-            
-        return modules
-        
-    def __addType(self, typeObj):
-        '''
-        Adds a new type object to the list of types 
-        '''
-
-        # Type name check
-        for i in self.types:
-            if i.name == typeObj.name:
-                raise RuntimeError("Type named %r already exists" % typeObj.name)
-                
-        # Store it in a global list
-        self.types.append( typeObj )
-        
-        # Store it in the current module list
-        self.__currModule.types.append(typeObj)
-        
-    def __compile(self, tokens):
-        '''
-        First processing pass.
-        Processes tokens generated by the lexer.
-        '''
-        
-        tokenProcessors = {
-            TokenType.STRUCT_BEGIN : Struct,
-            TokenType.INTERFACE_BEGIN : Interface,
-            TokenType.ENUM_BEGIN : Enum,
-            TokenType.TYPEDEF : Typedef,
-        }
-        
-        annotations = []
-        
-        while tokens:
-            # Take a token and process it
-            token = tokens[0]
-            
-            if token.type == TokenType.ANNOTATION:
-                # We keep annotations in a separate list and assign it to the first type we create
-                annotations.append( Annotation(tokens) )
-                continue
-            
-            if token.type in tokenProcessors:
-                typeObj = tokenProcessors[token.type](self.__currModule, tokens )
-                
-                typeObj.annotations = annotations
-                
-                annotations = []
-                
-                self.__addType( typeObj )
-            else:
-                raise RuntimeError("Unexpected token type %d" % token.type)
-        
-    def __findTypesByName(self, name):
-        '''
-        Find all types with the given name.
-        '''
-        
-        return [i for i in self.types if i.name == name]
-    
-    def resolveType(self, typeName):
-        '''
-        Resovles a type name to a type object
-        '''
-        
-        # Is it an array ?
-        if typeName.endswith(']'):
-            # Resolve its base type first
-            baseTypeName = re.compile(PARAM_NAME_MATCH).search(typeName).group(0)
-            
-            baseType = self.resolveType( baseTypeName )
-            
-            # Optional size
-            try:            
-                sizeStr = re.compile('(\[' + NUMBER_MATCH + '\])').search(typeName).group(0)[1:-1]
-            except:
-                raise RuntimeError("Invalid array size %r" % typeName)
-            
-            size = -1
-            
-            if sizeStr:
-                size = int(sizeStr)
-
-            if not baseType:
-                # Could not resolve base type
-                return None
-            
-            # Create an array type with this base
-            return  Array(self, baseType, size)
-            
-        types = self.__findTypesByName(typeName)
-        
-        if not types:
-            return None
-        
-        if len(types) != 1:
-            # Should this even be allowed to happen ?
-            raise RuntimeError("TODO: Not implemented")
-        
-        return types[0]
-    
-    def createVariable(self, rawArg):
-        resolvedType = self.resolveType(rawArg.type)
-        
-        if resolvedType:
-            return Variable(resolvedType, rawArg.name)
-        else:
-            return None
-            
-    def __link(self, module):
-        '''
-        Second processing pass.
-        Preforms per-type creation (e.g. type to object linking etc.) 
-        '''
-        
-        # Create argument list for each method.
-        # This has to be done after the initial method list compile since certain methods
-        # may depend on other ones.
-        for i in module.types:
-            i.create()

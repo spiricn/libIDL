@@ -2,7 +2,7 @@ import unittest
 
 from idl.Type import Type
 
-from idl2.Environment import Environment 
+from idl.Environment import Environment 
 from test.TestBase import TestBase
 
 
@@ -129,10 +129,10 @@ interface TestInterface{
         self.assertEqual(len(types), 2)
         
         # Array field created
-        self.assertEqual(types[1].fields[0].type, Type.ARRAY)
+        self.assertEqual(types[1].fields[0].type, Type.STRUCTURE)
         
         # Array of structures
-        self.assertEqual(types[1].fields[0].type.baseType, types[0])
+        self.assertEqual(types[1].fields[0].type, types[0])
 
 if __name__ == '__main__':
     unittest.main()

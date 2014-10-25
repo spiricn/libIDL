@@ -1,5 +1,5 @@
-from idl2.lexer.Token import Token
-from idl2.parser.Parser import Parser
+from idl.lexer.Token import Token
+from idl.parser.Parser import Parser
 
 
 class MethodInfo:

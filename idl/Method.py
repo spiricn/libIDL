@@ -1,95 +1,66 @@
-from idl.Type import Type
-from idl.lexer.TokenType import TokenType
-
 from idl.Annotatable import Annotatable
+from idl.Type import Type
 
 
 class Method(Annotatable):
+    class Argument:
+        def __init__(self, method, argType, name):
+            self.method = method
+            self.type = argType
+            self.name = name
+            
     NORMAL, \
     CALLBACK_REGISTER, \
     CALLBACK_UNREGISTER, \
     = range(3)
     
-    MOD_CALLBACK_REGISTER = 'callback_register'
-    MOD_CALLBACK_UNREGISTER = 'callback_unregister'
-    
-    def __init__(self, interface, module, tokens):
+    def __init__(self, interface, info):
         Annotatable.__init__(self)
-
-        self.module = module
-        
-        token = tokens.pop(0)
-        
-        # Sanity check
-        assert(token.type == TokenType.METHOD)
         
         self.interface = interface
         
-        if not token.mods:
-            # No modifier, it's a regular method
-            self.type = Method.NORMAL
-            
-        elif len(token.mods) > 1:
-            # TODO add support for multiple custom modifiers ?
-            raise RuntimeError('Malformed method declaration "%s"; reason="%s"' % (token.body, "Unrecognized method modifier"))
+        self.info = info
         
-        else:
-            mod = token.mods[0]
-            
-            if mod == Method.MOD_CALLBACK_REGISTER:
-                self.type = Method.CALLBACK_REGISTER
-                 
-            elif mod == Method.MOD_CALLBACK_UNREGISTER:
-                self.type = Method.CALLBACK_UNREGISTER
-                
-            else:
-                raise RuntimeError('Malformed method declaration "%s"; reason="%s"' % (token.body, "Unrecognized method modifier \"%s\"" % mod))
-            
-        # Method name
-        self.name = token.name
+        self.type = Method.NORMAL
         
-        # Save the method token, until the first pass is complete
-        # Will use it later in 'create'
-        self.rawMethod = token
+        self.name = info.name
         
-        # Only valid if we're a callback register/unregister methods
+        self.args = []
+        
         self.callbackType = None
 
-    def create(self):
-        # Resolve method return type
-        self.returnType = self.module.env.resolveType(self.rawMethod.returnType)
+    def _link(self):
+        # Resolve return type
+        self.returnType = self.interface.module._resolveType(self.info.returnTypeInfo)
         
-        if  self.returnType == None or self.returnType == Type.INVALID:
-            raise RuntimeError('Invalid method return type "%s"' % self.rawMethod.returnType)
-
-        # Resolve argument types        
-        self.args = []
-
-        for rawArg in self.rawMethod.args:
-            # Resolve the argument type
-            var = self.module.env.createVariable(rawArg)
+        if not self.returnType:
+            raise RuntimeError('Could not resolve return type %r of method %s::%s' % (self.info.returnTypeInfo.name, self.interface.name, self.name))
+        
+        # Resolve args
+        for index, arg in enumerate(self.info.args):
+            argType = self.interface.module._resolveType(arg.typeInfo)
             
-            if var == None:
-                # Unable to resolve type
-                raise RuntimeError('Could not resolve method argument type method="%s"; argument="%s %s"' % (self.rawMethod.name, rawArg.type, rawArg.name))
+            if not argType:
+                raise RuntimeError('Could not resolve #%d argument type %r of method %s::%s' % (index, arg.typeInfo.name, self.interface.name, self.name))
             
-            var.method = self
+            newArg = Method.Argument(self, argType, arg.name)
             
-            # Type resolved OK, add it to the list
-            self.args.append(var)
-    
-        # If this method is a callback register/unregister, attempt to deduce callback interface
-        if self.type in [Method.CALLBACK_REGISTER, Method.CALLBACK_UNREGISTER]:
-            numCallbackTypes = 0
+            # Duplicate name check
+            for i in self.args:
+                if i.name == newArg.name:
+                    raise RuntimeError('Duplicate argument name %r in method %s::%s' % (newArg.name, self.interface.name, self.name))
+                
+            self.args.append(newArg)
             
-            for arg in self.args:
-                # Callback can be either a callback method or an interface
-                if arg.type == Type.INTERFACE:
-                    numCallbackTypes += 1
-                    self.callbackType = arg.type
-                    
-            if numCallbackTypes != 1:
-                raise RuntimeError('Could not deduce callback type from arguments list in method "%s"' % self.rawMethod.body)
-            
-    def __str__(self):
-        return '<IDLMethod name="%s" type=%d>' % (self.name, self.type)
+        # Annotations
+        self._assignAnnotations(self.info.annotations)
+        
+        for arg in self.args:
+            if arg.type.mod(Type.MOD_CALLBACK_REG):
+                self.type = Method.CALLBACK_REGISTER
+                self.callbackType = arg.type
+                
+            elif arg.type.mod(Type.MOD_CULLBACK_UNREG):
+                self.type = Method.CALLBACK_UNREGISTER
+                self.callbackType = arg.type
+                

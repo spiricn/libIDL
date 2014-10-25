@@ -1,11 +1,12 @@
-from idl2.lexer.Token import Token
+from idl.lexer.Token import Token
 
 
 class Parser(object):
     class TypeInfo:
-        def __init__(self, name='', arraySize=None):
+        def __init__(self, name='', mods=[], arraySize=None):
             self.name = name
             self.arraySize = arraySize
+            self.mods = mods
             
     class AnnotationInfo:
         def __init__(self, name='', value=''):
@@ -94,7 +95,32 @@ class Parser(object):
             return None
         
     def eatTypeInfo(self):
-        return Parser.TypeInfo(self.eat(Token.ID).body, self.eatArraySize())
+        bodies = []
+        
+        arraySize = None
+        
+        while self.tokens:
+            if self.next().id == Token.PUNCTUATION and self.next().body != '[':
+                # Return the last one to the stack
+                self.tokens.insert(0, bodies[-1])
+                bodies.pop(-1)
+                # Done
+                break
+            
+            if self.next().id == Token.PUNCTUATION and self.next().body == '[':
+                arraySize = self.eatArraySize()
+                
+                if arraySize == None:
+                    raise RuntimeError('Unexpected token while parsing type info')
+                
+            else:
+                bodies.append( self.eat(Token.ID) )
+        
+        name = bodies[-1].body
+        
+        mods = [i.body for i in bodies[:-1]]
+        
+        return Parser.TypeInfo(name, mods, arraySize)
     
     def _debug(self, numTokens=1):
         print([str(self.tokens[index]) for index in range(numTokens)])

@@ -1,41 +1,14 @@
-import re
-
-from idl2.Compiler import Compiler
-from idl2.Environment import Environment
-from idl2.Interface import Interface
-from idl2.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
-    KEYWORD_TYPEDEF
-from idl2.lexer.Token import Token
-from idl2.lexer.Tokenizer import Tokenizer
-from idl2.parser.EnumParser import EnumParser
-from idl2.parser.InterfaceParser import InterfaceParser
-from idl2.parser.StructParser import StructParser
-from idl2.parser.TypedefParser import TypedefParser
+from idl.Environment import Environment
+from idl.Type import Type
 
 
 source = '''
 
 
-@Test
-struct TestStruct {
-    string field1;
-    Surface[65] surfacearray;
-    void[42] field2;
-    TestEnum enumField;
-};
-
 interface TestIface{
-@name=val
-    void[45] test(TestStruct [423] arg1, string arg2);
+    void test(in callback_register int32[53] arg1);
 };
 
-enum TestEnum{
-@FieldAnnotation=132
-    one( 234 )
-    two tree
-};
-
-typedef Surface;
 
 '''
 
@@ -60,8 +33,14 @@ env = Environment()
 # 
 module = env.compileSource(source)
 # 
-print(module.types[0].getAnnotation('Tesst'))
  
+class Asdf:
+    @property
+    def x(self):
+        return 3
+    
+    
+print(Asdf().x)
 # print('-'*80)
 # print('Done')
 

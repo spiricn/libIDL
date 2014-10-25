@@ -1,65 +1,39 @@
+from idl.Annotatable import Annotatable
 from idl.Type import Type
-from idl.lexer.TokenType import TokenType
-from idl.lexer.VariableToken import VariableToken
-
-from idl.Annotation import Annotation
 
 
 class Struct(Type):
-    def __init__(self, module, tokens):
-        Type.__init__(self, module, Type.STRUCTURE)
-        
-        header = tokens.pop(0)
-        
-        # Sanity check
-        assert(header.type == TokenType.STRUCT_BEGIN)
+    class Field(Annotatable):
+        def __init__(self, struct, fieldType, name):
+            Annotatable.__init__(self)
+            
+            self.struct = struct
+            self.type = fieldType
+            self.name = name
 
-        fields = []
-        
-        annotations = []
-        
-        while tokens:
-            token = tokens[0]
-            
-            if token.type == TokenType.CLOSING_BRACKET:
-                # Reached end
-                tokens.pop(0)
-                break
-            
-            elif token.type == TokenType.STRUCT_FIELD:
-                token.annotations = annotations
-                annotations = []
-                
-                fields.append(tokens.pop(0))
-                
-            elif token.type == TokenType.ANNOTATION:
-                annotations.append(Annotation(tokens))
-            
-            else:
-                raise RuntimeError('Unexpected token of type %d found whlie parsing structure: "%s"' % (token.type, token.body))
-            
-        self.name = header.name
+    def __init__(self, module, info):
+        Type.__init__(self, module, Type.STRUCTURE, info.name)
 
-        # Parse struct fields        
-        self.rawFields = []
+        self.info = info
 
-        for rawField in fields:
-            var = VariableToken(rawField.fieldType, rawField.fieldName)
-            
-            var.annotations = rawField.annotations
-            
-            self.rawFields.append( var )
-            
-    def create(self):
         self.fields = []
         
-        # Resolve field types
-        for rawField in self.rawFields:
-            var = self.module.env.createVariable(rawField)
+    def _link(self):
+        for field in self.info.fields:
+            # Resolve field type
+            fieldType = self.module._resolveType(field.typeInfo)
             
-            if var == None:
-                raise RuntimeError('Could not resolve structure field type %r of structure %r' % (rawField.type, self.name))
+            if not fieldType:
+                raise RuntimeError('Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.name, self.name))
             
-            var.annotations = rawField.annotations
+            newField = Struct.Field(self, fieldType, field.name)
             
-            self.fields.append(var)
+            # Duplicate check
+            for i in self.fields:
+                if i.name == newField.name:
+                    raise RuntimeError('Duplicate field name %r in structure %r' % (field.name, self.name))
+                
+            # Annotations
+            newField._assignAnnotations(field.annotations)
+                
+            self.fields.append(newField)

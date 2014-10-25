@@ -2,7 +2,7 @@ import unittest
 
 from idl.Type import Type
 
-from idl2.Environment import Environment 
+from idl.Environment import Environment 
 from test.TestBase import TestBase
 
 
@@ -43,10 +43,10 @@ class TypedefTest(TestBase):
         iface = env.getInterface("TestInterface")
         
         # Typedefs can be return types ?
-        self.assertEqual(iface.methods[0].returnType.id, Type.TYPEDEF)
+        self.assertEqual(iface.methods[0].returnType, Type.TYPEDEF)
         
         # Typedefs can be method args ?
-        self.assertEqual(iface.methods[0].args[0].type.id, Type.TYPEDEF)
+        self.assertEqual(iface.methods[0].args[0].type, Type.TYPEDEF)
     
 if __name__ == '__main__':
     unittest.main()

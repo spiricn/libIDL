@@ -1,8 +1,9 @@
 import os
 
+from idl.Type import Type
 from idl.TypeGetter import TypeGetter
 
-from idl2.Array import Array
+from idl.TypeInstance import TypeInstance
 
 
 class Module(TypeGetter):
@@ -13,11 +14,15 @@ class Module(TypeGetter):
         self.filePath = '' if not filePath else os.path.abspath(filePath)
 
     def _resolveType(self, typeInfo):
+        baseType = None 
         for i in self.env.types:
             if i.name == typeInfo.name:
-                if typeInfo.arraySize != None:
-                    return Array(self, i, typeInfo.arraySize)
-                else:
-                    return i
-
-        return None
+                baseType = i
+                break
+            
+        if not baseType:
+            # undefined reference
+            return None
+        
+        return TypeInstance(baseType, typeInfo)
+        

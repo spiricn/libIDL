@@ -1,7 +1,14 @@
-class Token(object):
-    def __init__(self, tokenType, body):
-        self.type = tokenType
+class Token:
+    UNKOWN, \
+    ID, \
+    PUNCTUATION, \
+    LIT, \
+    KEYWORD, \
+    = range(5)
+    
+    def __init__(self, tokenId, body):
+        self.id = tokenId
         self.body = body
         
     def __str__(self):
-        return '<Token type="%s" body="%s">' % (str(self.type), self.body)
+        return '%d %r' % (self.id, self.body)

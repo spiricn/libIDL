@@ -2,6 +2,12 @@ from idl.Annotatable import Annotatable
 
 
 class Type(Annotatable):
+    MOD_IN = 1 << 0
+    MOD_OUT = 1 << 1
+    MOD_CONST = 1 << 2
+    MOD_CALLBACK_REG = 1 << 3
+    MOD_CULLBACK_UNREG = 1 << 4
+
     BOOL, \
     INT64, \
     UINT64, \
@@ -19,9 +25,8 @@ class Type(Annotatable):
     INTERFACE, \
     ENUM, \
     TYPEDEF, \
-    ARRAY, \
     INVALID, \
-    = range(19)
+    = range(18)
     
     primitives = [
         BOOL, \
