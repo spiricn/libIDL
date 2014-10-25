@@ -111,7 +111,7 @@ class Type(Annotatable):
         return not self == other
 
     def __str__(self):
-        return '<Type id=%d>' % self.id
+        return '<Type %s(%d)>' % (self.name, self.id)
     
     def create(self):
         pass

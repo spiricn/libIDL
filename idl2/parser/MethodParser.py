@@ -38,7 +38,7 @@ class MethodParser(Parser):
 
     def _parseHead(self):
         # Return type
-        self.method.returnType = self.eat(Token.ID).body
+        self.method.returnTypeName = self.eat(Token.ID).body
         
         # Method name
         self.method.name = self.eat(Token.ID).body
