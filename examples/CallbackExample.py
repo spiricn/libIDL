@@ -21,10 +21,10 @@ def sampleMain():
     
     interface TestInterface{
         // Callback registration method
-        void registerCallback(CallbackInterface arg) callback_register;
+        void registerCallback(callback_register CallbackInterface arg);
 
         // Callback unregistration method
-        void unregisterCallback(CallbackInterface arg) callback_unregister;
+        void unregisterCallback(callback_unregister CallbackInterface arg);
         
         int32 dummyMethod(float32 arg);
     };
@@ -34,7 +34,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compile( inputSource )
+    module = env.compileSource( inputSource )
     
     # Get the test interface
     iface = module.getInterface('TestInterface')

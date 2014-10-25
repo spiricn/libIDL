@@ -24,7 +24,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compile( inputSource )
+    module = env.compileSource( inputSource )
     
     # Get the interface from the module
     interface = module.getInterface('TestInterface')

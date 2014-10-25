@@ -14,10 +14,10 @@ def sampleMain():
     inputSource = '''\
     
     enum Animals {
-        CAT,
-        DOG(42),        // explicit (decimal) enum value
-        COW(0xAA),    // explicit (hexa-decimal) enum value
-        HORSE,
+        CAT
+        DOG(42)        // explicit (decimal) enum value
+        COW(0xAA)    // explicit (hexa-decimal) enum value
+        HORSE
     };
     '''
     
@@ -25,7 +25,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compile( inputSource )
+    module = env.compileSource( inputSource )
     
     # Get the enum object from the module
     enum = module.getEnum('Animals')

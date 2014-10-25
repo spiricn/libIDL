@@ -28,7 +28,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compile( inputSource )
+    module = env.compileSource( inputSource )
     
     # Get the structure from the module
     struct = module.getStructure('SampleStruct')
