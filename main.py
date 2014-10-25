@@ -15,19 +15,19 @@ from idl2.parser.TypedefParser import TypedefParser
 
 source = '''
 
-interface Test{
-    void test(boolean asdf, void asdf);
-};
 
-
-'''
-
-'''
 
 enum asdf{
 one( 234 )
 two tree
 
+};
+'''
+
+'''
+
+interface Test{
+    void test(boolean arg1, string arg2);
 };
 
 struct TestStruct {

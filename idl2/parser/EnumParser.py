@@ -63,7 +63,7 @@ class EnumParser(Parser):
             # Has explicit vlaue
             self.eat(Token.PUNCTUATION, '(')
             
-            info.value = self.eat(Token.LIT)
+            info.value = self.eat(Token.LIT).body
             
             self.eat(Token.PUNCTUATION, ')')
             

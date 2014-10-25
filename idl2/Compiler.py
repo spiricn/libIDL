@@ -1,7 +1,9 @@
+from idl2.Enum import Enum
 from idl2.Interface import Interface
-from idl2.lexer.Keywords import KEYWORD_INTERFACE
+from idl2.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM
 from idl2.lexer.Token import Token
 from idl2.lexer.Tokenizer import Tokenizer
+from idl2.parser.EnumParser import EnumParser
 from idl2.parser.InterfaceParser import InterfaceParser
 
 
@@ -22,7 +24,7 @@ class Compiler:
     def compile(self, source):
         types = [
             TypeInfo(Interface, InterfaceParser, Token.KEYWORD, KEYWORD_INTERFACE),
-#             TypeInfo(Interface, EnumParser, Token.KEYWORD, KEYWORD_ENUM),
+            TypeInfo(Enum, EnumParser, Token.KEYWORD, KEYWORD_ENUM),
 #             TypeInfo(Interface, StructParser, Token.KEYWORD, KEYWORD_STRUCT),
 #             TypeInfo(Interface, TypedefParser, Token.KEYWORD, KEYWORD_TYPEDEF),
         ]
