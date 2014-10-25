@@ -8,6 +8,7 @@ from idl2.lexer.Token import Token
 from idl2.lexer.Tokenizer import Tokenizer
 from idl2.parser.EnumParser import EnumParser
 from idl2.parser.InterfaceParser import InterfaceParser
+from idl2.parser.Parser import Parser
 from idl2.parser.StructParser import StructParser
 from idl2.parser.TypedefParser import TypedefParser
 
@@ -36,16 +37,22 @@ class Compiler:
 
         tokens = Tokenizer.tokenize(source)
         
+        parser = Parser(tokens)
+        
         while tokens:
-            token = tokens[0]
-            
             foundParser = False
+            
+            parser.eatAnnotations()
+            
+            token = tokens[0]
             
             for i in types:
                 if i.startTokenID == token.id and i.startTokenName == token.body:
                     info = i.parserClass(tokens).parse()
                     
-                    typeObj = i.typeClass(self.module, info)  
+                    typeObj = i.typeClass(self.module, info)
+                    
+                    typeObj.annotations = parser.getAnnotations()  
                     
                     foundParser = True
                     
@@ -58,7 +65,7 @@ class Compiler:
                     break
                 
             if not foundParser:
-                raise RuntimeError('Did not find parser')
+                raise RuntimeError('Unrecognized token while parsing types %s(%d)' % (token.body, token.id))
 
     def link(self):
         for typeObj in self.types:

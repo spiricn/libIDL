@@ -16,6 +16,7 @@ from idl2.parser.TypedefParser import TypedefParser
 source = '''
 
 
+@Test
 struct TestStruct {
     string field1;
     Surface[65] surfacearray;
@@ -59,7 +60,7 @@ env = Environment()
 # 
 module = env.compileSource(source)
 # 
-print(module.types)
+print(module.types[0].getAnnotation('Tesst'))
  
 # print('-'*80)
 # print('Done')
