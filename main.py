@@ -14,9 +14,12 @@ from idl2.parser.TypedefParser import TypedefParser
 
 
 source = '''
+
+
 struct TestStruct {
     string field1;
-    void[] field2;
+    Surface[65] surfacearray;
+    void[42] field2;
     TestEnum enumField;
 };
 
@@ -28,6 +31,8 @@ enum TestEnum{
     one( 234 )
     two tree
 };
+
+typedef Surface;
 
 '''
 
@@ -50,7 +55,9 @@ typedef Surface;
 env = Environment()
             
 
-env.compileModule('module', source)
+module = env.compileModule('module', source)
+
+print(module.types[0].fields[1].type)
 
 print('-'*80)
 print('Done')

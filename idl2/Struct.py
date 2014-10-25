@@ -5,7 +5,7 @@ class Struct(Type):
     class Field:
         def __init__(self, struct, fieldType, name):
             self.struct = struct
-            self.fieldType = fieldType
+            self.type = fieldType
             self.name = name
 
     def __init__(self, module, info):

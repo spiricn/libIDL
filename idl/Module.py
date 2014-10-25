@@ -17,7 +17,7 @@ class Module(TypeGetter):
             if i.name == typeInfo.name:
                 if typeInfo.arraySize != None:
                     return Array(self, i, typeInfo.arraySize)
-                
-                return i
+                else:
+                    return i
 
         return None

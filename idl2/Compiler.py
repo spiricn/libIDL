@@ -1,12 +1,15 @@
 from idl2.Enum import Enum
 from idl2.Interface import Interface
 from idl2.Struct import Struct
-from idl2.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT
+from idl2.Typedef import Typedef
+from idl2.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
+    KEYWORD_TYPEDEF
 from idl2.lexer.Token import Token
 from idl2.lexer.Tokenizer import Tokenizer
 from idl2.parser.EnumParser import EnumParser
 from idl2.parser.InterfaceParser import InterfaceParser
 from idl2.parser.StructParser import StructParser
+from idl2.parser.TypedefParser import TypedefParser
 
 
 class TypeInfo:
@@ -28,7 +31,7 @@ class Compiler:
             TypeInfo(Interface, InterfaceParser, Token.KEYWORD, KEYWORD_INTERFACE),
             TypeInfo(Enum, EnumParser, Token.KEYWORD, KEYWORD_ENUM),
             TypeInfo(Struct, StructParser, Token.KEYWORD, KEYWORD_STRUCT),
-#             TypeInfo(Interface, TypedefParser, Token.KEYWORD, KEYWORD_TYPEDEF),
+            TypeInfo(Typedef, TypedefParser, Token.KEYWORD, KEYWORD_TYPEDEF),
         ]
 
         tokens = Tokenizer.tokenize(source)
@@ -49,6 +52,8 @@ class Compiler:
                     self.module.env._addType( typeObj )
                     
                     self.types.append( typeObj )
+                    
+                    self.module.types.append( typeObj )
                     
                     break
                 

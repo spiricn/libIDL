@@ -15,16 +15,14 @@ class TypedefParser(Parser):
         
         self.info = TypedefInfo()
         
-        
     def parse(self):
         # Typedef keyword
         self.eat(Token.KEYWORD, KEYWORD_TYPEDEF)
         
         # Type name
-        self.info.typeName = self.eat(Token.ID)
+        self.info.typeName = self.eat(Token.ID).body
         
         self.eat(Token.PUNCTUATION, ';')
         
         return self.info
-
     
