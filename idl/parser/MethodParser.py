@@ -47,6 +47,8 @@ class MethodParser(Parser):
         # List start
         self.eat(Token.PUNCTUATION, '(')
         
+        expectingArg = True
+         
         while True:
             token = self.pop()
             
@@ -54,7 +56,7 @@ class MethodParser(Parser):
                 # End of param list
                 break
             
-            elif token.id == Token.ID:
+            elif expectingArg and token.id == Token.ID:
                 # Argument type
                 argType = token.body
                 
@@ -63,6 +65,11 @@ class MethodParser(Parser):
                 
                 # Create info
                 self.method.args.append( MethodInfo.ArgInfo(argType, argName) )
+                
+                expectingArg = False
+                
+            elif not expectingArg and token.id == Token.PUNCTUATION and token.body == ',':
+                expectingArg = True
                 
             else:
                 raise RuntimeError('Invalid token while parsing argument list %d' % token.id)

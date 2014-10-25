@@ -1,16 +1,17 @@
 import re
 
-from idl.lexer2.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM
+from idl.lexer2.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT
 from idl.lexer2.Token import Token
 from idl.lexer2.Tokenizer import Tokenizer
 from idl.parser.EnumParser import EnumParser
 from idl.parser.InterfaceParser import InterfaceParser
+from idl.parser.StructParser import StructParser
 
 
 source = '''
 
 interface Test{
-    void test(int asdf, int arg2);
+    void test(int asdf, int ar);
 };
 
 
@@ -18,6 +19,10 @@ enum asdf{
 one( 234 )
 two tree
 
+};
+
+struct TestStruct {
+    int field1;
 };
 
 '''
@@ -41,7 +46,7 @@ class TypeInfo:
 types = [
     TypeInfo(Interface, InterfaceParser, Token.KEYWORD, KEYWORD_INTERFACE),
     TypeInfo(Interface, EnumParser, Token.KEYWORD, KEYWORD_ENUM),
-#     TypeInfo(Interface, InterfaceParser, Token.KEYWORD, KEYWORD_STRCUT),         
+    TypeInfo(Interface, StructParser, Token.KEYWORD, KEYWORD_STRUCT),         
 ]
 tokens = Tokenizer.tokenize(source)
 
