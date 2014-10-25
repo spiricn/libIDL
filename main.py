@@ -50,15 +50,15 @@ typedef Surface;
 
 # import re
 
-# print( re.compile('').match('Te2stEnum') )
+# print([str(i) for i in re.compile('\s').finditer('Te 2s tE num')])
 
 env = Environment()
-            
-
-module = env.compileModule('module', source)
-
-print(module.types[0].fields[1].type)
-
-print('-'*80)
-print('Done')
+#             
+# 
+module = env.compileSource(source)
+# 
+print(module.types)
+ 
+# print('-'*80)
+# print('Done')
 

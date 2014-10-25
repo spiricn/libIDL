@@ -6,9 +6,6 @@ class TypeGetter(object):
     Helper class used for type filtering
     '''
     
-    def __init__(self):
-        pass
-
     def getTypes(self, objType):
         '''
         Gets a list of all the objects of specific type

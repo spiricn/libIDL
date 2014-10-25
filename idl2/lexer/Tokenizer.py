@@ -18,8 +18,8 @@ class Tokenizer:
         return Tokenizer(source)._tokenize()
     
     def _tokenize(self):
-        # Split an input string to a list of unkown tokens (i.e. tokens split by whitespace)
-        self._createUnkowns()
+        # Create the initial unkown token from the source
+        self.tokens = [ Token(Token.UNKOWN, self.source) ]
         
         while not self._done():
             if Tokenizer.DEBUG:
@@ -57,7 +57,7 @@ class Tokenizer:
         if not searchResult:
             raise RuntimeError('No tokens in %r' % token.body)
         
-        tokenId, tokenMatches = searchResult
+        tokenId, tokenMatches, keep = searchResult
         
         newTokenSpans = []
         
@@ -68,25 +68,28 @@ class Tokenizer:
             
             # Check for tokens before the first match
             if index == 0 and span[0] > 0:
-                newTokenSpans.append( (True, (0, span[0]) ) )
+                newTokenSpans.append( (True, (0, span[0]), True) )
                 
             # Check for tokens before last match and this one
             if index > 0 and len(newTokenSpans):
-                isUnkown, prevSpan = newTokenSpans[-1]
+                isUnkown, prevSpan, keepToken = newTokenSpans[-1]
                      
                 if span[0] != prevSpan[1]:
                     # There's an unkown token between the match and the previous token
-                    newTokenSpans.append( (True, (prevSpan[1], span[1] - 1) ) )
+                    newTokenSpans.append( (True, (prevSpan[1], span[1] - 1), True ) )
 
             # Match
-            newTokenSpans.append( (False, span) )
+            newTokenSpans.append( (False, span, keep) )
             
             # After match 
             if index == len(tokenMatches) - 1 and span[1] <= len(token.body) - 1:
                 # There is an unkown token after the match
-                newTokenSpans.append( (True, (span[1], len(token.body)) ) )
+                newTokenSpans.append( (True, (span[1], len(token.body)), True) )
         
-        for isUnkown, indices in newTokenSpans:
+        for isUnkown, indices, keepNewToken in newTokenSpans:
+            if not keepNewToken:
+                continue
+            
             start, end = indices
             
             sliceBody = token.body[start:end]
@@ -113,28 +116,3 @@ class Tokenizer:
                 return False
             
         return True
-
-    def _createUnkowns(self):
-        tokens = []
-        
-        # Split by spaces
-        tokens += self.source.split(' ')
-        
-        # Split by tabs
-        res = []
-        
-        for i in tokens:
-            for j in i.split('\t'):
-                res.append(j)
-                
-        tokens = res
-                
-        res = []
-        
-        for i in tokens:
-            for j in i.split('\n'):
-                res.append(j)
-                
-        tokens = res
-                
-        self.tokens += [Token(Token.UNKOWN, i) for i in res if i]
