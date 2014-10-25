@@ -9,24 +9,44 @@ from idl.Compiler import Compiler
 
 class Environment(TypeGetter):
     class BuildEntry:
+        '''
+        Helper class used for compiling.
+        '''
+        
         def __init__(self, moduleName, source, filePath):
             self.moduleName = moduleName
             self.source = source
             self.filePath = filePath
             
     def __init__(self):
-        self.types = []
+        self._types = []
         
         # Add primitives to the list
         for typeId in Type.primitives:
-            self.types.append( Type(self, typeId) )
+            self._types.append( Type(self, typeId) )
             
         self.modules = []
+        
+    @property
+    def types(self):
+        '''
+        List of all types defined in this environment.
+        '''
+        
+        return self._types
             
     def _addType(self, typeObj):
-        self.types.append( typeObj )
+        '''
+        Adds a new type to the list of types.
+        '''
+        
+        self._types.append( typeObj )
         
     def getModule(self, name):
+        '''
+        Gets a module object with the given name.
+        '''
+        
         for i in self.modules:
             if i.name == name:
                 return i
@@ -34,6 +54,16 @@ class Environment(TypeGetter):
         return None
 
     def compileSource(self, source, moduleName=None):
+        '''
+        Compiles given source code into a module with the given name.
+        
+        @param source: Source code
+        @param moduleName: Name of the module (must be unique if provided).
+        
+        @return: Module object
+        '''
+        
+        # If not module name is given, generate one
         if not moduleName:
             # Generate name
             n = 0
@@ -46,11 +76,17 @@ class Environment(TypeGetter):
                 else:
                     break
                 
+        # Compile source code
         modules = self._build([Environment.BuildEntry(moduleName, source, None)])
         
         return modules[0]
                 
     def _build(self, entries):
+        '''
+        Compiles a list of build entries.
+        '''
+        
+        # Modules created in this run
         createdModules = []
         
         for entry in entries:
@@ -79,14 +115,25 @@ class Environment(TypeGetter):
         return createdModules
 
     def compileFiles(self, paths):
+        '''
+        Compiles a list of files. File are directly translated into module names (e.g. 'my_module.idl' becomes 'my_module'
+        
+        @param paths: List of paths of source files.
+        
+        @return: List of modules created.
+        '''
+        
+        # Build entry list
         entries = []
         
         for path in paths:
+            # Try to open the file
             try:
                 fileObj = open(path, 'r')
             except Exception as e:
                 raise RuntimeError('Error opening idl file %r:\n %s' % (path, str(e)))
             
+            # Get the source code
             source = fileObj.read()
             
             fileObj.close()
@@ -97,13 +144,22 @@ class Environment(TypeGetter):
             # Discard extension
             moduleName = os.path.splitext(moduleName)[0]
             
+            # Add it to the list of build entries
             entries.append( Environment.BuildEntry(moduleName, source, path) )
             
-            
+        # Actually compile the sources
         return self._build( entries )        
         
     
     def compileFile(self, path):
+        '''
+        Compiles a single file. File name is translated into module name.
+        
+        @param path: Path to the source code.
+        
+        @return: Compiled module.
+        '''
+        
         modules = self.compileFiles([path])
         
         return modules[0]

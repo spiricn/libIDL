@@ -12,6 +12,7 @@ class EnumInfo:
     def __init__(self):
         self.name = ''
         self.fields = []
+        
 
 class EnumParser(Parser):
     def __init__(self, tokens):

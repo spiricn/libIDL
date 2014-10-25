@@ -3,7 +3,7 @@ from idl.Type import Type
 
 class TypeInstance(object):
     def __init__(self, baseType, info):
-        self.type = baseType
+        self._type = baseType
         
         modStrToInt = {
             'const' : Type.MOD_CONST,
@@ -20,30 +20,54 @@ class TypeInstance(object):
                     if i == j:
                         raise RuntimeError('Duplicate argument modifier %r' % i) 
         
-        self.mods = 0
+        self._mods = 0
         
         for mod in info.mods:
             if mod not in modStrToInt:
                 raise RuntimeError('Unrecognized argument modifier %r' % mod)
             
-            self.mods |= modStrToInt[mod]
+            self._mods |= modStrToInt[mod]
             
         
         
-        self.isArray = info.arraySize != None
+        self._isArray = info.arraySize != None
         
-        self.arraySize = info.arraySize
+        self._arraySize = info.arraySize
         
     @property
+    def mods(self):
+        '''
+        Type modifier integer bit field.
+        '''
+        
+        return self._mods
+    
+    @property
+    def isArray(self):
+        return self._isArray
+    
+    @property
+    def arraySize(self):
+        return self._arraySize
+    
+    @property
     def name(self):
-        return self.type.name
+        '''
+        Name of the type this instance is associated with.
+        '''
+        
+        return self._type.name
     
     @property
     def id(self):
-        return self.type.id
+        '''
+        Id of the type this instance is associated with.
+        '''
+        
+        return self._type.id
         
     def mod(self, modId):
-        return False if self.mods & modId == 0 else True
+        return False if self._mods & modId == 0 else True
             
     def __eq__(self, other):
-        return self.type == other
+        return self._type == other

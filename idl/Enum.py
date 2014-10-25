@@ -7,18 +7,43 @@ class Enum(Type):
         def __init__(self, enum, name, value):
             Annotatable.__init__(self)
             
-            self.enum = enum
-            self.name = name
-            self.value = value
+            self._enum = enum
+            self._name = name
+            self._value = value
+            
+            
+        @property
+        def enum(self):
+            '''
+            Enumeration type this field is associated with.
+            '''
+            
+            return self._enum
+        
+        @property
+        def name(self):
+            '''
+            Field name.
+            '''
+            
+            return self._name
+        
+        @property
+        def value(self):
+            '''
+            Integer field value.
+            '''
+            
+            return self._value
             
     def __init__(self, module, info):
         Type.__init__(self, module, Type.ENUM, info.name)
 
-        self.info = info
+        self._info = info
         
-        self.fields = []
+        self._fields = []
         
-        for field in self.info.fields:
+        for field in self._info.fields:
             
             if field.value:
                 # Evaluate value
@@ -33,7 +58,7 @@ class Enum(Type):
                 while True:
                     taken = False
                     
-                    for i in self.fields:
+                    for i in self._fields:
                         if i.value == value:
                             taken = True
                             value += 1
@@ -51,10 +76,18 @@ class Enum(Type):
             # Annotations
             newField._assignAnnotations(field.annotations)
             
-            self.fields.append(newField)
+            self._fields.append(newField)
 
+    @property
+    def fields(self):
+        '''
+        List of enumeration fields.
+        '''
+        
+        return self._fields
+    
     def getField(self, name):
-        for field in self.fields:
+        for field in self._fields:
             if field.name == name:
                 return field
             

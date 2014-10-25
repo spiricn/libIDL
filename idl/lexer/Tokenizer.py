@@ -10,9 +10,9 @@ class Tokenizer:
     DEBUG = False
     
     def __init__(self, source):
-        self.source = source
+        self._source = source
         
-        self.tokens = []
+        self._tokens = []
         
     @staticmethod
     def tokenize(source):
@@ -23,12 +23,12 @@ class Tokenizer:
     
     def _preprocess(self):
         # Replace CR LF with LF
-        self.source = self.source.replace('\r\n', '\n')
+        self._source = self._source.replace('\r\n', '\n')
         
         res = ''
         
         # Remove escaped new lines
-        self.source = self.source.replace('\\\n', '')
+        self._source = self._source.replace('\\\n', '')
         
         # Remove comment blocks
         blockComment = re.compile(  r'/\*' + r'.*?' + r'\*/', re.DOTALL )
@@ -36,14 +36,14 @@ class Tokenizer:
         match = True
         
         while match:
-            match = blockComment.search(self.source)
+            match = blockComment.search(self._source)
             
             if match:
                 span = match.span()
                 
-                self.source = self.source[:span[0]] + self.source[span[1]:]
+                self._source = self._source[:span[0]] + self._source[span[1]:]
 
-        for line in self.source.split('\n'):
+        for line in self._source.split('\n'):
             # Remove comments
             commentStart = line.find('//')
             
@@ -59,23 +59,23 @@ class Tokenizer:
         # Remove ending new line
         res = res[:-1]
         
-        self.source = res
+        self._source = res
     
     def _tokenize(self):
         self._preprocess()
         
         # Create the initial unkown token from the source
-        self.tokens = [ Token(Token.UNKOWN, self.source) ]
+        self._tokens = [ Token(Token.UNKOWN, self._source) ]
         
         while not self._done():
             if Tokenizer.DEBUG:
                 print('='*80)
-                print('IN: ', [str(i) for i in self.tokens])
+                print('IN: ', [str(i) for i in self._tokens])
                 
             currIndex, currToken = self._findUnkown()
             
             # Remove the current unkown token
-            self.tokens.pop(currIndex)
+            self._tokens.pop(currIndex)
             
             newTokens = self._splitUnkown(currToken)
             
@@ -84,12 +84,12 @@ class Tokenizer:
             
             for index, token in enumerate(newTokens):
                 # Insert the identified / new unkown tokens in its place
-                self.tokens.insert(currIndex + index, token)
+                self._tokens.insert(currIndex + index, token)
                 
             if Tokenizer.DEBUG:
-                print('OUT: ', [str(i) for i in self.tokens])
+                print('OUT: ', [str(i) for i in self._tokens])
                 
-        return self.tokens
+        return self._tokens
             
     def _splitUnkown(self, token):
         '''
@@ -150,14 +150,14 @@ class Tokenizer:
         return newTokens
     
     def _findUnkown(self):
-        for index, token in enumerate(self.tokens):
+        for index, token in enumerate(self._tokens):
             if token.id == Token.UNKOWN:
                 return (index, token)
             
         return None
         
     def _done(self):
-        for token in self.tokens:
+        for token in self._tokens:
             if token.id == Token.UNKOWN:
                 return False
             

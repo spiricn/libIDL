@@ -7,19 +7,51 @@ class Struct(Type):
         def __init__(self, struct, fieldType, name):
             Annotatable.__init__(self)
             
-            self.struct = struct
-            self.type = fieldType
-            self.name = name
+            self._struct = struct
+            self._type = fieldType
+            self._name = name
+            
+        @property
+        def struct(self):
+            '''
+            Structure type this field is associated with.
+            '''
+            
+            return self._struct
+        
+        @property
+        def type(self):
+            '''
+            Field type.
+            '''
+            
+            return self._type
+        
+        @property
+        def name(self):
+            '''
+            Field name.
+            '''
+            
+            return self._name
 
     def __init__(self, module, info):
         Type.__init__(self, module, Type.STRUCTURE, info.name)
 
-        self.info = info
+        self._info = info
 
-        self.fields = []
+        self._fields = []
         
+    @property
+    def fields(self):
+        '''
+        List of fields defined in this structure.
+        '''
+        
+        return self._fields
+    
     def _link(self):
-        for field in self.info.fields:
+        for field in self._info.fields:
             # Resolve field type
             fieldType = self.module._resolveType(field.typeInfo)
             
@@ -29,11 +61,11 @@ class Struct(Type):
             newField = Struct.Field(self, fieldType, field.name)
             
             # Duplicate check
-            for i in self.fields:
+            for i in self._fields:
                 if i.name == newField.name:
                     raise RuntimeError('Duplicate field name %r in structure %r' % (field.name, self.name))
                 
             # Annotations
             newField._assignAnnotations(field.annotations)
                 
-            self.fields.append(newField)
+            self._fields.append(newField)
