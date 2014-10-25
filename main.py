@@ -1,11 +1,13 @@
 import re
 
-from idl.lexer2.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT
+from idl.lexer2.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
+    KEYWORD_TYPEDEF
 from idl.lexer2.Token import Token
 from idl.lexer2.Tokenizer import Tokenizer
 from idl.parser.EnumParser import EnumParser
 from idl.parser.InterfaceParser import InterfaceParser
 from idl.parser.StructParser import StructParser
+from idl.parser.TypedefParser import TypedefParser
 
 
 source = '''
@@ -24,6 +26,8 @@ two tree
 struct TestStruct {
     int field1;
 };
+
+typedef Surface;
 
 '''
 
@@ -46,8 +50,10 @@ class TypeInfo:
 types = [
     TypeInfo(Interface, InterfaceParser, Token.KEYWORD, KEYWORD_INTERFACE),
     TypeInfo(Interface, EnumParser, Token.KEYWORD, KEYWORD_ENUM),
-    TypeInfo(Interface, StructParser, Token.KEYWORD, KEYWORD_STRUCT),         
+    TypeInfo(Interface, StructParser, Token.KEYWORD, KEYWORD_STRUCT),
+    TypeInfo(Interface, TypedefParser, Token.KEYWORD, KEYWORD_TYPEDEF),
 ]
+
 tokens = Tokenizer.tokenize(source)
 
 while tokens:
