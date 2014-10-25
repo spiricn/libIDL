@@ -38,7 +38,7 @@ class MethodParser(Parser):
 
     def _parseHead(self):
         # Return type
-        self.method.returnTypeInfo = self.getTypeInfo()
+        self.method.returnTypeInfo = self.eatTypeInfo()
         
         # Method name
         self.method.name = self.eat(Token.ID).body
@@ -60,7 +60,7 @@ class MethodParser(Parser):
             
             elif expectingArg and token.id == Token.ID:
                 # Argument type
-                argTypeInfo = self.getTypeInfo()
+                argTypeInfo = self.eatTypeInfo()
                 
                 # Argument name
                 argName = self.eat(Token.ID).body

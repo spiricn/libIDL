@@ -41,6 +41,8 @@ class StructParser(Parser):
         self.eat(Token.PUNCTUATION, '{')
         
         while True:
+            self.eatAnnotations()
+            
             token = self.next()
             
             if token.id == Token.ID:
@@ -51,12 +53,17 @@ class StructParser(Parser):
                 self.pop()
                 break
             
+            else:
+                raise RuntimeError('Unexpected token %r(%d) while parsing structure %r' % (token.body, token.id, self.info.name))
+            
     def _parseField(self):
         info = StructInfo.FieldInfo()
         
-        info.typeInfo = self.getTypeInfo()
+        info.typeInfo = self.eatTypeInfo()
         
         info.name = self.eat(Token.ID).body
+        
+        info.annotations = self.getAnnotations()
         
         self.info.fields.append( info )
         

@@ -40,6 +40,8 @@ class EnumParser(Parser):
         self.eat(Token.PUNCTUATION, '{')
         
         while True:
+            self.eatAnnotations()
+            
             token = self.next()
             
             if token.id == Token.PUNCTUATION and token.body == '}':
@@ -67,4 +69,6 @@ class EnumParser(Parser):
             
             self.eat(Token.PUNCTUATION, ')')
             
+        info.annotations = self.getAnnotations()
+        
         self.info.fields.append(info)

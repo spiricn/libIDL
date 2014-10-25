@@ -2,7 +2,7 @@ import unittest
 
 from idl.Type import Type
 
-from idl.Environment import Environment 
+from idl2.Environment import Environment 
 from test.TestBase import TestBase
 
 

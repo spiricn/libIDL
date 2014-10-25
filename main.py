@@ -24,10 +24,12 @@ struct TestStruct {
 };
 
 interface TestIface{
+@name=val
     void[45] test(TestStruct [423] arg1, string arg2);
 };
 
 enum TestEnum{
+@FieldAnnotation=132
     one( 234 )
     two tree
 };

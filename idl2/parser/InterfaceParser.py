@@ -36,6 +36,8 @@ class InterfaceParser(Parser):
         self.eat(Token.PUNCTUATION , '{')
         
         while True:
+            self.eatAnnotations()
+            
             token = self.next()
 
             # End of body ?
@@ -45,5 +47,7 @@ class InterfaceParser(Parser):
 
             # Parse method
             method = MethodParser(self.tokens).parse()
+            
+            method.annotations = self.getAnnotations()
             
             self.interface.methods.append( method )
