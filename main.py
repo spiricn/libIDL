@@ -8,8 +8,9 @@ from idl.parser.InterfaceParser import InterfaceParser
 
 
 source = '''
+
 interface Test{
-    void test(int asdf);
+    void test(int asdf, int arg2);
 };
 
 
