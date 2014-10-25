@@ -18,10 +18,10 @@ class Struct(Type):
     def _link(self):
         for field in self.info.fields:
             # Resolve field type
-            fieldType = self.module.env.resolveType(field.typeName)
+            fieldType = self.module._resolveType(field.typeInfo)
             
             if not fieldType:
-                raise RuntimeError('Could not resolve field %r type %r of structure %r' % (field.name, field.typeName, self.name))
+                raise RuntimeError('Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.name, self.name))
             
             newField = Struct.Field(self, fieldType, field.name)
             

@@ -4,14 +4,14 @@ from idl2.parser.Parser import Parser
 
 class MethodInfo:
     class ArgInfo:
-        def __init__(self, argTypeName, argName):
-            self.typeName = argTypeName
+        def __init__(self, argTypeInfo, argName):
+            self.typeInfo = argTypeInfo
             self.name = argName
         
     def __init__(self):
         self.args = []
         self.name = ''
-        self.returnTypeName = ''
+        self.returnTypeInfo = Parser.TypeInfo()
 
 class MethodParser(Parser):
     class Test:
@@ -38,7 +38,7 @@ class MethodParser(Parser):
 
     def _parseHead(self):
         # Return type
-        self.method.returnTypeName = self.eat(Token.ID).body
+        self.method.returnTypeInfo = self.getTypeInfo()
         
         # Method name
         self.method.name = self.eat(Token.ID).body
@@ -50,26 +50,29 @@ class MethodParser(Parser):
         expectingArg = True
          
         while True:
-            token = self.pop()
+            token = self.next()
             
             if token.id == Token.PUNCTUATION and token.body == ')':
                 # End of param list
+                self.pop()
+                
                 break
             
             elif expectingArg and token.id == Token.ID:
                 # Argument type
-                argType = token.body
+                argTypeInfo = self.getTypeInfo()
                 
                 # Argument name
                 argName = self.eat(Token.ID).body
                 
                 # Create info
-                self.method.args.append( MethodInfo.ArgInfo(argType, argName) )
+                self.method.args.append( MethodInfo.ArgInfo(argTypeInfo, argName) )
                 
                 expectingArg = False
                 
             elif not expectingArg and token.id == Token.PUNCTUATION and token.body == ',':
                 expectingArg = True
+                self.pop()
                 
             else:
                 raise RuntimeError('Invalid token while parsing argument list %d' % token.id)

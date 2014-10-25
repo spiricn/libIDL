@@ -16,12 +16,12 @@ from idl2.parser.TypedefParser import TypedefParser
 source = '''
 struct TestStruct {
     string field1;
-    void field2;
+    void[] field2;
     TestEnum enumField;
 };
 
 interface TestIface{
-    void test(TestStruct arg1, string arg2);
+    void[45] test(TestStruct [423] arg1, string arg2);
 };
 
 enum TestEnum{
@@ -51,4 +51,7 @@ env = Environment()
             
 
 env.compileModule('module', source)
+
+print('-'*80)
+print('Done')
 

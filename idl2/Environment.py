@@ -14,13 +14,6 @@ class Environment:
             
         self.modules = []
             
-    def resolveType(self, name):
-        for i in self.types:
-            if i.name == name:
-                return i
-
-        return None
-    
     def _addType(self, typeObj):
         self.types.append( typeObj )
 

@@ -6,7 +6,7 @@ from idl2.parser.Parser import Parser
 class StructInfo:
     class FieldInfo:
         def __init__(self):
-            self.typeName = ''
+            self.typeInfo = Parser.TypeInfo()
             self.name = ''
 
     def __init__(self):
@@ -54,7 +54,7 @@ class StructParser(Parser):
     def _parseField(self):
         info = StructInfo.FieldInfo()
         
-        info.typeName = self.eat(Token.ID).body
+        info.typeInfo = self.getTypeInfo()
         
         info.name = self.eat(Token.ID).body
         

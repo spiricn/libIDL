@@ -23,17 +23,17 @@ class Method:
 
     def _link(self):
         # Resolve return type
-        self.returnType = self.interface.module.env.resolveType(self.info.returnTypeName)
+        self.returnType = self.interface.module._resolveType(self.info.returnTypeInfo)
         
         if not self.returnType:
-            raise RuntimeError('Could not resolve return type %r of method %s::%s' % (self.info.returnTypeName, self.interface.name, self.name))
+            raise RuntimeError('Could not resolve return type %r of method %s::%s' % (self.info.returnTypeInfo.name, self.interface.name, self.name))
         
         # Resolve args
         for index, arg in enumerate(self.info.args):
-            argType = self.interface.module.env.resolveType(arg.typeName)
+            argType = self.interface.module._resolveType(arg.typeInfo)
             
             if not argType:
-                raise RuntimeError('Could not resolve #%d argument type %r of method %s::%s' % (index, arg.typeName, self.interface.name, self.name))
+                raise RuntimeError('Could not resolve #%d argument type %r of method %s::%s' % (index, arg.typeInfo.name, self.interface.name, self.name))
             
             newArg = Method.Argument(self, argType, arg.name)
             

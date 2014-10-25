@@ -1,4 +1,12 @@
+from idl2.lexer.Token import Token
+
+
 class Parser(object):
+    class TypeInfo:
+        def __init__(self, name='', arraySize=None):
+            self.name = name
+            self.arraySize = arraySize
+             
     def __init__(self, tokens):
         self.tokens = tokens
         
@@ -25,3 +33,27 @@ class Parser(object):
     
     def next(self):
         return self.tokens[0]
+    
+    def getArraySize(self):
+        if self.next().id == Token.PUNCTUATION and self.next().body == '[':
+            self.eat(Token.PUNCTUATION)
+            
+            size = -1
+            
+            # Evaluate array size if given
+            if self.next().id == Token.LIT:
+                size = eval(self.pop().body)
+                
+            self.eat(Token.PUNCTUATION, ']')
+            
+            return size
+        
+        else:
+            return None
+        
+    def getTypeInfo(self):
+        return Parser.TypeInfo(self.eat(Token.ID).body, self.getArraySize())
+    
+    def _debug(self, numTokens=1):
+        print([str(self.tokens[index]) for index in range(numTokens)])
+        
