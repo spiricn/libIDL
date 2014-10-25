@@ -1,3 +1,7 @@
+import re
+
+from idl.lexer.Utils import WHITESPACE_LINE_MATCH
+
 from idl2.lexer.Token import Token
 from idl2.lexer.TokenSearch import TokenSearch
 
@@ -17,7 +21,49 @@ class Tokenizer:
             
         return Tokenizer(source)._tokenize()
     
+    def _preprocess(self):
+        # Replace CR LF with LF
+        self.source = self.source.replace('\r\n', '\n')
+        
+        res = ''
+        
+        # Remove escaped new lines
+        self.source = self.source.replace('\\\n', '')
+        
+        # Remove comment blocks
+        blockComment = re.compile(  r'/\*' + r'.*?' + r'\*/', re.DOTALL )
+        
+        match = True
+        
+        while match:
+            match = blockComment.search(self.source)
+            
+            if match:
+                span = match.span()
+                
+                self.source = self.source[:span[0]] + self.source[span[1]:]
+
+        for line in self.source.split('\n'):
+            # Remove comments
+            commentStart = line.find('//')
+            
+            if commentStart != -1:
+                line = line[:commentStart]
+                
+            # Remove empty lines
+            if re.compile(WHITESPACE_LINE_MATCH).match(line):
+                continue
+
+            res += '%s\n' % line
+
+        # Remove ending new line
+        res = res[:-1]
+        
+        self.source = res
+    
     def _tokenize(self):
+        self._preprocess()
+        
         # Create the initial unkown token from the source
         self.tokens = [ Token(Token.UNKOWN, self.source) ]
         
