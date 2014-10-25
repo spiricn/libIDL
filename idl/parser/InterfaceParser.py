@@ -1,7 +1,8 @@
 from idl.lexer2.Keywords import KEYWORD_INTERFACE
-from idl.lexer2.MethodParser import MethodParser
-from idl.lexer2.Parser import Parser
 from idl.lexer2.Token import Token
+from idl.parser.MethodParser import MethodParser
+from idl.parser.Parser import Parser
+
 
 class InterfaceInfo:
     def __init__(self):
@@ -19,31 +20,27 @@ class InterfaceParser(Parser):
         
         self._parseBody()
         
-        self.assertNext(Token.PUNCTUATION, ';')
-        self.pop()
+        self.eat(Token.PUNCTUATION, ';')
         
         return self.interface
         
     def _parseHead(self):
         # Check start keyword
-        self.assertNext(Token.KEYWORD , KEYWORD_INTERFACE)
-        self.tokens.pop(0)
+        self.eat(Token.KEYWORD , KEYWORD_INTERFACE)
         
         # Interface name
-        self.assertNext(Token.ID)
-        self.interface.name = self.tokens.pop(0).body
+        self.interface.name = self.eat(Token.ID).body
     
     def _parseBody(self):
         # Body start
-        self.assertNext(Token.PUNCTUATION , '{')
-        self.pop()
+        self.eat(Token.PUNCTUATION , '{')
         
         while True:
-            token = self.tokens[0]
+            token = self.next()
 
             # End of body ?
             if token.id == Token.PUNCTUATION and token.body == '}':
-                self.tokens.pop(0)
+                self.pop()
                 break
 
             # Parse method

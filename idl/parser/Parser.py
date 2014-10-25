@@ -15,6 +15,11 @@ class Parser(object):
             if body != None and body != self.next().body:
                 raise RuntimeError('Invalid token while parsing; expected %r got %r' % (body, self.next().body))
             
+    def eat(self, typeId, body=None):
+        self.assertNext(typeId, body)
+        
+        return self.pop()
+        
     def pop(self):
         return self.tokens.pop(0)
     

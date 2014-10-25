@@ -1,5 +1,6 @@
-from idl.lexer2.Parser import Parser
 from idl.lexer2.Token import Token
+from idl.parser.Parser import Parser
+
 
 class MethodInfo:
     class ArgInfo:
@@ -30,27 +31,21 @@ class MethodParser(Parser):
         self._parseArgs()
         
         # Tail
-        self.assertNext(Token.PUNCTUATION , ';')
-        self.pop()
+        self.eat(Token.PUNCTUATION , ';')
         
         return self.method
         
 
     def _parseHead(self):
         # Return type
-        self.assertNext(Token.ID)
-        
-        self.method.returnType = self.pop().body
+        self.method.returnType = self.eat(Token.ID).body
         
         # Method name
-        self.assertNext(Token.ID)
-        
-        self.method.name = self.pop().body
+        self.method.name = self.eat(Token.ID).body
         
     def _parseArgs(self):
         # List start
-        self.assertNext(Token.PUNCTUATION, '(')
-        self.pop()
+        self.eat(Token.PUNCTUATION, '(')
         
         while True:
             token = self.pop()
@@ -64,8 +59,7 @@ class MethodParser(Parser):
                 argType = token.body
                 
                 # Argument name
-                self.assertNext(Token.ID)
-                argName = self.pop().body
+                argName = self.eat(Token.ID).body
                 
                 # Create info
                 self.method.args.append( MethodInfo.ArgInfo(argType, argName) )
