@@ -25,6 +25,9 @@ class StructParser(Parser):
         self._parseBody()
         
         self.eat(Token.PUNCTUATION, ';')
+        
+        return self.info
+    
 
     def _parseHead(self):
         # Struct keyword

@@ -17,22 +17,23 @@ source = '''
 
 
 
-enum asdf{
-one( 234 )
-two tree
-
+struct TestStruct {
+    string field1;
+    void field2;
 };
 '''
 
 '''
+
+one( 234 )
+two tree
+
+};
 
 interface Test{
     void test(boolean arg1, string arg2);
 };
 
-struct TestStruct {
-    int field1;
-};
 
 typedef Surface;
 '''
