@@ -14,37 +14,41 @@ from idl2.parser.TypedefParser import TypedefParser
 
 
 source = '''
-
-
-
 struct TestStruct {
     string field1;
     void field2;
+    TestEnum enumField;
 };
+
+interface TestIface{
+    void test(TestStruct arg1, string arg2);
+};
+
+enum TestEnum{
+    one( 234 )
+    two tree
+};
+
 '''
 
 '''
 
-one( 234 )
-two tree
 
-};
 
-interface Test{
-    void test(boolean arg1, string arg2);
-};
+
 
 
 typedef Surface;
 '''
 
-        
-class Enum:
-    def __init__(self, info):
-        self.info = info
 
+
+# import re
+
+# print( re.compile('').match('Te2stEnum') )
 
 env = Environment()
             
 
 env.compileModule('module', source)
+

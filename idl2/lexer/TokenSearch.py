@@ -17,12 +17,12 @@ class TokenSearch:
                 [re.compile('\\;'), Token.PUNCTUATION],
                 [re.compile('\\='), Token.PUNCTUATION],
                 [re.compile('\\,'), Token.PUNCTUATION],
-                [re.compile( KEYWORD_INTERFACE ), Token.KEYWORD],
-                [re.compile(KEYWORD_ENUM), Token.KEYWORD],
-                [re.compile(KEYWORD_STRUCT), Token.KEYWORD],
-                [re.compile(KEYWORD_TYPEDEF), Token.KEYWORD],
-                [re.compile('[a-zA-Z]+[a-zA-Z0-9_]'), Token.ID],
-                [re.compile('[0-9]+'), Token.LIT],
+                [re.compile( '^' + KEYWORD_INTERFACE + '$' ), Token.KEYWORD],
+                [re.compile('^' + KEYWORD_ENUM  + '$'), Token.KEYWORD],
+                [re.compile('^' + KEYWORD_STRUCT  + '$'), Token.KEYWORD],
+                [re.compile('^' + KEYWORD_TYPEDEF + '$' ), Token.KEYWORD],
+                [re.compile('^[a-zA-Z]+[a-zA-Z0-9_]*$'), Token.ID],
+                [re.compile('^[0-9]+$'), Token.LIT],
     ]
     
     @staticmethod
