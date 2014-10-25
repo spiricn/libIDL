@@ -1,6 +1,7 @@
-from idl.lexer2.Keywords import KEYWORD_TYPEDEF
-from idl.lexer2.Token import Token
-from idl.parser.Parser import Parser
+from idl2.lexer.Token import Token
+
+from idl2.lexer.Keywords import KEYWORD_TYPEDEF
+from idl2.parser.Parser import Parser
 
 
 class TypedefInfo:

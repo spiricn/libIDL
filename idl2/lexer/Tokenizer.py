@@ -1,5 +1,5 @@
-from idl.lexer2.Token import Token
-from idl.lexer2.TokenSearch import TokenSearch
+from idl2.lexer.Token import Token
+from idl2.lexer.TokenSearch import TokenSearch
 
 
 class Tokenizer:

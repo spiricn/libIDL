@@ -1,8 +1,8 @@
 import re
 
-from idl.lexer2.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
+from idl2.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
     KEYWORD_TYPEDEF
-from idl.lexer2.Token import Token
+from idl2.lexer.Token import Token
 
 
 class TokenSearch:
