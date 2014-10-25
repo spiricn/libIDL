@@ -43,7 +43,7 @@ class EnumParser(Parser):
         while True:
             self.eatAnnotations()
             
-            token = self.next()
+            token = self.next
             
             if token.id == Token.PUNCTUATION and token.body == '}':
                 # End of enumeration
@@ -62,7 +62,7 @@ class EnumParser(Parser):
         info.name = self.pop().body
         
         # Field declaration
-        if self.tokens and self.next().id == Token.PUNCTUATION and self.next().body == '(':
+        if self.tokens and self.next.id == Token.PUNCTUATION and self.next.body == '(':
             # Has explicit vlaue
             self.eat(Token.PUNCTUATION, '(')
             

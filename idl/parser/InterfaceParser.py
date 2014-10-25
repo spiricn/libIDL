@@ -38,7 +38,7 @@ class InterfaceParser(Parser):
         while True:
             self.eatAnnotations()
             
-            token = self.next()
+            token = self.next
 
             # End of body ?
             if token.id == Token.PUNCTUATION and token.body == '}':

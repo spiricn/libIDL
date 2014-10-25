@@ -57,7 +57,7 @@ class Compiler:
             parser.eatAnnotations()
             
             for i in types:
-                if i.startTokenID == parser.next().id and i.startTokenName == parser.next().body:
+                if i.startTokenID == parser.next.id and i.startTokenName == parser.next.body:
                     # Instantiate a parser class and create type info
                     info = i.parserClass(tokens).parse()
                     
@@ -82,7 +82,7 @@ class Compiler:
                 
             if not foundParser:
                 # Found an unexpected token (no parsers found)
-                raise RuntimeError('Unrecognized token while parsing types %s(%d)' % (parser.next().body, parser.next().id))
+                raise RuntimeError('Unrecognized token while parsing types %s(%d)' % (parser.next.body, parser.next.id))
 
     def link(self):
         # Just iterate over all the types we created and link them

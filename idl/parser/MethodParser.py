@@ -50,7 +50,7 @@ class MethodParser(Parser):
         expectingArg = True
          
         while True:
-            token = self.next()
+            token = self.next
             
             if token.id == Token.PUNCTUATION and token.body == ')':
                 # End of param list
@@ -58,7 +58,7 @@ class MethodParser(Parser):
                 
                 break
             
-            elif expectingArg and token.id == Token.ID:
+            elif expectingArg:
                 # Argument type
                 argTypeInfo = self.eatTypeInfo()
                 

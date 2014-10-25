@@ -43,7 +43,7 @@ class StructParser(Parser):
         while True:
             self.eatAnnotations()
             
-            token = self.next()
+            token = self.next
             
             if token.id == Token.ID:
                 self._parseField()
