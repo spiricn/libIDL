@@ -4,6 +4,7 @@ import unittest
 from idl.Environment import Environment 
 
 from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 from test.TestBase import TestBase
 
 
@@ -47,6 +48,20 @@ class MiscTest(TestBase):
         Test lexer/parser errors.
         '''
         
+        # Multiple type definition
+        src = '''\
+        
+        
+            typedef type;
+            typedef type;
+        ''' 
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLTypeError as e:
+            self.assertEqual(e.line, 3)        
+            
         # Unrecognized token
         src = '''\
 

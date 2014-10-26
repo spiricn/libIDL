@@ -1,10 +1,11 @@
 import os
 
+from idl.Compiler import Compiler
 from idl.Module import Module
 from idl.Type import Type
 from idl.TypeGetter import TypeGetter
 
-from idl.Compiler import Compiler
+from idl.IDLTypeError import IDLTypeError
 
 
 class Environment(TypeGetter):
@@ -39,6 +40,9 @@ class Environment(TypeGetter):
         '''
         Adds a new type to the list of types.
         '''
+        
+        if self.getType(typeObj.name):
+            raise IDLTypeError(typeObj.module, 0, "Type named %r already exists" % typeObj.name)
         
         self._types.append( typeObj )
         

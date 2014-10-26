@@ -7,6 +7,7 @@ from idl.lexer.Token import Token
 from idl.lexer.Tokenizer import Tokenizer
 
 from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 from idl.lexer.LexerError import LexerError
 from idl.parser.EnumParser import EnumParser
 from idl.parser.InterfaceParser import InterfaceParser
@@ -67,6 +68,8 @@ class Compiler:
             
             for i in types:
                 if i.startTokenID == parser.next.id and i.startTokenName == parser.next.body:
+                    startToken = parser.next
+                    
                     # Instantiate a parser class and create type info
                     try:
                         info = i.parserClass(tokens).parse()
@@ -83,7 +86,11 @@ class Compiler:
                     foundParser = True
                     
                     # Add type global environment types
-                    self._module.env._addType( typeObj )
+                    try:
+                        self._module.env._addType( typeObj )
+                    except IDLTypeError as e:
+                        # Re-raise it with added line
+                        raise IDLTypeError(self._module, startToken.location[0], e.message)
                     
                     # Add type to our types (used later for linking)
                     self._types.append( typeObj )
