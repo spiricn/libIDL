@@ -6,9 +6,12 @@ from idl.lexer import Lang
 from idl.lexer.Token import Token
 from idl.lexer.Tokenizer import Tokenizer
 
+from idl.IDLSyntaxError import IDLSyntaxError
+from idl.lexer.LexerError import LexerError
 from idl.parser.EnumParser import EnumParser
 from idl.parser.InterfaceParser import InterfaceParser
 from idl.parser.Parser import Parser
+from idl.parser.ParserError import ParserError
 from idl.parser.StructParser import StructParser
 from idl.parser.TypedefParser import TypedefParser
 
@@ -23,7 +26,6 @@ class TypeInfo:
         self.parserClass = parserClass
         self.startTokenID = startTokenID
         self.startTokenName = startTokenBody
-        
 
 class Compiler:
     def __init__(self, module):
@@ -44,7 +46,11 @@ class Compiler:
         ]
 
         # Tokenize the source
-        tokens = Tokenizer.tokenize(source)
+        try:
+            tokens = Tokenizer.tokenize(source)
+        except LexerError as e:
+            # Re-reaise the lexer exception as public IDLSyntaxError
+            raise IDLSyntaxError(self._module, e.token)
         
         # Parser used for generating type annotations
         parser = Parser(tokens)
@@ -58,7 +64,11 @@ class Compiler:
             for i in types:
                 if i.startTokenID == parser.next.id and i.startTokenName == parser.next.body:
                     # Instantiate a parser class and create type info
-                    info = i.parserClass(tokens).parse()
+                    try:
+                        info = i.parserClass(tokens).parse()
+                    except ParserError as e:
+                        # Re-reaise the parser exception as public IDLSyntaxError
+                        raise IDLSyntaxError(self._module, e.token)
                     
                     # Instantiate associated type object
                     typeObj = i.typeClass(self._module, info)

@@ -2,6 +2,7 @@ from idl.lexer import Lang
 from idl.lexer.Token import Token
 
 from idl.parser.Parser import Parser
+from idl.parser.ParserError import ParserError
 
 
 class StructInfo:
@@ -55,7 +56,7 @@ class StructParser(Parser):
                 break
             
             else:
-                raise RuntimeError('Unexpected token %r(%d) while parsing structure %r' % (token.body, token.id, self.info.name))
+                raise ParserError('Unexpected token while parsing structure body', token)
             
     def _parseField(self):
         info = StructInfo.FieldInfo()

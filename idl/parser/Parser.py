@@ -1,6 +1,8 @@
 from idl.lexer import Lang
 from idl.lexer.Token import Token
 
+from idl.parser.ParserError import ParserError
+
 
 class Parser(object):
     class TypeInfo:
@@ -17,19 +19,19 @@ class Parser(object):
     def __init__(self, tokens):
         self.tokens = tokens
         self.annotations = []
+        self._prevToken = None
         
     def assertNext(self, typeId, body=None):
         if len(self.tokens) == 0:
-            raise RuntimeError('Token missing (expecting %d)' % typeId)
+            raise ParserError('Missing token', self._prevToken)
+    
+        # Type check
+        if self.next.id != typeId:
+            raise ParserError('Unexpected token while parsing', self.next)
         
-        else:
-            # Type check
-            if self.next.id != typeId:
-                raise RuntimeError('Invalid token while parsing; expected %s(%d) got %s(%d)' % (str(body), typeId, self.next.body, self.next.id))
-            
-            # Body check
-            if body != None and body != self.next.body:
-                raise RuntimeError('Invalid token while parsing; expected %r got %r' % (body, self.next.body))
+        # Body check
+        if body != None and body != self.next.body:
+            raise ParserError('Unexpected token while parsing', self.next)
             
     def eat(self, typeId, body=None):
         self.assertNext(typeId, body)
@@ -37,7 +39,8 @@ class Parser(object):
         return self.pop()
         
     def pop(self):
-        return self.tokens.pop(0)
+        self._prevToken = self.tokens.pop(0) 
+        return self._prevToken
     
     @property
     def next(self):
@@ -117,7 +120,7 @@ class Parser(object):
             arraySize = self.eatArraySize()
                 
             if arraySize == None:
-                raise RuntimeError('Unexpected token while parsing type info')
+                raise ParserError('Unexpected token while parsing type info', self.next)
             
         # Check keywords
         validKeywords = [
@@ -130,7 +133,7 @@ class Parser(object):
         
         for keyword in keywords:
             if keyword.body not in validKeywords:
-                raise RuntimeError('Invalid type modifier %r for type %r' % (keyword.body, name))
+                raise ParserError('Unexpected keyword while parsing type', keyword)
             
             
         return Parser.TypeInfo(name, [i.body for i in keywords], arraySize)

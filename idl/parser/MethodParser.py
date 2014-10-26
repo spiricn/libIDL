@@ -1,5 +1,7 @@
 from idl.lexer.Token import Token
+
 from idl.parser.Parser import Parser
+from idl.parser.ParserError import ParserError
 
 
 class MethodInfo:
@@ -75,4 +77,4 @@ class MethodParser(Parser):
                 self.pop()
                 
             else:
-                raise RuntimeError('Invalid token while parsing argument list %d' % token.id)
+                raise ParserError('Unexpected token while parsing method', token)

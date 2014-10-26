@@ -2,6 +2,8 @@
 from idl.lexer import Lang
 from idl.lexer.Token import Token
 
+from idl.lexer.LexerError import LexerError
+
 
 class Tokenizer:
     DEBUG = False
@@ -29,7 +31,7 @@ class Tokenizer:
         return Tokenizer(source)._tokenize()
     
     def _tokenize(self):
-        # Create the initial unkown token from the source
+        # Create the initial unknown token from the source
         self._tokens = [ Token(self, Token.UNKOWN, (0, len(self._source))) ]
         
         while not self._done():
@@ -39,7 +41,7 @@ class Tokenizer:
                 
             currIndex, currToken = self._findUnkown()
             
-            # Remove the current unkown token
+            # Remove the current unknown token
             self._tokens.pop(currIndex)
             
             newTokens = self._splitUnkown(currToken)
@@ -48,7 +50,7 @@ class Tokenizer:
                 print('NW: ', [str(i) for i in newTokens])
             
             for index, token in enumerate(newTokens):
-                # Insert the identified / new unkown tokens in its place
+                # Insert the identified / new unknown tokens in its place
                 self._tokens.insert(currIndex + index, token)
                 
             if Tokenizer.DEBUG:
@@ -66,7 +68,7 @@ class Tokenizer:
         searchResult = self.findMatches(token)
         
         if not searchResult:
-            raise RuntimeError('Unrecognized code segment %r' % token.body)
+            raise LexerError(token)
         
         tokenId, tokenMatches, keep = searchResult
         
@@ -86,7 +88,7 @@ class Tokenizer:
                 isUnkown, prevSpan, keepToken = newTokenSpans[-1]
                      
                 if span[0] != prevSpan[1]:
-                    # There's an unkown token between the match and the previous token
+                    # There's an unknown token between the match and the previous token
                     newTokenSpans.append( (True, (prevSpan[1], span[1] - 1), True ) )
 
             # Match
@@ -94,7 +96,7 @@ class Tokenizer:
             
             # After match 
             if index == len(tokenMatches) - 1 and span[1] <= len(token.body) - 1:
-                # There is an unkown token after the match
+                # There is an unknown token after the match
                 newTokenSpans.append( (True, (span[1], len(token.body)), True) )
         
         for isUnkown, indices, keepNewToken in newTokenSpans:

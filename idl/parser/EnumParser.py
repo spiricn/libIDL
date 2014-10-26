@@ -2,6 +2,7 @@ from idl.lexer import Lang
 from idl.lexer.Token import Token
 
 from idl.parser.Parser import Parser
+from idl.parser.ParserError import ParserError
 
 
 class EnumInfo:
@@ -55,7 +56,7 @@ class EnumParser(Parser):
                 self._parseField()
                 
             else:
-                raise RuntimeError('Invalid token')
+                raise ParserError('Unexpected token while parsing enumeration body', token)
     
     def _parseField(self):
         info = EnumInfo.FieldInfo()
