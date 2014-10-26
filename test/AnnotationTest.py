@@ -38,6 +38,9 @@ class AnnotationTest(unittest.TestCase):
         
         @name=value
         typedef dummyType;
+        
+        @stringValue='stringValue'
+        typedef dummyValue2;
 
 '''
         env = Environment()

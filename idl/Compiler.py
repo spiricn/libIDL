@@ -59,7 +59,11 @@ class Compiler:
             foundParser = False
             
             # Consume all annotations before type declaration
-            parser.eatAnnotations()
+            try:
+                parser.eatAnnotations()
+            except ParserError as e:
+                # Re-reaise the lexer exception as public IDLSyntaxError
+                raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
             
             for i in types:
                 if i.startTokenID == parser.next.id and i.startTokenName == parser.next.body:

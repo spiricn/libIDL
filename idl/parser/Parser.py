@@ -90,6 +90,8 @@ class Parser(object):
                 
                 if self.next.id in [Token.ID, Token.INT_LIT]:
                     value = self.pop().body
+                else:
+                    raise ParserError('Unexpected token while parsing annotation', self.next)
                 
             else:
                 value= ''
