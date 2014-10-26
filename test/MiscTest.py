@@ -49,6 +49,7 @@ class MiscTest(TestBase):
         
         # Unrecognized token
         src = '''\
+
             unrecognized
         ''' 
         
