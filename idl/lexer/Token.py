@@ -3,7 +3,7 @@ class Token:
     UNKOWN, \
     ID, \
     PUNCTUATION, \
-    LIT, \
+    INT_LIT, \
     KEYWORD, \
     COMMENT, \
     BLOCK_COMMENT, \

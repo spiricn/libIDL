@@ -50,7 +50,7 @@ class Parser(object):
             size = -1
             
             # Evaluate array size if given
-            if self.next.id == Token.LIT:
+            if self.next.id == Token.INT_LIT:
                 size = eval(self.pop().body)
                 
             self.eat(Token.PUNCTUATION, ']')
@@ -85,7 +85,7 @@ class Parser(object):
             if self.next.id == Token.PUNCTUATION and self.next.body == '=':
                 self.pop()
                 
-                if self.next.id in [Token.ID, Token.LIT]:
+                if self.next.id in [Token.ID, Token.INT_LIT]:
                     value = self.pop().body
                 
             else:

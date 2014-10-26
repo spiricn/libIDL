@@ -20,7 +20,6 @@ KEYWORD_CALLBACK_REG = r'callback_register'
 
 KEYWORD_CALLBACK_UNREG = r'callback_unregister'
 
-
 class TokenTypeInfo:
     def __init__(self, regex, tokenId, keep, flags=0):
         self.regex = re.compile(regex, flags)
@@ -68,8 +67,8 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'^[a-zA-Z]+[a-zA-Z0-9_]*$', Token.ID, True),
                 
                 # Decimal Literal
-                TokenTypeInfo(r'^[0-9]+$', Token.LIT, True),
+                TokenTypeInfo(r'^[0-9]+$', Token.INT_LIT, True),
                 
                 # Hexadecimal literal
-                TokenTypeInfo(r'^0x[0-9a-fA-F]+$', Token.LIT, True),
+                TokenTypeInfo(r'^0x[0-9a-fA-F]+$', Token.INT_LIT, True),
 ]
