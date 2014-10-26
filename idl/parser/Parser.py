@@ -88,8 +88,15 @@ class Parser(object):
             if self.next.id == Token.PUNCTUATION and self.next.body == '=':
                 self.pop()
                 
-                if self.next.id in [Token.ID, Token.INT_LIT]:
-                    value = self.pop().body
+                if self.next.id in [Token.ID, Token.INT_LIT, Token.STRING_LIT]:
+                    value = self.next.body
+                    
+                    if self.next.id == Token.STRING_LIT:
+                        # Strip the quotations marks
+                        value = value[1:-1]
+                        
+                    self.pop()
+                        
                 else:
                     raise ParserError('Unexpected token while parsing annotation', self.next)
                 

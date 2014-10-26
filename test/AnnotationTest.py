@@ -40,7 +40,7 @@ class AnnotationTest(unittest.TestCase):
         typedef dummyType;
         
         @stringValue='stringValue'
-        typedef dummyValue2;
+        typedef dummyType2;
 
 '''
         env = Environment()
@@ -73,6 +73,8 @@ class AnnotationTest(unittest.TestCase):
         self.assertEqual(env.getType('dummyType').getAnnotation('name'), env.getType('dummyType').annotations[0])
         
         self.assertEqual(env.getType('dummyType').getAnnotationVal('name'), env.getType('dummyType').annotations[0].value)
+        
+        self.assertEqual(env.getType('dummyType2').getAnnotationVal('stringValue'), 'stringValue')
         
 if __name__ == '__main__':
     unittest.main()
