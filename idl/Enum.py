@@ -86,11 +86,16 @@ class Enum(Type):
         return self._fields
     
     def getField(self, name):
+        '''
+        Gets a field with a specific name.
+        
+        @param name: Field name.
+        
+        @return: EnumField object or None.
+        '''
+        
         for field in self._fields:
             if field.name == name:
                 return field
             
         return None
-    
-    def _link(self):
-        pass

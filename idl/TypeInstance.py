@@ -69,6 +69,14 @@ class TypeInstance(object):
         return self._type.id
         
     def mod(self, modId):
+        '''
+        Checks if this type contains a modifier.
+        
+        @param modId: Modifier bit mask.
+        
+        @return: True or False
+        '''
+        
         return False if self._mods & modId == 0 else True
             
     def __eq__(self, other):

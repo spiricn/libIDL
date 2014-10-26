@@ -1,4 +1,5 @@
 from idl.Annotatable import Annotatable
+from idl.lexer import Lang
 
 
 class Type(Annotatable):
@@ -56,20 +57,20 @@ class Type(Annotatable):
         if isinstance(t, str):
             # Primitive types
             stringToType = {
-               'int64' : Type.INT64,
-               'uint64' : Type.UINT64,
-               'int32' : Type.INT32,
-               'uint32' : Type.UINT32,
-               'int16' : Type.INT16,
-               'uint16' : Type.UINT16,
-               'int8' : Type.INT8,
-               'uint8' : Type.UINT8,
-               'float32' : Type.FLOAT32,
-               'float64' : Type.FLOAT64,
-               'void' : Type.VOID,
-               'string' : Type.STRING,
-               'boolean' : Type.BOOL,
-               }
+               Lang.TYPE_INT64 : Type.INT64,
+               Lang.TYPE_UINT64 : Type.UINT64,
+               Lang.TYPE_INT32 : Type.INT32,
+               Lang.TYPE_UINT32 : Type.UINT32,
+               Lang.TYPE_INT16 : Type.INT16,
+               Lang.TYPE_UINT16 : Type.UINT16,
+               Lang.TYPE_INT8 : Type.INT8,
+               Lang.TYPE_UINT8 : Type.UINT8,
+               Lang.TYPE_FLOAT32 : Type.FLOAT32,
+               Lang.TYPE_FLOAT64 : Type.FLOAT64,
+               Lang.TYPE_VOID : Type.VOID,
+               Lang.TYPE_STRING : Type.STRING,
+               Lang.TYPE_BOOLEAN : Type.BOOL,
+            }
             
             if t in stringToType:
                 self._id = stringToType[t]
@@ -81,19 +82,19 @@ class Type(Annotatable):
             
             if t in Type.primitives:
                 typeToName = {
-                   Type.INT64 : 'int64',
-                   Type.UINT64 : 'uint64',
-                   Type.INT32 : 'int32',
-                   Type.UINT32 : 'uint32',
-                   Type.INT16 : 'int16' ,
-                   Type.UINT16 : 'uint16',
-                   Type.INT8 : 'int8',
-                   Type.UINT8 : 'uint8',
-                   Type.FLOAT32 : 'float32',
-                   Type.FLOAT64 : 'float64',
-                   Type.VOID : 'void',
-                   Type.STRING : 'string',
-                   Type.BOOL : 'boolean',
+                   Type.INT64 : Lang.TYPE_INT64,
+                   Type.UINT64 : Lang.TYPE_UINT64,
+                   Type.INT32 : Lang.TYPE_INT32,
+                   Type.UINT32 : Lang.TYPE_UINT32,
+                   Type.INT16 : Lang.TYPE_INT16,
+                   Type.UINT16 : Lang.TYPE_UINT16,
+                   Type.INT8 : Lang.TYPE_INT8,
+                   Type.UINT8 : Lang.TYPE_UINT8,
+                   Type.FLOAT32 : Lang.TYPE_FLOAT32,
+                   Type.FLOAT64 : Lang.TYPE_FLOAT64,
+                   Type.VOID : Lang.TYPE_VOID,
+                   Type.STRING : Lang.TYPE_STRING,
+                   Type.BOOL : Lang.TYPE_BOOLEAN,
                 }
                 
                 self._name = typeToName[t]
