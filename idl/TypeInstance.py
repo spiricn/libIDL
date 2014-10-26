@@ -1,5 +1,7 @@
 from idl.Type import Type
 
+from idl.IDLSyntaxError import IDLSyntaxError
+
 
 class TypeInstance(object):
     def __init__(self, baseType, info):
@@ -18,13 +20,13 @@ class TypeInstance(object):
             if index < len(info.mods) - 1:
                 for j in info.mods[index+1:]:
                     if i == j:
-                        raise RuntimeError('Duplicate argument modifier %r' % i) 
+                        raise IDLSyntaxError(module=None, line=-1, message='Duplicate type modifier %r for type %r' % (i, self._type.name))
         
         self._mods = 0
         
         for mod in info.mods:
             if mod not in modStrToInt:
-                raise RuntimeError('Unrecognized argument modifier %r' % mod)
+                raise IDLSyntaxError(module=None, line=-1, message='Unrecognized type modifier %r for type %r' % (mod, self._type.name))
             
             self._mods |= modStrToInt[mod]
             

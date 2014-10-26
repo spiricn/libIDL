@@ -1,6 +1,8 @@
 from idl.Annotatable import Annotatable
 from idl.Type import Type
 
+from idl.IDLSyntaxError import IDLSyntaxError
+
 
 class Enum(Type):
     class Field(Annotatable):
@@ -47,10 +49,7 @@ class Enum(Type):
             
             if field.value:
                 # Evaluate value
-                try:
-                    value = eval(field.value)
-                except Exception as e:
-                    raise RuntimeError('Could not evaluate field %r value %r of enum %r: %s' % (field.name, field.value, self.name, str(e)))
+                value = eval(field.value)
                 
             else:
                 # Assign value
@@ -71,7 +70,7 @@ class Enum(Type):
             
             # Duplicate check
             if self.getField(newField.name):
-                raise RuntimeError('Enum %s duplicate field name %r' % (self.name, newField.name))
+                raise IDLSyntaxError(self.module, field.line, 'Enum %r duplicate field name %r' % (self.name, newField.name))
             
             # Annotations
             newField._assignAnnotations(field.annotations)

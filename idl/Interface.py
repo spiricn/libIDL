@@ -1,6 +1,7 @@
+from idl.Method import Method
 from idl.Type import Type
 
-from idl.Method import Method
+from idl.IDLSyntaxError import IDLSyntaxError
 
 
 class Interface(Type):
@@ -17,7 +18,7 @@ class Interface(Type):
             # Duplicate method check
             for method in self._methods:
                 if method.name == newMethod.name:
-                    raise RuntimeError('Method named %r already exists in interface %r' % (method.name, self.name))
+                    raise IDLSyntaxError(self.module, methodInfo.line, 'Method named %r already exists in interface %r' % (method.name, self.name))
                 
             self._methods.append(newMethod)
             

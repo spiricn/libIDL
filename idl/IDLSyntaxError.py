@@ -1,9 +1,13 @@
 class IDLSyntaxError(Exception):
-    def __init__(self, module, token):
-        Exception.__init__(self,'Syntax error in module %r %s, line %d\n%s' % (module.name,'(File "' + module.filePath + '")' if module.filePath else '', token.location[0] + 1, token.locationStr))
+    def __init__(self, module, line, message):
+        # Exception message
+        baseMessage = 'Syntax error in module %s %s, line %d\n%s' % (module.name if module else '', '(File "' + module.filePath + '")' if (module and module.filePath) else '', line+1, message)
+         
+        Exception.__init__(self, baseMessage)
         
         self._module = module
-        self._token = token
+        
+        self._message = message
         
     @property
     def module(self):
@@ -14,9 +18,13 @@ class IDLSyntaxError(Exception):
         return self._module
     
     @property
-    def location(self):
+    def line(self):
         '''
-        Line/column of the syntax error.
+        Line of the syntax error.
         '''
         
-        return self._token.location
+        return self._location
+
+    @property
+    def message(self):
+        return self._message

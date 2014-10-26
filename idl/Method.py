@@ -1,6 +1,8 @@
 from idl.Annotatable import Annotatable
 from idl.Type import Type
 
+from idl.IDLSyntaxError import IDLSyntaxError
+
 
 class Method(Annotatable):
     class Argument:
@@ -93,16 +95,25 @@ class Method(Annotatable):
         '''
         
         return self._callbackType
+    
     def _link(self):
         # Resolve return type
-        self.returnType = self._interface.module._resolveType(self._info.returnTypeInfo)
+        try:
+            self.returnType = self._interface.module._resolveType(self._info.returnTypeInfo)
+        except IDLSyntaxError as e:
+            # Re-raise exception with module/line information
+            raise IDLSyntaxError(self._interface.module, self._info.line, e.message)
         
         if not self.returnType:
             raise RuntimeError('Could not resolve return type %r of method %s::%s' % (self._info.returnTypeInfo.name, self._interface.name, self._name))
         
         # Resolve args
         for index, arg in enumerate(self._info.args):
-            argType = self._interface.module._resolveType(arg.typeInfo)
+            try:
+                argType = self._interface.module._resolveType(arg.typeInfo)
+            except IDLSyntaxError as e:
+                # Re-raise exception with module/line information
+                raise IDLSyntaxError(self._interface.module, arg.line, e.message)
             
             if not argType:
                 raise RuntimeError('Could not resolve #%d argument type %r of method %s::%s' % (index, arg.typeInfo.name, self._interface.name, self._name))
@@ -112,7 +123,7 @@ class Method(Annotatable):
             # Duplicate name check
             for i in self._args:
                 if i.name == newArg.name:
-                    raise RuntimeError('Duplicate argument name %r in method %s::%s' % (newArg.name, self._interface.name, self._name))
+                    raise IDLSyntaxError(self._interface.module, arg.line, 'Duplicate argument name %r in method \'%s::%s\'' % (newArg.name, self._interface.name, self._name))
                 
             self._args.append(newArg)
             

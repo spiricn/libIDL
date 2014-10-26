@@ -50,7 +50,7 @@ class Compiler:
             tokens = Tokenizer.tokenize(source)
         except LexerError as e:
             # Re-reaise the lexer exception as public IDLSyntaxError
-            raise IDLSyntaxError(self._module, e.token)
+            raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
         
         # Parser used for generating type annotations
         parser = Parser(tokens)
@@ -68,7 +68,7 @@ class Compiler:
                         info = i.parserClass(tokens).parse()
                     except ParserError as e:
                         # Re-reaise the parser exception as public IDLSyntaxError
-                        raise IDLSyntaxError(self._module, e.token)
+                        raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
                     
                     # Instantiate associated type object
                     typeObj = i.typeClass(self._module, info)

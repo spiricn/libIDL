@@ -7,9 +7,10 @@ from idl.parser.ParserError import ParserError
 
 class StructInfo:
     class FieldInfo:
-        def __init__(self):
+        def __init__(self, line):
             self.typeInfo = Parser.TypeInfo()
             self.name = ''
+            self.line = line
 
     def __init__(self):
         self.name = ''
@@ -59,7 +60,7 @@ class StructParser(Parser):
                 raise ParserError('Unexpected token while parsing structure body', token)
             
     def _parseField(self):
-        info = StructInfo.FieldInfo()
+        info = StructInfo.FieldInfo(self.next.location[0])
         
         info.typeInfo = self.eatTypeInfo()
         

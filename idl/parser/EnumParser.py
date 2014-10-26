@@ -10,9 +10,11 @@ class EnumInfo:
         def __init__(self):
             self.name = ''
             self.value = ''
+            self.line = None
 
     def __init__(self):
         self.name = ''
+        self.line = None
         self.fields = []
         
 
@@ -33,7 +35,10 @@ class EnumParser(Parser):
     
     def _parseHead(self):
         # Enum keyword
-        self.eat(Token.KEYWORD, Lang.KEYWORD_ENUM)
+        keywordToken = self.eat(Token.KEYWORD, Lang.KEYWORD_ENUM)
+        
+        # Save enum location
+        self.info.line = keywordToken.location[0]
         
         # Name
         self.info.name = self.eat(Token.ID).body
@@ -60,8 +65,13 @@ class EnumParser(Parser):
     
     def _parseField(self):
         info = EnumInfo.FieldInfo()
+
+        nameToken = self.pop()
         
-        info.name = self.pop().body
+        # Save field location
+        info.line = nameToken.location[0]
+        
+        info.name = nameToken.body
         
         # Field declaration
         if self.tokens and self.next.id == Token.PUNCTUATION and self.next.body == '(':
