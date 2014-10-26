@@ -1,5 +1,6 @@
-from idl.lexer.Keywords import KEYWORD_INTERFACE
+from idl.lexer import Lang
 from idl.lexer.Token import Token
+
 from idl.parser.MethodParser import MethodParser
 from idl.parser.Parser import Parser
 
@@ -26,7 +27,7 @@ class InterfaceParser(Parser):
         
     def _parseHead(self):
         # Check start keyword
-        self.eat(Token.KEYWORD , KEYWORD_INTERFACE)
+        self.eat(Token.KEYWORD , Lang.KEYWORD_INTERFACE)
         
         # Interface name
         self.interface.name = self.eat(Token.ID).body

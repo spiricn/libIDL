@@ -1,5 +1,6 @@
-from idl.lexer.Keywords import KEYWORD_STRUCT
+from idl.lexer import Lang
 from idl.lexer.Token import Token
+
 from idl.parser.Parser import Parser
 
 
@@ -31,7 +32,7 @@ class StructParser(Parser):
 
     def _parseHead(self):
         # Struct keyword
-        self.eat(Token.KEYWORD, KEYWORD_STRUCT)
+        self.eat(Token.KEYWORD, Lang.KEYWORD_STRUCT)
         
         # Name
         self.info.name = self.eat(Token.ID).body

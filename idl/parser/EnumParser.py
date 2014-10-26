@@ -1,5 +1,6 @@
-from idl.lexer.Keywords import KEYWORD_ENUM
+from idl.lexer import Lang
 from idl.lexer.Token import Token
+
 from idl.parser.Parser import Parser
 
 
@@ -31,7 +32,7 @@ class EnumParser(Parser):
     
     def _parseHead(self):
         # Enum keyword
-        self.eat(Token.KEYWORD, KEYWORD_ENUM)
+        self.eat(Token.KEYWORD, Lang.KEYWORD_ENUM)
         
         # Name
         self.info.name = self.eat(Token.ID).body

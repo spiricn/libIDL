@@ -1,18 +1,25 @@
-import re
 
-from idl.lexer.Utils import WHITESPACE_LINE_MATCH
-
+from idl.lexer import Lang
 from idl.lexer.Token import Token
-from idl.lexer.TokenSearch import TokenSearch
 
 
 class Tokenizer:
     DEBUG = False
     
     def __init__(self, source):
+        self._originalSource = source
+        
         self._source = source
         
         self._tokens = []
+        
+    @property
+    def source(self):
+        '''
+        Original tokenizer source
+        '''
+        
+        return self._originalSource
         
     @staticmethod
     def tokenize(source):
@@ -21,51 +28,9 @@ class Tokenizer:
             
         return Tokenizer(source)._tokenize()
     
-    def _preprocess(self):
-        # Replace CR LF with LF
-        self._source = self._source.replace('\r\n', '\n')
-        
-        res = ''
-        
-        # Remove escaped new lines
-        self._source = self._source.replace('\\\n', '')
-        
-        # Remove comment blocks
-        blockComment = re.compile(  r'/\*' + r'.*?' + r'\*/', re.DOTALL )
-        
-        match = True
-        
-        while match:
-            match = blockComment.search(self._source)
-            
-            if match:
-                span = match.span()
-                
-                self._source = self._source[:span[0]] + self._source[span[1]:]
-
-        for line in self._source.split('\n'):
-            # Remove comments
-            commentStart = line.find('//')
-            
-            if commentStart != -1:
-                line = line[:commentStart]
-                
-            # Remove empty lines
-            if re.compile(WHITESPACE_LINE_MATCH).match(line):
-                continue
-
-            res += '%s\n' % line
-
-        # Remove ending new line
-        res = res[:-1]
-        
-        self._source = res
-    
     def _tokenize(self):
-        self._preprocess()
-        
         # Create the initial unkown token from the source
-        self._tokens = [ Token(Token.UNKOWN, self._source) ]
+        self._tokens = [ Token(self, Token.UNKOWN, (0, len(self._source))) ]
         
         while not self._done():
             if Tokenizer.DEBUG:
@@ -98,7 +63,7 @@ class Tokenizer:
         
         newTokens = []
         
-        searchResult = TokenSearch.find(token.body)
+        searchResult = self.findMatches(token)
         
         if not searchResult:
             raise RuntimeError('No tokens in %r' % token.body)
@@ -138,16 +103,30 @@ class Tokenizer:
             
             start, end = indices
             
-            sliceBody = token.body[start:end]
+            tokenStart = token.span[0]
+                        
+            newSpan = (tokenStart + start, tokenStart + end)
             
             if isUnkown:
-                newToken = Token(Token.UNKOWN, sliceBody)
+                newToken = Token(self, Token.UNKOWN, newSpan)
             else:
-                newToken = Token(tokenId, sliceBody)
+                newToken = Token(self, tokenId, newSpan)
                 
             newTokens.append(newToken)
 
         return newTokens
+    
+
+    def findMatches(self, token):
+        for tokenTypeInfo in Lang.TOKEN_TYPES:
+            matches = [i for i in tokenTypeInfo.regex.finditer(token.body)]
+            
+            if not matches:
+                continue
+            
+            return [tokenTypeInfo.tokenId, matches, tokenTypeInfo.keep]
+        
+        return None
     
     def _findUnkown(self):
         for index, token in enumerate(self._tokens):

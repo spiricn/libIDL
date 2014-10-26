@@ -1,5 +1,4 @@
-from idl.lexer.Keywords import KEYWORD_IN, KEYWORD_OUT, KEYWORD_CONST, \
-    KEYWORD_CALLBACK_REG, KEYWORD_CALLBACK_UNREG
+from idl.lexer import Lang
 from idl.lexer.Token import Token
 
 
@@ -122,11 +121,11 @@ class Parser(object):
             
         # Check keywords
         validKeywords = [
-            KEYWORD_IN,
-            KEYWORD_OUT,
-            KEYWORD_CONST,
-            KEYWORD_CALLBACK_REG,
-            KEYWORD_CALLBACK_UNREG,
+            Lang.KEYWORD_IN,
+            Lang.KEYWORD_OUT,
+            Lang.KEYWORD_CONST,
+            Lang.KEYWORD_CALLBACK_REG,
+            Lang.KEYWORD_CALLBACK_UNREG,
         ]
         
         for keyword in keywords:

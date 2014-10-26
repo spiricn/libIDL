@@ -1,6 +1,6 @@
+from idl.lexer import Lang
 from idl.lexer.Token import Token
 
-from idl.lexer.Keywords import KEYWORD_TYPEDEF
 from idl.parser.Parser import Parser
 
 
@@ -17,7 +17,7 @@ class TypedefParser(Parser):
         
     def parse(self):
         # Typedef keyword
-        self.eat(Token.KEYWORD, KEYWORD_TYPEDEF)
+        self.eat(Token.KEYWORD, Lang.KEYWORD_TYPEDEF)
         
         # Type name
         self.info.typeName = self.eat(Token.ID).body

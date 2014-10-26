@@ -2,8 +2,7 @@ from idl.Enum import Enum
 from idl.Interface import Interface
 from idl.Struct import Struct
 from idl.Typedef import Typedef
-from idl.lexer.Keywords import KEYWORD_INTERFACE, KEYWORD_ENUM, KEYWORD_STRUCT, \
-    KEYWORD_TYPEDEF
+from idl.lexer import Lang
 from idl.lexer.Token import Token
 from idl.lexer.Tokenizer import Tokenizer
 
@@ -38,10 +37,10 @@ class Compiler:
         '''
         
         types = [
-            TypeInfo(Interface, InterfaceParser, Token.KEYWORD, KEYWORD_INTERFACE),
-            TypeInfo(Enum, EnumParser, Token.KEYWORD, KEYWORD_ENUM),
-            TypeInfo(Struct, StructParser, Token.KEYWORD, KEYWORD_STRUCT),
-            TypeInfo(Typedef, TypedefParser, Token.KEYWORD, KEYWORD_TYPEDEF),
+            TypeInfo(Interface, InterfaceParser, Token.KEYWORD, Lang.KEYWORD_INTERFACE),
+            TypeInfo(Enum, EnumParser, Token.KEYWORD, Lang.KEYWORD_ENUM),
+            TypeInfo(Struct, StructParser, Token.KEYWORD, Lang.KEYWORD_STRUCT),
+            TypeInfo(Typedef, TypedefParser, Token.KEYWORD, Lang.KEYWORD_TYPEDEF),
         ]
 
         # Tokenize the source
@@ -82,7 +81,7 @@ class Compiler:
                 
             if not foundParser:
                 # Found an unexpected token (no parsers found)
-                raise RuntimeError('Unrecognized token while parsing types %s(%d)' % (parser.next.body, parser.next.id))
+                raise RuntimeError('Unrecognized token while parsing types %r (%d)' % (parser.next.body, parser.next.id))
 
     def link(self):
         # Just iterate over all the types we created and link them
