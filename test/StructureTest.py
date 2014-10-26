@@ -1,8 +1,10 @@
 import unittest
 
+from idl.Environment import Environment 
 from idl.Type import Type
 
-from idl.Environment import Environment 
+from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 from test.TestBase import TestBase
 
 
@@ -133,6 +135,38 @@ interface TestInterface{
         
         # Array of structures
         self.assertEqual(types[1].fields[0].type, types[0])
+
+    def test_errors(self):
+        '''
+        Structure related syntax errors.
+        '''
+        
+        # Duplicate field name test
+        src = '''\
+            struct Test{
+                void dup;
+                void dup;
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 2)
+            
+        # Unresolved field type test
+        src = '''\
+            struct Test{
+                unresolved dup;
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLTypeError as e:
+            self.assertEqual(e.line, 1)
 
 if __name__ == '__main__':
     unittest.main()

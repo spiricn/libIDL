@@ -2,6 +2,8 @@ import os
 import unittest
 
 from idl.Environment import Environment 
+
+from idl.IDLSyntaxError import IDLSyntaxError
 from test.TestBase import TestBase
 
 
@@ -39,6 +41,22 @@ class MiscTest(TestBase):
         self.assertNotEqual(env.getModule('module3'), None)
         
         self.assertNotEqual(env.getModule('module2'), None)
+        
+    def test_errors(self):
+        '''
+        Test lexer/parser errors.
+        '''
+        
+        # Unrecognized token
+        src = '''\
+            unrecognized
+        ''' 
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 1)        
     
 if __name__ == '__main__':
     unittest.main()
