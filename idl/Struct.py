@@ -2,6 +2,7 @@ from idl.Annotatable import Annotatable
 from idl.Type import Type
 
 from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 
 
 class Struct(Type):
@@ -62,7 +63,7 @@ class Struct(Type):
                 raise IDLSyntaxError(self.module, field.line, e.message)
             
             if not fieldType:
-                raise RuntimeError('Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.name, self.name))
+                raise IDLTypeError(self.module, field.line, 'Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.name, self.name))
             
             newField = Struct.Field(self, fieldType, field.name)
             

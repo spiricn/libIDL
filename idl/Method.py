@@ -2,6 +2,7 @@ from idl.Annotatable import Annotatable
 from idl.Type import Type
 
 from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 
 
 class Method(Annotatable):
@@ -105,7 +106,7 @@ class Method(Annotatable):
             raise IDLSyntaxError(self._interface.module, self._info.line, e.message)
         
         if not self.returnType:
-            raise RuntimeError('Could not resolve return type %r of method %s::%s' % (self._info.returnTypeInfo.name, self._interface.name, self._name))
+            raise IDLTypeError(self.interface.module, self._info.line, 'Could not resolve return type %r of method %s::%s' % (self._info.returnTypeInfo.name, self._interface.name, self._name))
         
         # Resolve args
         for index, arg in enumerate(self._info.args):
@@ -116,7 +117,7 @@ class Method(Annotatable):
                 raise IDLSyntaxError(self._interface.module, arg.line, e.message)
             
             if not argType:
-                raise RuntimeError('Could not resolve #%d argument type %r of method %s::%s' % (index, arg.typeInfo.name, self._interface.name, self._name))
+                raise IDLTypeError(self._interface.module, arg.line, 'Could not resolve #%d argument type %r of method %s::%s' % (index + 1, arg.typeInfo.name, self._interface.name, self._name))
             
             newArg = Method.Argument(self, argType, arg.name)
             
