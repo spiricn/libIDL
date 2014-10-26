@@ -191,6 +191,27 @@ interface BasicInterface{
         
         self.assertEqual(iface2.methods[0].args[1].type.arraySize, -1)
 
+    def test_modifiers(self):
+        '''
+        Argument modifier test.
+        '''
+        
+        src = '''\
+        
+        interface Test{
+        void test(in int32 inArg, out int32 outArg);
+        };
+        
+        '''
+        
+        module = Environment().compileSource(src)
+        
+        method = module.getInterface('Test').methods[0]
+        
+        self.assertTrue( method.args[0].type.mod(Type.MOD_IN) )
+        
+        self.assertTrue( method.args[1].type.mod(Type.MOD_OUT) )
+        
     def test_errors(self):
         '''
         Test interface related syntax errors.

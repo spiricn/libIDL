@@ -135,7 +135,6 @@ class Parser(object):
         validKeywords = [
             Lang.KEYWORD_IN,
             Lang.KEYWORD_OUT,
-            Lang.KEYWORD_CONST,
             Lang.KEYWORD_CALLBACK_REG,
             Lang.KEYWORD_CALLBACK_UNREG,
         ]

@@ -1,4 +1,5 @@
 from idl.Type import Type
+from idl.lexer import Lang
 
 from idl.IDLSyntaxError import IDLSyntaxError
 
@@ -8,11 +9,10 @@ class TypeInstance(object):
         self._type = baseType
         
         modStrToInt = {
-            'const' : Type.MOD_CONST,
-            'in' : Type.MOD_IN,
-            'out' : Type.MOD_OUT,
-            'callback_register' : Type.MOD_CALLBACK_REG,
-            'callback_unregister' : Type.MOD_CULLBACK_UNREG,
+            Lang.KEYWORD_IN : Type.MOD_IN,
+            Lang.KEYWORD_OUT : Type.MOD_OUT,
+            Lang.KEYWORD_CALLBACK_REG : Type.MOD_CALLBACK_REG,
+            Lang.KEYWORD_CALLBACK_UNREG : Type.MOD_CULLBACK_UNREG,
         }
         
         # Check for duplicate mods

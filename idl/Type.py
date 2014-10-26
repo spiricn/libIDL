@@ -5,9 +5,8 @@ class Type(Annotatable):
     # Possible type modifiers bit fields
     MOD_IN = 1 << 0
     MOD_OUT = 1 << 1
-    MOD_CONST = 1 << 2
-    MOD_CALLBACK_REG = 1 << 3
-    MOD_CULLBACK_UNREG = 1 << 4
+    MOD_CALLBACK_REG = 1 << 2
+    MOD_CULLBACK_UNREG = 1 << 3
 
     # Possible types
     BOOL, \

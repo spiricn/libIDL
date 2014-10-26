@@ -15,8 +15,6 @@ KEYWORD_IN = r'in'
 
 KEYWORD_OUT = r'out'
 
-KEYWORD_CONST = r'const'
-
 KEYWORD_CALLBACK_REG = r'callback_register'
 
 KEYWORD_CALLBACK_UNREG = r'callback_unregister'
@@ -64,7 +62,6 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'^' + KEYWORD_TYPEDEF + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_IN + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_OUT + r'$', Token.KEYWORD, True),
-                TokenTypeInfo(r'^' + KEYWORD_CONST + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_CALLBACK_REG + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_CALLBACK_UNREG + r'$', Token.KEYWORD, True),
                 
