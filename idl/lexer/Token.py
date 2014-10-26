@@ -4,10 +4,11 @@ class Token:
     ID, \
     PUNCTUATION, \
     INT_LIT, \
+    STRING_LIT, \
     KEYWORD, \
     COMMENT, \
     BLOCK_COMMENT, \
-    = range(7)
+    = range(8)
     
     def __init__(self, tokenizer, tokenId, span):
         self._tokenizer = tokenizer

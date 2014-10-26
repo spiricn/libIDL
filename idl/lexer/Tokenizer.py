@@ -66,7 +66,7 @@ class Tokenizer:
         searchResult = self.findMatches(token)
         
         if not searchResult:
-            raise RuntimeError('No tokens in %r' % token.body)
+            raise RuntimeError('Unrecognized code segment %r' % token.body)
         
         tokenId, tokenMatches, keep = searchResult
         

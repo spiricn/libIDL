@@ -2,6 +2,7 @@ import re
 
 from idl.lexer.Token import Token
 
+
 KEYWORD_INTERFACE = r'interface'
 
 KEYWORD_STRUCT = r'struct'
@@ -33,6 +34,10 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'\/\/[^\n]*', Token.COMMENT, False, re.DOTALL),
                 
                 TokenTypeInfo(r'/\*' + r'.*?' + r'\*/', Token.BLOCK_COMMENT, False, re.DOTALL),
+                
+                # String literals
+                TokenTypeInfo(r'\"[^\"]*\"', Token.STRING_LIT, True),
+                TokenTypeInfo(r"\'[^\"]*\'", Token.STRING_LIT, True),
                 
                 # Discarded delimiters
                 TokenTypeInfo(r'\s', Token.PUNCTUATION, False),
@@ -66,7 +71,7 @@ TOKEN_TYPES = [
                 # ID
                 TokenTypeInfo(r'^[a-zA-Z]+[a-zA-Z0-9_]*$', Token.ID, True),
                 
-                # Decimal Literal
+                # Decimal literal
                 TokenTypeInfo(r'^[0-9]+$', Token.INT_LIT, True),
                 
                 # Hexadecimal literal
