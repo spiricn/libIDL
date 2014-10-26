@@ -91,7 +91,7 @@ class Compiler:
                 
             if not foundParser:
                 # Found an unexpected token (no parsers found)
-                raise RuntimeError('Unrecognized token while parsing types %r (%d)' % (parser.next.body, parser.next.id))
+                raise IDLSyntaxError(self._module, parser.next.location[0], parser.next.locationStr)
 
     def link(self):
         # Just iterate over all the types we created and link them
