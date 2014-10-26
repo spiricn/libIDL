@@ -9,6 +9,8 @@ class IDLTypeError(Exception):
         
         self._message = message
         
+        self._line = line
+        
     @property
     def module(self):
         '''
@@ -23,7 +25,7 @@ class IDLTypeError(Exception):
         Line of the syntax error.
         '''
         
-        return self._location
+        return self._line
 
     @property
     def message(self):

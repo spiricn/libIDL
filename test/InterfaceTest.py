@@ -1,10 +1,12 @@
 import unittest
 
+from idl.Environment import Environment
 from idl.Method import Method
 from idl.Module import Module 
 from idl.Type import Type
 
-from idl.Environment import Environment
+from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 from test.TestBase import TestBase
 
 
@@ -189,5 +191,89 @@ interface BasicInterface{
         
         self.assertEqual(iface2.methods[0].args[1].type.arraySize, -1)
 
+    def test_errors(self):
+        '''
+        Test interface related syntax errors.
+        '''
+        
+        # Duplicate method name test
+        src = '''\
+            interface Test{
+                void test();
+                void test();
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 2)
+            
+        # Duplicate argument name test
+        src = '''\
+            interface Test{
+                void test(void dup, void dup);
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 1)
+            
+        # Unresolved return type
+        src = '''\
+            interface Test{
+                unresolved test();
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLTypeError as e:
+            self.assertEqual(e.line, 1)
+        
+        # Unresolved argument type
+        src = '''\
+            interface Test{
+                void test(unresolved arg);
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLTypeError as e:
+            self.assertEqual(e.line, 1)
+            
+        # Duplicate return type modifier
+        src = '''\
+            interface Test{
+                in in void test(unresolved arg);
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 1)
+            
+        # Duplicate argument modifier
+        src = '''\
+            interface Test{
+                in void test(in in void arg);
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 1)
+            
 if __name__ == '__main__':
     unittest.main()
