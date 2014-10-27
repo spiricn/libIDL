@@ -89,7 +89,8 @@ class Tokenizer:
                      
                 if span[0] != prevSpan[1]:
                     # There's an unknown token between the match and the previous token
-                    newTokenSpans.append( (True, (prevSpan[1], span[1] - 1), True ) )
+                    newTokenSpans.append( (True, (prevSpan[1], span[0]), True ) )
+
 
             # Match
             newTokenSpans.append( (False, span, keep) )
@@ -98,7 +99,7 @@ class Tokenizer:
             if index == len(tokenMatches) - 1 and span[1] <= len(token.body) - 1:
                 # There is an unknown token after the match
                 newTokenSpans.append( (True, (span[1], len(token.body)), True) )
-        
+                
         for isUnkown, indices, keepNewToken in newTokenSpans:
             if not keepNewToken:
                 continue
@@ -125,7 +126,7 @@ class Tokenizer:
             
             if not matches:
                 continue
-            
+
             return [tokenTypeInfo.tokenId, matches, tokenTypeInfo.keep]
         
         return None
