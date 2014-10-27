@@ -15,27 +15,30 @@ class TypeInstance(object):
             Lang.KEYWORD_CALLBACK_UNREG : Type.MOD_CULLBACK_UNREG,
         }
         
-        # Check for duplicate mods
-        for index, i in enumerate(info.mods):
-            if index < len(info.mods) - 1:
-                for j in info.mods[index+1:]:
-                    if i == j:
-                        raise IDLSyntaxError(module=None, line=-1, message='Duplicate type modifier %r for type %r' % (i, self._type.name))
-        
         self._mods = 0
         
-        for mod in info.mods:
-            if mod not in modStrToInt:
-                raise IDLSyntaxError(module=None, line=-1, message='Unrecognized type modifier %r for type %r' % (mod, self._type.name))
+        if info:
+            # Check for duplicate mods
+            for index, i in enumerate(info.mods):
+                if index < len(info.mods) - 1:
+                    for j in info.mods[index+1:]:
+                        if i == j:
+                            raise IDLSyntaxError(module=None, line=-1, message='Duplicate type modifier %r for type %r' % (i, self._type.name))
             
-            self._mods |= modStrToInt[mod]
+            for mod in info.mods:
+                if mod not in modStrToInt:
+                    raise IDLSyntaxError(module=None, line=-1, message='Unrecognized type modifier %r for type %r' % (mod, self._type.name))
+                
+                self._mods |= modStrToInt[mod]
             
+        self._isArray = False if not info else info.arraySize != None
         
+        self._arraySize = None if not info else info.arraySize
         
-        self._isArray = info.arraySize != None
-        
-        self._arraySize = info.arraySize
-        
+    @property
+    def baseType(self):
+        return TypeInstance(self._type, None)
+    
     @property
     def annotations(self):
         return self._type.annotations
@@ -89,3 +92,6 @@ class TypeInstance(object):
             
     def __eq__(self, other):
         return self._type == other
+    
+    def __ne__(self, other):
+        return not (self == other)
