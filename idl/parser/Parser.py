@@ -44,6 +44,9 @@ class Parser(object):
     
     @property
     def next(self):
+        if not self.tokens:
+            raise ParserError('No tokens left', self._prevToken)
+        
         return self.tokens[0]
     
     def eatArraySize(self):
@@ -80,6 +83,9 @@ class Parser(object):
                 break
 
     def _eatAnnotation(self):
+        if not len(self.tokens):
+            return None
+
         if self.next.id == Token.PUNCTUATION and self.next.body == '@':
             self.pop()
             

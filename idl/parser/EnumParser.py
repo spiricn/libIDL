@@ -82,6 +82,9 @@ class EnumParser(Parser):
             
             self.eat(Token.PUNCTUATION, ')')
             
+        if self.next.id == Token.PUNCTUATION and self.next.body == ',':
+            self.pop()
+            
         info.annotations = self.getAnnotations()
         
         self.info.fields.append(info)
