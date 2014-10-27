@@ -67,7 +67,7 @@ TOKEN_TYPES = [
                 
                 # String literals
                 TokenTypeInfo(r'\"[^\"]*\"', Token.STRING_LIT, True),
-                TokenTypeInfo(r"\'[^\"]*\'", Token.STRING_LIT, True),
+                TokenTypeInfo(r"\'[^\']*\'", Token.STRING_LIT, True),
                 
                 # Discarded delimiters
                 TokenTypeInfo(r'\s', Token.PUNCTUATION, False),

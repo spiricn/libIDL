@@ -37,6 +37,14 @@ class TypeInstance(object):
         self._arraySize = info.arraySize
         
     @property
+    def annotations(self):
+        return self._type.annotations
+    
+    @property
+    def isPrimitive(self):
+        return self._type.isPrimitive()
+    
+    @property
     def mods(self):
         '''
         Type modifier integer bit field.
