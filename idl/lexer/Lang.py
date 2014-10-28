@@ -105,4 +105,10 @@ TOKEN_TYPES = [
                 
                 # Hexadecimal literal
                 TokenTypeInfo(r'^0x[0-9a-fA-F]+$', Token.INT_LIT, True),
+                
+                # Binary literal
+                TokenTypeInfo(r'^0b[0-1]+$', Token.INT_LIT, True),
+                
+                # Octal literal
+                TokenTypeInfo(r'^0[0-7]+$', Token.INT_LIT, True),
 ]
