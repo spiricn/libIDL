@@ -10,9 +10,10 @@ class Enum(Type):
             Annotatable.__init__(self)
             
             self._enum = enum
-            self._name = name
-            self._value = value
             
+            self._name = name
+            
+            self._value = value
             
         @property
         def enum(self):
@@ -51,24 +52,17 @@ class Enum(Type):
                 # Evaluate value
                 value = eval(field.value)
                 
+                # Duplicate value check
+                for i in self._fields:
+                    if i.value == value:
+                        raise IDLSyntaxError(self.module, field.line, 'Enum %r duplicate explicit field value %d for field %r' % (self.name, value, field.name))
+                
             else:
-                # Assign value
-                value = 0
-                while True:
-                    taken = False
-                    
-                    for i in self._fields:
-                        if i.value == value:
-                            taken = True
-                            value += 1
-                            break
-                        
-                    if not taken:
-                        break
+                value = self._generateFieldValue()
             
             newField = Enum.Field(self, field.name, value)
             
-            # Duplicate check
+            # Duplicate name check
             if self.getField(newField.name):
                 raise IDLSyntaxError(self.module, field.line, 'Enum %r duplicate field name %r' % (self.name, newField.name))
             
@@ -76,6 +70,24 @@ class Enum(Type):
             newField._assignAnnotations(field.annotations)
             
             self._fields.append(newField)
+            
+    def _generateFieldValue(self):
+        # Assign value
+        value = 0
+        
+        while True:
+            taken = False
+            
+            for field in self._fields:
+                if field.value == value:
+                    taken = True
+                    value += 1
+                    break
+                
+            if not taken:
+                break
+            
+        return value
 
     @property
     def fields(self):

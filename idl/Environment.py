@@ -26,6 +26,7 @@ class Environment(TypeGetter):
         for typeId in Type.primitives:
             self._types.append( Type(self, typeId) )
             
+        # List of modules compiled by this environment
         self.modules = []
         
     @property
@@ -167,4 +168,3 @@ class Environment(TypeGetter):
         modules = self.compileFiles([path])
         
         return modules[0]
-    

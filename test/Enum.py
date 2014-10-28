@@ -1,9 +1,8 @@
+from idl.Environment import Environment
+from idl.IDLSyntaxError import IDLSyntaxError
+from idl.Type import Type
 import os
 import unittest
-
-from idl.Type import Type
-
-from idl.Environment import Environment
 
 
 RESOURCE_DIR = os.path.abspath('./rsrc')
@@ -82,6 +81,39 @@ class EnumTest(unittest.TestCase):
         # Can enums be struct fields ?
         self.assertEqual(struct.fields[1].type.id, Type.ENUM)
 
+    def test_errors(self):
+        '''
+        Enum related error tests.
+        '''
+        
+        # Duplicate field name
+        src = '''\
+            enum Test{
+                a a
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 1)
+            
+        # Duplicate field value
+        src = '''\
+            enum Test{
+                a(5) 
+            
+            
+                b(5)
+            };
+        '''
+        
+        try:
+            Environment().compileSource(src)
+            self.fail()
+        except IDLSyntaxError as e:
+            self.assertEqual(e.line, 4)
         
 
 if __name__ == '__main__':

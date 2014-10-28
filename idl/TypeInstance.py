@@ -37,15 +37,30 @@ class TypeInstance(object):
         
     @property
     def baseType(self):
+        '''
+        Base type object of this instance (i.e. idl.Type stored in environment/module lists)
+        '''
+          
         return TypeInstance(self._type, None)
     
     @property
     def annotations(self):
+        '''
+        A list of annotations associated with this type instance.
+        '''
+        
         return self._type.annotations
     
     @property
     def isPrimitive(self):
-        return self._type.isPrimitive()
+        '''
+        Checks if type instance is a primitive.
+        '''
+        
+        if self.isArray:
+            return False
+        else:
+            return self._type.isPrimitive()
     
     @property
     def mods(self):
@@ -57,10 +72,18 @@ class TypeInstance(object):
     
     @property
     def isArray(self):
+        '''
+        Is this instance an array?
+        '''
+        
         return self._isArray
     
     @property
     def arraySize(self):
+        '''
+        Array size (only valid if self.isArray is True)
+        '''
+        
         return self._arraySize
     
     @property
