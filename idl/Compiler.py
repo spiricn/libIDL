@@ -17,7 +17,7 @@ from idl.parser.StructParser import StructParser
 from idl.parser.TypedefParser import TypedefParser
 
 
-class TypeInfo:
+class ParserInfo:
     '''
     Helper class used by the compiler.
     '''
@@ -29,6 +29,20 @@ class TypeInfo:
         self.startTokenName = startTokenBody
 
 class Compiler:
+    PARSERS = [
+            # Interface
+            ParserInfo(Interface, InterfaceParser, Token.KEYWORD, Lang.KEYWORD_INTERFACE),
+            
+            # Enum
+            ParserInfo(Enum, EnumParser, Token.KEYWORD, Lang.KEYWORD_ENUM),
+            
+            # Struct
+            ParserInfo(Struct, StructParser, Token.KEYWORD, Lang.KEYWORD_STRUCT),
+            
+            # Typedef
+            ParserInfo(Typedef, TypedefParser, Token.KEYWORD, Lang.KEYWORD_TYPEDEF),
+    ]
+    
     def __init__(self, module):
         self._module = module
     
@@ -39,13 +53,6 @@ class Compiler:
         Compile given source and add types to the module and the associated environment.
         '''
         
-        types = [
-            TypeInfo(Interface, InterfaceParser, Token.KEYWORD, Lang.KEYWORD_INTERFACE),
-            TypeInfo(Enum, EnumParser, Token.KEYWORD, Lang.KEYWORD_ENUM),
-            TypeInfo(Struct, StructParser, Token.KEYWORD, Lang.KEYWORD_STRUCT),
-            TypeInfo(Typedef, TypedefParser, Token.KEYWORD, Lang.KEYWORD_TYPEDEF),
-        ]
-
         # Tokenize the source
         try:
             tokens = Tokenizer.tokenize(source)
@@ -54,59 +61,70 @@ class Compiler:
             raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
         
         # Parser used for generating type annotations
-        parser = Parser(tokens)
+        self._tokenParser = Parser(tokens)
         
+        # While there are tokens to compile ..
         while tokens:
-            foundParser = False
-            
             # Consume all annotations before type declaration
             try:
-                parser.eatAnnotations()
+                self._tokenParser.eatAnnotations()
             except ParserError as e:
                 # Re-reaise the lexer exception as public IDLSyntaxError
                 raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
             
-            for i in types:
-                if i.startTokenID == parser.next.id and i.startTokenName == parser.next.body:
-                    startToken = parser.next
+            # Find a suitable parser for the next token
+            typeParser = self._findParser()
+            
+            if not typeParser:
+                # No parser found (probably an unexpected token error)
+                raise IDLSyntaxError(self._module, self._tokenParser.next.location[0], self._tokenParser.next.locationStr)
+            
+            # Save the starting token (we will need it if a type error ocurrs later)
+            startToken = self._tokenParser.next
                     
-                    # Instantiate a parser class and create type info
-                    try:
-                        info = i.parserClass(tokens).parse()
-                    except ParserError as e:
-                        # Re-reaise the parser exception as public IDLSyntaxError
-                        raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
-                    
-                    # Instantiate associated type object
-                    typeObj = i.typeClass(self._module, info)
-                    
-                    # Assign previously accumulated annotations to the newly created type
-                    typeObj._assignAnnotations( parser.getAnnotations() )  
-                    
-                    foundParser = True
-                    
-                    # Add type global environment types
-                    try:
-                        self._module.env._addType( typeObj )
-                    except IDLTypeError as e:
-                        # Re-raise it with added line
-                        raise IDLTypeError(self._module, startToken.location[0], e.message)
-                    
-                    # Add type to our types (used later for linking)
-                    self._types.append( typeObj )
-                    
-                    # Add type to module types
-                    self._module.types.append( typeObj )
-                    
-                    break
-                
-            if not foundParser:
-                # Found an unexpected token (no parsers found)
-                raise IDLSyntaxError(self._module, parser.next.location[0], parser.next.locationStr)
-
+            # Instantiate a parser class and create type info (consumes tokens)
+            try:
+                info = typeParser.parserClass(tokens).parse()
+            except ParserError as e:
+                # Re-reaise the parser exception as public IDLSyntaxError
+                raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
+            
+            # Instantiate associated type object
+            typeObj = typeParser.typeClass(self._module, info)
+            
+            # Assign previously accumulated annotations to the newly created type
+            typeObj._assignAnnotations( self._tokenParser.getAnnotations() )  
+            
+            # Add type global environment types
+            try:
+                self._module.env._addType( typeObj )
+            except IDLTypeError as e:
+                # Re-raise it with added line
+                raise IDLTypeError(self._module, startToken.location[0], e.message)
+            
+            # Add type to our types (used later for linking)
+            self._types.append( typeObj )
+            
+            # Add type to module types
+            self._module.types.append( typeObj )
+            
+    def _findParser(self):
+        '''
+        Finds a suitable parser for the next token in the queue.
+        '''
+        
+        for parser in Compiler.PARSERS:
+            if parser.startTokenID == self._tokenParser.next.id and parser.startTokenName == self._tokenParser.next.body:
+                return parser
+            
+        return None
+    
     def link(self):
+        '''
+        Links type created by self.compile
+        '''
+        
         # Just iterate over all the types we created and link them
         for typeObj in self._types:
             typeObj._link()
-
     
