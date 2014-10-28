@@ -2,11 +2,12 @@
 
 from distutils.core import setup
 
+import idl
 
 setup(
       name = 'libIDL',
       
-      version = '1.0',
+      version = idl.__version__,
       
       description = 'IDL parser tool',
       
