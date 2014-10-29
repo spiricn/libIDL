@@ -121,7 +121,7 @@ class Module(TypeGetter):
                 typePackage = self.env.getPackage( importInfo[:-1] )
                 
                 if not typePackage:
-                    raise IDLError('Unexisting package %r' % ('.'.join(typePackage)))
+                    raise IDLError('Unexisting package %r' % ('.'.join(importInfo)))
                 
                 # Find type in subpackage
                 typeName = importInfo[-1]

@@ -33,6 +33,10 @@ class Environment(TypeGetter):
         self._packages = []
         
     @property
+    def packages(self):
+        return self._packages
+        
+    @property
     def types(self):
         '''
         List of all types defined in this environment.
