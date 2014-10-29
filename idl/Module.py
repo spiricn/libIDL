@@ -10,7 +10,6 @@ class Module(TypeGetter):
         self._name = name
         self._types = []
         self._filePath = '' if not filePath else os.path.abspath(filePath)
-        self._path = []
         self._package = None
 
     @property
@@ -20,10 +19,6 @@ class Module(TypeGetter):
         '''
         
         return self._package
-    
-    @property
-    def path(self):
-        return self._path
     
     @property
     def env(self):
@@ -85,5 +80,8 @@ class Module(TypeGetter):
         return TypeInstance(baseType, typeInfo)
     
     def _setPackage(self, package):
+        '''
+        Sets the parent package (called by the compiler
+        '''
+        
         self._package = package
-

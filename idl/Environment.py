@@ -78,8 +78,8 @@ class Environment(TypeGetter):
         
         return modules[0]
     
-    def getModuleByPath(self, path):
-        for i in self._modules:
+    def getPackage(self, path):
+        for i in self._packages:
             if i.path == path:
                 return i
             
