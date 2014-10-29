@@ -14,6 +14,7 @@ class Module(TypeGetter):
         self._package = None
         self._importsInfo = None
         self._importedPackages = []
+        self._importedTypes = []
         
     @property
     def package(self):
@@ -69,6 +70,12 @@ class Module(TypeGetter):
         
         baseType = None
         
+        # Imported types
+        
+        for i in self._importedTypes:
+            if i.name == typeInfo.name:
+                return TypeInstance(i, typeInfo)
+        
         for location in typeSearch: 
             for i in location.types:
                 if i.name == typeInfo.name:
@@ -95,17 +102,34 @@ class Module(TypeGetter):
         self._importsInfo = importsInfo
         
     def _link(self):
-        for packagePath in self._importsInfo.packages:
-            if packagePath == self.package.path:
+        for importInfo in self._importsInfo.imports:
+            if importInfo == self.package.path:
                 # Cause a warning maybe ?
                 continue
             
-            package = self.env.getPackage(packagePath)
+            # Is it a package ?
+            package = self.env.getPackage(importInfo)
             
-            if not package:
-                raise IDLError('Unexisting package %r' % ('.'.join(packagePath)))
-            
-            if package in self._importedPackages:
-                raise IDLError('Attempting to import package %r twice' % ('.'.join(packagePath)))
-            
-            self._importedPackages.append( package )
+            if package:
+                if package in self._importedPackages:
+                    raise IDLError('Attempting to import package %r twice' % ('.'.join(importInfo)))
+                
+                self._importedPackages.append( package )
+                
+            else:
+                # It may be a type
+                typePackage = self.env.getPackage( importInfo[:-1] )
+                
+                if not typePackage:
+                    raise IDLError('Unexisting package %r' % ('.'.join(typePackage)))
+                
+                # Find type in subpackage
+                typeName = importInfo[-1]
+                
+                typeObj = typePackage.getType( typeName )
+                
+                if not typeObj:
+                    raise IDLError('Unkown type %r' % '.'.join(importInfo))
+                
+                else:
+                    self._importedTypes.append( typeObj )

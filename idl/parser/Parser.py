@@ -21,8 +21,8 @@ class Parser(object):
             self.package = package
             
     class ImportsInfo:
-        def __init__(self, packages):
-            self.packages = packages
+        def __init__(self, imports):
+            self.imports = imports
              
     def __init__(self, tokens):
         self.tokens = tokens
@@ -97,7 +97,10 @@ class Parser(object):
         if self.next.id == Token.PUNCTUATION and self.next.body == '@':
             self.pop()
             
-            name = self.eat(Token.ID).body
+            if self.next.id in [Token.ID, Token.STRING_LIT]:
+                name = self.pop().body 
+            else:
+                raise ParserError('Unexpected token while parsing annotation', self.next)
             
             if self.next.id == Token.PUNCTUATION and self.next.body == '=':
                 self.pop()
@@ -160,12 +163,12 @@ class Parser(object):
             
         return Parser.TypeInfo(name, [i.body for i in keywords], arraySize)
     
-    def _eatPackagePathInfo(self):
-        package = []
+    def _eatImportPathInfo(self):
+        importInfo = []
         
         while True:
             # Eat package component
-            package.append( self.eat(Token.ID).body )
+            importInfo.append( self.eat(Token.ID).body )
             
             if self.next.id == Token.PUNCTUATION:
                 if self.next.body == '.':
@@ -180,7 +183,7 @@ class Parser(object):
             else:
                 raise ParserError('Unexpected token while parsing package declaration', self.next)
             
-        return package
+        return importInfo
         
     def eatPackageInfo(self):
         if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_PACKAGE ):
@@ -188,7 +191,7 @@ class Parser(object):
             self.pop()
 
             # Eat the package we're declaring
-            package = self._eatPackagePathInfo()
+            package = self._eatImportPathInfo()
             
             # Eat semicolon
             self.eat(Token.PUNCTUATION, ';')
@@ -199,7 +202,7 @@ class Parser(object):
             return None
         
     def eatImportsInfo(self):
-        packages = []
+        imports = []
         
         while True:
             if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_IMPORT ):
@@ -207,9 +210,9 @@ class Parser(object):
                 self.pop()
                 
                 # Eat the package we're importing
-                package = self._eatPackagePathInfo()
+                package = self._eatImportPathInfo()
                 
-                packages.append(package)
+                imports.append(package)
                 
                 # Eat semicolon
                 self.eat(Token.PUNCTUATION, ';')
@@ -217,7 +220,7 @@ class Parser(object):
             else:
                 break
             
-        return Parser.ImportsInfo(packages)
+        return Parser.ImportsInfo(imports)
     
     def _debug(self, numTokens=1):
         print([str(self.tokens[index]) for index in range(numTokens)])
