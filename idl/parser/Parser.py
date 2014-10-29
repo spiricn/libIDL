@@ -1,6 +1,6 @@
 from idl.lexer import Lang
+from idl.lexer.Lang import KEYWORD_PACKAGE
 from idl.lexer.Token import Token
-
 from idl.parser.ParserError import ParserError
 
 
@@ -15,6 +15,10 @@ class Parser(object):
         def __init__(self, name='', value=''):
             self.name = name
             self.value = value
+            
+    class PackageInfo:
+        def __init__(self, package):
+            self.package = package
              
     def __init__(self, tokens):
         self.tokens = tokens
@@ -151,6 +155,34 @@ class Parser(object):
             
             
         return Parser.TypeInfo(name, [i.body for i in keywords], arraySize)
+    
+    def eatPackageInfo(self):
+        package = []
+        
+        if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_PACKAGE ):
+            # Eat package keyword
+            self.pop()
+            
+            while True:
+                # Eat package component
+                package.append( self.eat(Token.ID).body )
+                
+                if self.next.id == Token.PUNCTUATION:
+                    if self.next.body == '.':
+                        self.pop()
+                    elif self.next.body == ';':
+                        self.pop()
+                        break
+                    else:
+                        raise ParserError('Unexpected token while parsing package declaration', self.next)
+                    
+                else:
+                    raise ParserError('Unexpected token while parsing package declaration', self.next)
+                
+            return Parser.PackageInfo(package)
+        
+        else:
+            return None
     
     def _debug(self, numTokens=1):
         print([str(self.tokens[index]) for index in range(numTokens)])

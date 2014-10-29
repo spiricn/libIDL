@@ -60,9 +60,20 @@ class Compiler:
             # Re-reaise the lexer exception as public IDLSyntaxError
             raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
         
-        # Parser used for generating type annotations
+        # Parser used for generating type annotations & package info
         self._tokenParser = Parser(tokens)
         
+        # Parse package
+        try:
+            packageInfo = self._tokenParser.eatPackageInfo()
+        except ParserError as e:
+            raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
+
+        if not packageInfo:
+            raise IDLSyntaxError(self._module, self._tokenParser.next.location[0] if self._tokenParser.tokens else 0, 'Missing package declaration in module')
+        
+        self._module._setPath( packageInfo.package )
+
         # While there are tokens to compile ..
         while tokens:
             # Consume all annotations before type declaration

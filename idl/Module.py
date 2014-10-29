@@ -10,7 +10,12 @@ class Module(TypeGetter):
         self._name = name
         self._types = []
         self._filePath = '' if not filePath else os.path.abspath(filePath)
+        self._path = []
 
+    @property
+    def path(self):
+        return self._path
+    
     @property
     def env(self):
         '''
@@ -42,6 +47,13 @@ class Module(TypeGetter):
         '''
         
         return self._filePath
+    
+    def _setPath(self, path):
+        '''
+        Set the package path (called by the compiler)
+        '''
+        
+        self._path = path
     
     def _resolveType(self, typeInfo):
         baseType = None 

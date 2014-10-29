@@ -88,6 +88,7 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'\;', Token.PUNCTUATION, True),
                 TokenTypeInfo(r'\=', Token.PUNCTUATION, True),
                 TokenTypeInfo(r'\,', Token.PUNCTUATION, True),
+                TokenTypeInfo(r'\.', Token.PUNCTUATION, True),
                 
                 # Keywords
                 TokenTypeInfo(r'^' + KEYWORD_INTERFACE + r'$', Token.KEYWORD, True),
