@@ -12,6 +12,7 @@ def sampleMain():
     '''
     # IDL source code
     inputSource = '''\
+    package com.example.structure;
     
     // Basic structure with couple of fields
     struct SampleStruct{
@@ -28,7 +29,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compileSource( inputSource )
+    module = env.compileSource( inputSource, 'StructExample')
     
     # Get the structure from the module
     struct = module.getStructure('SampleStruct')

@@ -12,6 +12,7 @@ def sampleMain():
     '''
     # IDL source code
     inputSource = '''\
+    package com.example.iface;
     
     interface TestInterface {
         void testMethod1(int32 arg1, int32 arg2);
@@ -24,7 +25,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compileSource( inputSource )
+    module = env.compileSource( inputSource, 'InterfaceExample' )
     
     # Get the interface from the module
     interface = module.getInterface('TestInterface')

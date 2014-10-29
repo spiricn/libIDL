@@ -13,6 +13,7 @@ def sampleMain():
     '''
     # IDL source code
     inputSource = '''\
+    package com.example.callback;
 
     interface CallbackInterface{
         // Callback method
@@ -34,7 +35,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compileSource( inputSource )
+    module = env.compileSource( inputSource, 'CallbackExample' )
     
     # Get the test interface
     iface = module.getInterface('TestInterface')

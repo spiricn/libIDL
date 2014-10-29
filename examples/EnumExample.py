@@ -12,6 +12,7 @@ def sampleMain():
     '''
     # IDL source code
     inputSource = '''\
+    package com.example.enumeration;
     
     enum Animals {
         CAT
@@ -25,7 +26,7 @@ def sampleMain():
     env = Environment()
     
     # Compile the IDL source as a module
-    module = env.compileSource( inputSource )
+    module = env.compileSource( inputSource, 'EnumExample' )
     
     # Get the enum object from the module
     enum = module.getEnum('Animals')
