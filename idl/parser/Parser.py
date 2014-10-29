@@ -1,5 +1,5 @@
 from idl.lexer import Lang
-from idl.lexer.Lang import KEYWORD_PACKAGE
+from idl.lexer.Lang import KEYWORD_PACKAGE, KEYWORD_IMPORT
 from idl.lexer.Token import Token
 from idl.parser.ParserError import ParserError
 
@@ -19,6 +19,10 @@ class Parser(object):
     class PackageInfo:
         def __init__(self, package):
             self.package = package
+            
+    class ImportsInfo:
+        def __init__(self, packages):
+            self.packages = packages
              
     def __init__(self, tokens):
         self.tokens = tokens
@@ -156,33 +160,64 @@ class Parser(object):
             
         return Parser.TypeInfo(name, [i.body for i in keywords], arraySize)
     
-    def eatPackageInfo(self):
+    def _eatPackagePathInfo(self):
         package = []
         
-        if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_PACKAGE ):
-            # Eat package keyword
-            self.pop()
+        while True:
+            # Eat package component
+            package.append( self.eat(Token.ID).body )
             
-            while True:
-                # Eat package component
-                package.append( self.eat(Token.ID).body )
-                
-                if self.next.id == Token.PUNCTUATION:
-                    if self.next.body == '.':
-                        self.pop()
-                    elif self.next.body == ';':
-                        self.pop()
-                        break
-                    else:
-                        raise ParserError('Unexpected token while parsing package declaration', self.next)
+            if self.next.id == Token.PUNCTUATION:
+                if self.next.body == '.':
+                    self.pop()
                     
+                elif self.next.body == ';':
+                    break
+                
                 else:
                     raise ParserError('Unexpected token while parsing package declaration', self.next)
                 
+            else:
+                raise ParserError('Unexpected token while parsing package declaration', self.next)
+            
+        return package
+        
+    def eatPackageInfo(self):
+        if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_PACKAGE ):
+            # Eat package keyword
+            self.pop()
+
+            # Eat the package we're declaring
+            package = self._eatPackagePathInfo()
+            
+            # Eat semicolon
+            self.eat(Token.PUNCTUATION, ';')
+            
             return Parser.PackageInfo(package)
         
         else:
             return None
+        
+    def eatImportsInfo(self):
+        packages = []
+        
+        while True:
+            if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_IMPORT ):
+                # Eat import keyword
+                self.pop()
+                
+                # Eat the package we're importing
+                package = self._eatPackagePathInfo()
+                
+                packages.append(package)
+                
+                # Eat semicolon
+                self.eat(Token.PUNCTUATION, ';')
+
+            else:
+                break
+            
+        return Parser.ImportsInfo(packages)
     
     def _debug(self, numTokens=1):
         print([str(self.tokens[index]) for index in range(numTokens)])

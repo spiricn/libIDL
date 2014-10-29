@@ -11,7 +11,9 @@ class Module(TypeGetter):
         self._types = []
         self._filePath = '' if not filePath else os.path.abspath(filePath)
         self._package = None
-
+        self._importsInfo = None
+        self._importedPackages = []
+        
     @property
     def package(self):
         '''
@@ -62,6 +64,8 @@ class Module(TypeGetter):
     def _resolveType(self, typeInfo):
         typeSearch = [self.env, self.package]
         
+        typeSearch += self._importedPackages
+        
         baseType = None
         
         for location in typeSearch: 
@@ -85,3 +89,21 @@ class Module(TypeGetter):
         '''
         
         self._package = package
+        
+    def _setImportsInfo(self, importsInfo):
+        self._importsInfo = importsInfo
+        
+    def _link(self):
+        for packagePath in self._importsInfo.packages:
+            if packagePath == self.package.path:
+                raise RuntimeError('Package %r attempting to import itself' % ('.'.join(packagePath)))
+            
+            package = self.env.getPackage(packagePath)
+            
+            if not package:
+                raise RuntimeError('Unexisting package %r' % ('.'.join(packagePath)))
+            
+            if package in self._importedPackages:
+                raise RuntimeError('Attempting to import package %r twice' % ('.'.join(packagePath)))
+            
+            self._importedPackages.append( package )

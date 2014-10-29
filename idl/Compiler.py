@@ -75,6 +75,11 @@ class Compiler:
         # Create or acquire package
         package = self._module.env._createPackage(packageInfo.package)
         
+        # Imports
+        imports = self._tokenParser.eatImportsInfo()
+        
+        self._module._setImportsInfo( imports )
+        
         # Add the module
         package._addModule(self._module)
 

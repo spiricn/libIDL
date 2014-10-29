@@ -108,6 +108,9 @@ class Environment(TypeGetter):
             # Add to list
             self._modules.append(module)
 
+        for module in createdModules:
+            module._link()
+
         # Link            
         for entry in entries:
             entry.compiler.link()
