@@ -20,32 +20,34 @@ KEYWORD_CALLBACK_REG = r'callback_register'
 
 KEYWORD_CALLBACK_UNREG = r'callback_unregister'
 
+KEYWORD_PACKAGE = r'package'
+
 # Type names
-TYPE_INT64 = 'int64'
+TYPE_INT64 = r'int64'
 
-TYPE_UINT64 = 'uint64'
+TYPE_UINT64 = r'uint64'
 
-TYPE_INT32 = 'int32'
+TYPE_INT32 = r'int32'
 
-TYPE_UINT32 = 'uint32'
+TYPE_UINT32 = r'uint32'
 
-TYPE_INT16 = 'int16'
+TYPE_INT16 = r'int16'
 
-TYPE_UINT16 = 'uint16'
+TYPE_UINT16 = r'uint16'
 
-TYPE_INT8 = 'int8'
+TYPE_INT8 = r'int8'
 
-TYPE_UINT8 = 'uint8'
+TYPE_UINT8 = r'uint8'
 
-TYPE_FLOAT32 = 'float32'
+TYPE_FLOAT32 = r'float32'
 
-TYPE_FLOAT64 = 'float64'
+TYPE_FLOAT64 = r'float64'
 
-TYPE_VOID = 'void'
+TYPE_VOID = r'void'
 
-TYPE_STRING = 'string'
+TYPE_STRING = r'string'
 
-TYPE_BOOLEAN = 'boolean'
+TYPE_BOOLEAN = r'boolean'
                
 class TokenTypeInfo:
     '''
@@ -96,6 +98,7 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'^' + KEYWORD_OUT + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_CALLBACK_REG + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_CALLBACK_UNREG + r'$', Token.KEYWORD, True),
+                TokenTypeInfo(r'^' + KEYWORD_PACKAGE + r'$', Token.KEYWORD, True),
                 
                 # ID
                 TokenTypeInfo(r'^[a-zA-Z]+[a-zA-Z0-9_]*$', Token.ID, True),
