@@ -1,6 +1,8 @@
 from idl.IDLTypeError import IDLTypeError
 from idl.TypeGetter import TypeGetter
 
+from idl.IDLError import IDLError
+
 
 class Package(TypeGetter):
     def __init__(self, path):
@@ -30,7 +32,7 @@ class Package(TypeGetter):
         # Duplicate name check
         for i in self._modules:
             if i.name == module.name:
-                raise RuntimeError('Module named %r already exists in package %r' % (module.name, self.packageStr))
+                raise IDLError('Module named %r already exists in package %r' % (module.name, self.packageStr))
             
         module._setPackage(self)
         

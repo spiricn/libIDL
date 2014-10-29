@@ -1,7 +1,8 @@
-import os
-
 from idl.TypeGetter import TypeGetter
 from idl.TypeInstance import TypeInstance
+import os
+
+from idl.IDLError import IDLError
 
 
 class Module(TypeGetter):
@@ -96,14 +97,15 @@ class Module(TypeGetter):
     def _link(self):
         for packagePath in self._importsInfo.packages:
             if packagePath == self.package.path:
-                raise RuntimeError('Package %r attempting to import itself' % ('.'.join(packagePath)))
+                # Cause a warning maybe ?
+                continue
             
             package = self.env.getPackage(packagePath)
             
             if not package:
-                raise RuntimeError('Unexisting package %r' % ('.'.join(packagePath)))
+                raise IDLError('Unexisting package %r' % ('.'.join(packagePath)))
             
             if package in self._importedPackages:
-                raise RuntimeError('Attempting to import package %r twice' % ('.'.join(packagePath)))
+                raise IDLError('Attempting to import package %r twice' % ('.'.join(packagePath)))
             
             self._importedPackages.append( package )

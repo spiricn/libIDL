@@ -5,6 +5,7 @@ from idl.Type import Type
 from idl.TypeGetter import TypeGetter
 import os
 
+from idl.IDLError import IDLError
 from idl.Package import Package
 
 
@@ -134,7 +135,7 @@ class Environment(TypeGetter):
             try:
                 fileObj = open(path, 'r')
             except Exception as e:
-                raise RuntimeError('Error opening idl file %r:\n %s' % (path, str(e)))
+                raise IDLError('Error opening idl file %r:\n %s' % (path, str(e)))
             
             # Get the source code
             source = fileObj.read()
