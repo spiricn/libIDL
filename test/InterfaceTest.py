@@ -17,6 +17,8 @@ class InterfaceTest(TestBase):
         '''
         
         source = '''\
+        package com.test;
+        
 /*
 test
 comment block 2
@@ -31,9 +33,9 @@ interface TestInterface{
 '''
         env = Environment()
         
-        env.compileSource(source)
+        module = env.compileSource(source, 'testModule')
         
-        interfaces = env.getTypes(Type.INTERFACE)
+        interfaces = module.package.getTypes(Type.INTERFACE)
         
         self.assertEqual(len(interfaces), 1)
         
@@ -49,6 +51,8 @@ interface TestInterface{
         '''
          
         source = '''\
+        package com.test;
+        
 interface BasicInterface{
     void methodName(int32 arg1, uint32 arg2, string arg3);
 };
@@ -56,10 +60,10 @@ interface BasicInterface{
          
         env = Environment()
         
-        env.compileSource(source)
+        module = env.compileSource(source, 'testModule')
          
         # Check the interface name
-        interface = env.getTypes(Type.INTERFACE)
+        interface = module.package.getTypes(Type.INTERFACE)
         self.assertEqual(len(interface), 1)
         
         interface = interface[0]
@@ -100,6 +104,7 @@ interface BasicInterface{
         '''
 
         source = '''\
+        package com.test;
         
         interface CallbackInterface{
             void onCallback(int32 arg1);
@@ -112,7 +117,7 @@ interface BasicInterface{
         };
 '''
  
-        types = Environment().compileSource(source).types 
+        types = Environment().compileSource(source, 'testModule').types 
         
         self.assertEqual(len(types), 2)
         
@@ -158,6 +163,8 @@ interface BasicInterface{
         '''
         
         source = '''\
+        package com.test;
+        
         interface TestInterface1{
             void test();
         };
@@ -169,13 +176,13 @@ interface BasicInterface{
         
         env = Environment()
         
-        types = env.compileSource(source).types
+        module = env.compileSource(source, 'testModule')
         
-        self.assertEqual(len(types), 2)
+        self.assertEqual(len(module.package.types), 2)
         
-        iface1 = env.getInterface('TestInterface1')
+        iface1 = module.package.getInterface('TestInterface1')
         
-        iface2 = env.getInterface('TestInterface2')
+        iface2 = module.package.getInterface('TestInterface2')
         
         # Array of interfaces
         self.assertEqual(iface2.methods[0].args[1].type, iface1)
@@ -197,6 +204,7 @@ interface BasicInterface{
         '''
         
         src = '''\
+        package com.test;
         
         interface Test{
         void test(in int32 inArg, out int32 outArg);
@@ -204,7 +212,7 @@ interface BasicInterface{
         
         '''
         
-        module = Environment().compileSource(src)
+        module = Environment().compileSource(src, 'testModule')
         
         method = module.getInterface('Test').methods[0]
         
@@ -219,6 +227,8 @@ interface BasicInterface{
         
         # Duplicate method name test
         src = '''\
+            package com.test;
+            
             interface Test{
                 void test();
                 void test();
@@ -226,75 +236,85 @@ interface BasicInterface{
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
-            self.assertEqual(e.line, 2)
+            self.assertEqual(e.line, 4)
             
         # Duplicate argument name test
         src = '''\
+            package com.test;
+            
             interface Test{
                 void test(void dup, void dup);
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
-            self.assertEqual(e.line, 1)
+            self.assertEqual(e.line, 3)
             
         # Unresolved return type
         src = '''\
+            package com.test;
+            
             interface Test{
                 unresolved test();
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLTypeError as e:
-            self.assertEqual(e.line, 1)
+            self.assertEqual(e.line, 3)
         
         # Unresolved argument type
         src = '''\
+            package com.test;
+            
             interface Test{
                 void test(unresolved arg);
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLTypeError as e:
-            self.assertEqual(e.line, 1)
+            self.assertEqual(e.line, 3)
             
         # Duplicate return type modifier
         src = '''\
+            package com.test;
+            
             interface Test{
                 in in void test(unresolved arg);
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
-            self.assertEqual(e.line, 1)
+            self.assertEqual(e.line, 3)
             
         # Duplicate argument modifier
         src = '''\
+            package com.test;
+            
             interface Test{
                 in void test(in in void arg);
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
-            self.assertEqual(e.line, 1)
+            self.assertEqual(e.line, 3)
             
 if __name__ == '__main__':
     unittest.main()

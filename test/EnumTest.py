@@ -17,6 +17,8 @@ class EnumTest(unittest.TestCase):
         '''
         
         source = '''\
+        package com.test;
+
         enum TestEnum{
             first
             second
@@ -39,11 +41,11 @@ class EnumTest(unittest.TestCase):
 '''
         env = Environment()
         
-        types = env.compileSource(source).types
+        module = env.compileSource(source, 'testModule')
         
-        self.assertEqual(len(types), 3)
+        self.assertEqual(len(module.package.types), 3)
         
-        enum = types[0]
+        enum = module.package.types[0]
         
         # Test enum
         self.assertEqual(enum.id, Type.ENUM);
@@ -74,7 +76,7 @@ class EnumTest(unittest.TestCase):
         self.assertEqual(enum.fields[6].value, 012345)
         
         # Test interface
-        iface = env.getInterface("TestInterface")
+        iface = module.package.getInterface("TestInterface")
         self.assertNotEqual(iface, None)
         
         # Can enums be method args ?
@@ -83,7 +85,7 @@ class EnumTest(unittest.TestCase):
         # Can enums be method return types ?
         self.assertEqual(iface.methods[0].returnType.id, Type.ENUM)
         
-        struct = env.getStructure("TestStruct")
+        struct = module.package.getStructure("TestStruct")
         self.assertNotEqual(struct, None)
 
         # Can enums be struct fields ?
@@ -96,29 +98,31 @@ class EnumTest(unittest.TestCase):
         
         # Duplicate field name
         src = '''\
+            package com.test;
+            
             enum Test{
                 a a
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
-            self.assertEqual(e.line, 1)
+            self.assertEqual(e.line, 3)
             
         # Duplicate field value
         src = '''\
+            package com.test;
+        
             enum Test{
                 a(5) 
-            
-            
                 b(5)
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
             self.assertEqual(e.line, 4)

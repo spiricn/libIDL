@@ -18,6 +18,8 @@ class StructureTest(TestBase):
         '''
         
         source = '''\
+package com.test;
+
 // First structure
 struct Struct1 {
     int32 f1;
@@ -39,10 +41,10 @@ interface TestInterface{
 '''
         env = Environment()
         
-        env.compileSource(source)
+        module = env.compileSource(source, 'testModule')
         
         # Structure number
-        structs = env.getTypes(Type.STRUCTURE)
+        structs = module.package.getTypes(Type.STRUCTURE)
         self.assertEqual(len(structs), 2)
         s1,s2= structs
         f1,f2 = s1.fields, s2.fields
@@ -80,7 +82,7 @@ interface TestInterface{
         
         
         # Verify method
-        interface = env.getTypes(Type.INTERFACE)[0]
+        interface = module.package.getTypes(Type.INTERFACE)[0]
         
         methods = interface.methods
         self.assertEqual(len(methods), 1)
@@ -113,6 +115,8 @@ interface TestInterface{
         '''
         
         source = '''\
+        package com.test;
+
         struct A{
         };
         
@@ -123,7 +127,7 @@ interface TestInterface{
         
         env = Environment()
         
-        module = env.compileSource(source)
+        module = env.compileSource(source, 'testModule')
         
         types = module.types
         
@@ -143,6 +147,8 @@ interface TestInterface{
         
         # Duplicate field name test
         src = '''\
+            package com.test;
+            
             struct Test{
                 void dup;
                 void dup;
@@ -150,23 +156,25 @@ interface TestInterface{
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
-            self.assertEqual(e.line, 2)
+            self.assertEqual(e.line, 4)
             
         # Unresolved field type test
         src = '''\
+            package com.test;
+            
             struct Test{
                 unresolved dup;
             };
         '''
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLTypeError as e:
-            self.assertEqual(e.line, 1)
+            self.assertEqual(e.line, 3)
 
 if __name__ == '__main__':
     unittest.main()

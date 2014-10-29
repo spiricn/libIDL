@@ -11,7 +11,16 @@ class Module(TypeGetter):
         self._types = []
         self._filePath = '' if not filePath else os.path.abspath(filePath)
         self._path = []
+        self._package = None
 
+    @property
+    def package(self):
+        '''
+        The package object this module belongs to.
+        '''
+        
+        return self._package
+    
     @property
     def path(self):
         return self._path
@@ -56,10 +65,17 @@ class Module(TypeGetter):
         self._path = path
     
     def _resolveType(self, typeInfo):
-        baseType = None 
-        for i in self.env.types:
-            if i.name == typeInfo.name:
-                baseType = i
+        typeSearch = [self.env, self.package]
+        
+        baseType = None
+        
+        for location in typeSearch: 
+            for i in location.types:
+                if i.name == typeInfo.name:
+                    baseType = i
+                    break
+                
+            if baseType:
                 break
             
         if not baseType:
@@ -67,3 +83,7 @@ class Module(TypeGetter):
             return None
         
         return TypeInstance(baseType, typeInfo)
+    
+    def _setPackage(self, package):
+        self._package = package
+

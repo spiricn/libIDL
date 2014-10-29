@@ -13,6 +13,8 @@ class TypedefTest(TestBase):
         '''
         
         src = '''\
+        package com.test;
+        
         typedef DummyType1;
 
         typedef DummyType2;
@@ -28,19 +30,19 @@ class TypedefTest(TestBase):
 
         env = Environment()
         
-        types = env.compileSource(src).types
+        module = env.compileSource(src, 'testModule')
         
-        self.assertEqual(len(types), 4)
+        self.assertEqual(len(module.package.types), 4)
         
         # Defined ok ?
-        self.assertEqual(types[0].id, Type.TYPEDEF)
-        self.assertEqual(types[0].name, "DummyType1")
+        self.assertEqual(module.package.types[0].id, Type.TYPEDEF)
+        self.assertEqual(module.package.types[0].name, "DummyType1")
         
         # Defined ok?
-        self.assertEqual(types[1].id, Type.TYPEDEF)
-        self.assertEqual(types[1].name, "DummyType2")
+        self.assertEqual(module.package.types[1].id, Type.TYPEDEF)
+        self.assertEqual(module.package.types[1].name, "DummyType2")
         
-        iface = env.getInterface("TestInterface")
+        iface = module.package.getInterface("TestInterface")
         
         # Typedefs can be return types ?
         self.assertEqual(iface.methods[0].returnType, Type.TYPEDEF)

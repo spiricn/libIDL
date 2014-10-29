@@ -1,11 +1,11 @@
-import os
-
 from idl.Compiler import Compiler
+from idl.IDLTypeError import IDLTypeError
 from idl.Module import Module
 from idl.Type import Type
 from idl.TypeGetter import TypeGetter
+import os
 
-from idl.IDLTypeError import IDLTypeError
+from idl.Package import Package
 
 
 class Environment(TypeGetter):
@@ -27,7 +27,9 @@ class Environment(TypeGetter):
             self._types.append( Type(self, typeId) )
             
         # List of modules compiled by this environment
-        self.modules = []
+        self._modules = []
+        
+        self._packages = []
         
     @property
     def types(self):
@@ -36,29 +38,19 @@ class Environment(TypeGetter):
         '''
         
         return self._types
-            
-    def _addType(self, typeObj):
-        '''
-        Adds a new type to the list of types.
-        '''
-        
-        if self.getType(typeObj.name):
-            raise IDLTypeError(typeObj.module, 0, "Type named %r already exists" % typeObj.name)
-        
-        self._types.append( typeObj )
-        
+    
     def getModule(self, name):
         '''
         Gets a module object with the given name.
         '''
         
-        for i in self.modules:
+        for i in self._modules:
             if i.name == name:
                 return i
             
         return None
 
-    def compileSource(self, source, moduleName=None):
+    def compileSource(self, source, moduleName):
         '''
         Compiles given source code into a module with the given name.
         
@@ -85,6 +77,13 @@ class Environment(TypeGetter):
         modules = self._build([Environment.BuildEntry(moduleName, source, None)])
         
         return modules[0]
+    
+    def getModuleByPath(self, path):
+        for i in self._modules:
+            if i.path == path:
+                return i
+            
+        return None
                 
     def _build(self, entries):
         '''
@@ -94,16 +93,9 @@ class Environment(TypeGetter):
         # Modules created in this run
         createdModules = []
         
-        for entry in entries:
-            # Duplicate name check
-            if self.getModule(entry.moduleName):
-                raise RuntimeError('Module named %r already exists in environment' % entry.moduleName)
-                        
+        for entry in entries:                        
             # Create module object
             module = Module(self, entry.moduleName, entry.filePath)
-        
-            # Add to list
-            self.modules.append(module)
         
             # Create compiler
             entry.compiler = Compiler(module)
@@ -112,6 +104,9 @@ class Environment(TypeGetter):
             entry.compiler.compile(entry.source)
             
             createdModules.append( module )
+            
+            # Add to list
+            self._modules.append(module)
 
         # Link            
         for entry in entries:
@@ -168,3 +163,14 @@ class Environment(TypeGetter):
         modules = self.compileFiles([path])
         
         return modules[0]
+    
+    def _createPackage(self, path):
+        for package in self._packages:
+            if package.path == path:
+                return package
+            
+        package = Package(path)
+        
+        self._packages.append( package )
+        
+        return package

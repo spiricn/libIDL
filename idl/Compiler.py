@@ -72,7 +72,11 @@ class Compiler:
         if not packageInfo:
             raise IDLSyntaxError(self._module, self._tokenParser.next.location[0] if self._tokenParser.tokens else 0, 'Missing package declaration in module')
         
-        self._module._setPath( packageInfo.package )
+        # Create or acquire package
+        package = self._module.env._createPackage(packageInfo.package)
+        
+        # Add the module
+        package._addModule(self._module)
 
         # While there are tokens to compile ..
         while tokens:
@@ -108,7 +112,7 @@ class Compiler:
             
             # Add type global environment types
             try:
-                self._module.env._addType( typeObj )
+                self._module.package._addType( typeObj )
             except IDLTypeError as e:
                 # Re-raise it with added line
                 raise IDLTypeError(self._module, startToken.location[0], e.message)

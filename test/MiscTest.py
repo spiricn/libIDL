@@ -50,29 +50,30 @@ class MiscTest(TestBase):
         
         # Multiple type definition
         src = '''\
-        
+            package com.test;
         
             typedef type;
             typedef type;
         ''' 
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLTypeError as e:
             self.assertEqual(e.line, 3)        
             
         # Unrecognized token
         src = '''\
-
+            package com.test;
+            
             unrecognized
         ''' 
         
         try:
-            Environment().compileSource(src)
+            Environment().compileSource(src, 'testModule')
             self.fail()
         except IDLSyntaxError as e:
-            self.assertEqual(e.line, 1)        
+            self.assertEqual(e.line, 2)        
     
 if __name__ == '__main__':
     unittest.main()
