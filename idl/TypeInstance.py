@@ -136,9 +136,12 @@ class TypeInstance(object):
             # Since Type objects can't be arrays this is alwas false
             if self.isArray:
                 return False
-            else:
+            elif self.isPrimitive and other.isPrimitive:
                 # Compare base type
                 return self.type == other
+            
+            else:
+                return (self.type == other) and (self.name == other.name)
             
         elif isinstance(other, int):
             # Compare ids
