@@ -6,9 +6,8 @@ from idl.parser.ParserError import ParserError
 
 class MethodInfo:
     class ArgInfo:
-        def __init__(self, argTypeInfo, argName, line):
-            self.typeInfo = argTypeInfo
-            self.name = argName
+        def __init__(self, varInfo, line):
+            self.varInfo = varInfo
             self.line = line
         
     def __init__(self, line):
@@ -66,13 +65,10 @@ class MethodParser(Parser):
                 argLine = self.next.location[0]
                 
                 # Argument type
-                argTypeInfo = self.eatTypeInfo()
-                
-                # Argument name
-                argName = self.eat(Token.ID).body
+                varInfo = self.eatVariableInfo()
                 
                 # Create info
-                self.method.args.append( MethodInfo.ArgInfo(argTypeInfo, argName, argLine) )
+                self.method.args.append( MethodInfo.ArgInfo(varInfo, argLine) )
                 
                 expectingArg = False
                 

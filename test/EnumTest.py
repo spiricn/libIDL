@@ -26,7 +26,6 @@ class EnumTest(unittest.TestCase):
             fourth(42)
             fifth(0b11111111)
             sixth(0xC2Ab3)
-            seventh(012345)
         }; // </TestEnum>
         
         struct TestStruct{
@@ -52,7 +51,7 @@ class EnumTest(unittest.TestCase):
         
         self.assertEqual(enum.name, 'TestEnum')
         
-        self.assertEqual(len(enum.fields), 7)
+        self.assertEqual(len(enum.fields), 6)
         
         self.assertEqual(enum.fields[0].name, "first")
         self.assertEqual(enum.fields[0].value, 0)
@@ -72,9 +71,6 @@ class EnumTest(unittest.TestCase):
         self.assertEqual(enum.fields[5].name, "sixth")
         self.assertEqual(enum.fields[5].value, 0xC2Ab3)
         
-        self.assertEqual(enum.fields[6].name, "seventh")
-        self.assertEqual(enum.fields[6].value, 012345)
-        
         # Test interface
         iface = module.package.getInterface("TestInterface")
         self.assertNotEqual(iface, None)
@@ -83,7 +79,7 @@ class EnumTest(unittest.TestCase):
         self.assertEqual(iface.methods[0].args[0].type.id, Type.ENUM)
         
         # Can enums be method return types ?
-        self.assertEqual(iface.methods[0].returnType.id, Type.ENUM)
+        self.assertEqual(iface.methods[0].ret.type, Type.ENUM)
         
         struct = module.package.getStructure("TestStruct")
         self.assertNotEqual(struct, None)

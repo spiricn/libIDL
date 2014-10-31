@@ -1,5 +1,4 @@
 from idl.TypeGetter import TypeGetter
-from idl.TypeInstance import TypeInstance
 import os
 
 from idl.IDLError import IDLError
@@ -74,11 +73,11 @@ class Module(TypeGetter):
         
         for i in self._importedTypes:
             if i.name == typeInfo.name:
-                return TypeInstance(i, typeInfo)
+                return i
         
         for location in typeSearch: 
             for i in location.types:
-                if i.name == typeInfo.name:
+                if i.name == typeInfo.typeName:
                     baseType = i
                     break
                 
@@ -89,7 +88,8 @@ class Module(TypeGetter):
             # undefined reference
             return None
         
-        return TypeInstance(baseType, typeInfo)
+        
+        return baseType
     
     def _setPackage(self, package):
         '''

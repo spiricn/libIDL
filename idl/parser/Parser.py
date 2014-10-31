@@ -6,10 +6,15 @@ from idl.parser.ParserError import ParserError
 
 class Parser(object):
     class TypeInfo:
-        def __init__(self, name='', mods=[], arraySize=None):
-            self.name = name
+        def __init__(self, typeName='', mods=[], arraySize=None):
+            self.typeName = typeName
             self.arraySize = arraySize
             self.mods = mods
+            
+    class VariableInfo:
+        def __init__(self, typeInfo, name):
+            self.typeInfo = typeInfo
+            self.name = name
             
     class AnnotationInfo:
         def __init__(self, name='', value=''):
@@ -125,6 +130,15 @@ class Parser(object):
         else:
             return None
         
+    def eatVariableInfo(self):
+        # Eat variable type
+        typeInfo = self.eatTypeInfo()
+        
+        # Variable name
+        name = self.eat(Token.ID).body
+        
+        return Parser.VariableInfo(typeInfo, name)
+    
     def eatTypeInfo(self):
         keywords = []
             

@@ -45,7 +45,7 @@ class TypedefTest(TestBase):
         iface = module.package.getInterface("TestInterface")
         
         # Typedefs can be return types ?
-        self.assertEqual(iface.methods[0].returnType, Type.TYPEDEF)
+        self.assertEqual(iface.methods[0].ret.type, Type.TYPEDEF)
         
         # Typedefs can be method args ?
         self.assertEqual(iface.methods[0].args[0].type, Type.TYPEDEF)

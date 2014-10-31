@@ -95,7 +95,7 @@ interface BasicInterface{
         self.assertEqual(arg3.type, Type.STRING)
          
         # Return value
-        self.assertEqual(method.returnType, Type.VOID)
+        self.assertEqual(method.ret.type, Type.VOID)
          
          
     def test_callback(self):
@@ -185,18 +185,17 @@ interface BasicInterface{
         iface2 = module.package.getInterface('TestInterface2')
         
         # Array of interfaces
-        self.assertEqual(iface2.methods[0].args[1].type.type, iface1)
+        self.assertEqual(iface2.methods[0].args[1].type, iface1)
 
         # Array return type
-        self.assertTrue(iface2.methods[0].returnType.isArray)
+        self.assertTrue(iface2.methods[0].ret.isArray)
 
         # Array size test (should probably be moved elswhere)        
-        self.assertEqual(iface2.methods[0].returnType.arraySize, 45)
+        self.assertEqual(iface2.methods[0].ret.arraySize, 45)
         
-        self.assertEqual(iface2.methods[0].args[0].type.arraySize, 56)
+        self.assertEqual(iface2.methods[0].args[0].arraySize, 56)
         
-        
-        self.assertEqual(iface2.methods[0].args[1].type.arraySize, -1)
+        self.assertEqual(iface2.methods[0].args[1].arraySize, -1)
 
     def test_modifiers(self):
         '''
@@ -216,9 +215,9 @@ interface BasicInterface{
         
         method = module.getInterface('Test').methods[0]
         
-        self.assertTrue( method.args[0].type.mod(Type.MOD_IN) )
+        self.assertTrue( method.args[0].mod(Type.MOD_IN) )
         
-        self.assertTrue( method.args[1].type.mod(Type.MOD_OUT) )
+        self.assertTrue( method.args[1].mod(Type.MOD_OUT) )
         
     def test_errors(self):
         '''
