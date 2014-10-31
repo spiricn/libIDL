@@ -15,6 +15,14 @@ class Module(TypeGetter):
         self._importedTypes = []
         
     @property
+    def path(self):
+        packagePath = self.package.path
+        
+        packagePath.append( self.name )
+        
+        return packagePath
+        
+    @property
     def package(self):
         '''
         The package object this module belongs to.
