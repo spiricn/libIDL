@@ -41,7 +41,7 @@ def sampleMain():
         print('\tName: %r' % method.name)
         
         # Method return type
-        print('\tType: %r' % method.returnType.name)
+        print('\tType: %r' % method.ret.type.name)
         
         # Arguments
         for arg in method.args:
