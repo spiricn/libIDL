@@ -103,6 +103,14 @@ class Type(Annotatable):
             raise NotImplementedError('Invalid type id')
         
     @property
+    def path(self):
+        modulePath = self.module.path
+        
+        modulePath.append( self.name )
+        
+        return modulePath
+    
+    @property
     def name(self):
         '''
         Type name.
