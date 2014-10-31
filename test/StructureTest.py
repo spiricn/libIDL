@@ -135,10 +135,10 @@ interface TestInterface{
         self.assertEqual(len(types), 2)
         
         # Array field created
-        self.assertEqual(types[1].fields[0].type, Type.STRUCTURE)
+        self.assertEqual(types[1].fields[0].type.type, Type.STRUCTURE)
         
         # Array of structures
-        self.assertEqual(types[1].fields[0].type, types[0])
+        self.assertEqual(types[1].fields[0].type.type, types[0])
 
     def test_errors(self):
         '''

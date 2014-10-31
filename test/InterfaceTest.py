@@ -185,7 +185,7 @@ interface BasicInterface{
         iface2 = module.package.getInterface('TestInterface2')
         
         # Array of interfaces
-        self.assertEqual(iface2.methods[0].args[1].type, iface1)
+        self.assertEqual(iface2.methods[0].args[1].type.type, iface1)
 
         # Array return type
         self.assertTrue(iface2.methods[0].returnType.isArray)
