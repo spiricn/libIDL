@@ -36,12 +36,12 @@ class TypeInstance(object):
         self._arraySize = None if not info else info.arraySize
         
     @property
-    def baseType(self):
+    def type(self):
         '''
         Base type object of this instance (i.e. idl.Type stored in environment/module lists)
         '''
           
-        return TypeInstance(self._type, None)
+        return self._type
     
     @property
     def annotations(self):
@@ -59,6 +59,7 @@ class TypeInstance(object):
         
         if self.isArray:
             return False
+        
         else:
             return self._type.isPrimitive()
     
@@ -114,7 +115,41 @@ class TypeInstance(object):
         return False if self._mods & modId == 0 else True
             
     def __eq__(self, other):
-        return self._type == other
+        if isinstance(other, TypeInstance):
+            if not self.isPrimitive and not other.isPrimitive:
+                # Not the same type
+                if self.type != other.type:
+                    return False
+                
+                elif self.isArray == other.isArray:
+                    # Both are either arrays or not arrays, in either way compare names
+                    return self.type.name == other.type.name
+                
+                else:
+                    # One is an array the other isn't
+                    return False
+            else:
+                # Both are primitives, so compare types
+                return self.type == other.type
+            
+        elif isinstance(other, Type):
+            # Since Type objects can't be arrays this is alwas false
+            if self.isArray:
+                return False
+            else:
+                # Compare base type
+                return self.type == other
+            
+        elif isinstance(other, int):
+            # Compare ids
+            if self.isArray:
+                return False
+            else:
+                # Compare base type
+                return self.type == other
+            
+        else:
+            raise RuntimeError('Invalid comparison of types %s' % str(other))
     
     def __ne__(self, other):
         return not (self == other)
