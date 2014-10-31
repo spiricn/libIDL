@@ -52,6 +52,17 @@ class Package(TypeGetter):
         
         return path
     
+    def getModule(self, name):
+        '''
+        Gets a module object with the given name.
+        '''
+        
+        for i in self._modules:
+            if i.name == name:
+                return i
+            
+        return None
+    
     @property
     def parent(self):
         return self._parent

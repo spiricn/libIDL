@@ -27,29 +27,6 @@ class Environment(Package):
         for typeId in Type.primitives:
             self._addType( Type(self, typeId) )
 
-    @property
-    def packages(self):
-        return self._packages
-        
-    @property
-    def types(self):
-        '''
-        List of all types defined in this environment.
-        '''
-        
-        return self._types
-    
-    def getModule(self, name):
-        '''
-        Gets a module object with the given name.
-        '''
-        
-        for i in self._modules:
-            if i.name == name:
-                return i
-            
-        return None
-
     def compileSource(self, source, moduleName):
         '''
         Compiles given source code into a module with the given name.
