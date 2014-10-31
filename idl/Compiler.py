@@ -43,8 +43,10 @@ class Compiler:
             ParserInfo(Typedef, TypedefParser, Token.KEYWORD, Lang.KEYWORD_TYPEDEF),
     ]
     
-    def __init__(self, module):
+    def __init__(self, env, module):
         self._module = module
+        
+        self._env = env
     
         self._types = []
         
@@ -73,7 +75,7 @@ class Compiler:
             raise IDLSyntaxError(self._module, self._tokenParser.next.location[0] if self._tokenParser.tokens else 0, 'Missing package declaration in module')
         
         # Create or acquire package
-        package = self._module.env._createChildTree(packageInfo.package)
+        package = self._env._createChildTree(packageInfo.package)
         
         # Imports
         imports = self._tokenParser.eatImportsInfo()

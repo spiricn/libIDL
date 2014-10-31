@@ -5,12 +5,11 @@ from idl.IDLError import IDLError
 
 
 class Module(TypeGetter):
-    def __init__(self, env, name, filePath=None):
-        self._env = env
+    def __init__(self, name, filePath):
+        self._package = None
         self._name = name
         self._types = []
         self._filePath = '' if not filePath else os.path.abspath(filePath)
-        self._package = None
         self._importsInfo = None
         self._importedPackages = []
         self._importedTypes = []
@@ -22,14 +21,6 @@ class Module(TypeGetter):
         '''
         
         return self._package
-    
-    @property
-    def env(self):
-        '''
-        Parent environment of this module.
-        '''
-        
-        return self._env
     
     @property
     def name(self):
@@ -63,7 +54,7 @@ class Module(TypeGetter):
         self._path = path
     
     def _resolveType(self, typeInfo):
-        typeSearch = [self.env, self.package]
+        typeSearch = [self.package.env, self.package]
         
         typeSearch += self._importedPackages
         
@@ -108,7 +99,7 @@ class Module(TypeGetter):
                 continue
             
             # Is it a package ?
-            package = self.env.getChild(importInfo)
+            package = self.package.env.getChild(importInfo)
             
             if package:
                 if package in self._importedPackages:
@@ -118,7 +109,7 @@ class Module(TypeGetter):
                 
             else:
                 # It may be a type
-                typePackage = self.env.getChild( importInfo[:-1] )
+                typePackage = self.package.env.getChild( importInfo[:-1] )
                 
                 if not typePackage:
                     raise IDLError('Unexisting package %r' % ('.'.join(importInfo)))

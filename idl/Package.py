@@ -5,17 +5,22 @@ from idl.IDLError import IDLError
 
 
 class Package(TypeGetter):
-    def __init__(self, parent, name):
+    def __init__(self, env, parent, name):
         TypeGetter.__init__(self)
         
+        self._env = env
         self._parent = parent
         self._modules = []
         self._types = []
         self._name = name
         self._children = []
         
+    @property
+    def env(self):
+        return self._env
+    
     def _createChildPackage(self, name):
-        package = Package(self, name) 
+        package = Package(self.env, self, name) 
         
         if self.getChild(name):
             raise RuntimeError('Package with name %r already exists' % name)

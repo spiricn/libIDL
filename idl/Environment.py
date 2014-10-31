@@ -21,7 +21,7 @@ class Environment(Package):
             self.filePath = filePath
             
     def __init__(self):
-        Package.__init__(self, None, '')
+        Package.__init__(self, self, None, '')
         
         # Add primitives to the list
         for typeId in Type.primitives:
@@ -65,10 +65,10 @@ class Environment(Package):
         
         for entry in entries:                        
             # Create module object
-            module = Module(self, entry.moduleName, entry.filePath)
+            module = Module(entry.moduleName, entry.filePath)
         
             # Create compiler
-            entry.compiler = Compiler(module)
+            entry.compiler = Compiler(self, module)
         
             # Compile
             entry.compiler.compile(entry.source)
