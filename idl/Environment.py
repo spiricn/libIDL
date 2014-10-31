@@ -9,7 +9,7 @@ from idl.IDLError import IDLError
 from idl.Package import Package
 
 
-class Environment(TypeGetter):
+class Environment(Package):
     class BuildEntry:
         '''
         Helper class used for compiling.
@@ -21,17 +21,12 @@ class Environment(TypeGetter):
             self.filePath = filePath
             
     def __init__(self):
-        self._types = []
+        Package.__init__(self, None, '')
         
         # Add primitives to the list
         for typeId in Type.primitives:
-            self._types.append( Type(self, typeId) )
-            
-        # List of modules compiled by this environment
-        self._modules = []
-        
-        self._packages = []
-        
+            self._addType( Type(self, typeId) )
+
     @property
     def packages(self):
         return self._packages
@@ -83,13 +78,6 @@ class Environment(TypeGetter):
         
         return modules[0]
     
-    def getPackage(self, path):
-        for i in self._packages:
-            if i.path == path:
-                return i
-            
-        return None
-                
     def _build(self, entries):
         '''
         Compiles a list of build entries.
@@ -172,13 +160,3 @@ class Environment(TypeGetter):
         
         return modules[0]
     
-    def _createPackage(self, path):
-        for package in self._packages:
-            if package.path == path:
-                return package
-            
-        package = Package(path)
-        
-        self._packages.append( package )
-        
-        return package

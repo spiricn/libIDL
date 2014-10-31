@@ -108,7 +108,7 @@ class Module(TypeGetter):
                 continue
             
             # Is it a package ?
-            package = self.env.getPackage(importInfo)
+            package = self.env.getChild(importInfo)
             
             if package:
                 if package in self._importedPackages:
@@ -118,7 +118,7 @@ class Module(TypeGetter):
                 
             else:
                 # It may be a type
-                typePackage = self.env.getPackage( importInfo[:-1] )
+                typePackage = self.env.getChild( importInfo[:-1] )
                 
                 if not typePackage:
                     raise IDLError('Unexisting package %r' % ('.'.join(importInfo)))
