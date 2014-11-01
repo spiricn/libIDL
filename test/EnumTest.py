@@ -42,9 +42,9 @@ class EnumTest(unittest.TestCase):
         
         module = env.compileSource(source, 'testModule')
         
-        self.assertEqual(len(module.package.types), 3)
+        self.assertEqual(len(module.types), 3)
         
-        enum = module.package.types[0]
+        enum = module.types[0]
         
         # Test enum
         self.assertEqual(enum.id, Type.ENUM);
@@ -72,7 +72,7 @@ class EnumTest(unittest.TestCase):
         self.assertEqual(enum.fields[5].value, 0xC2Ab3)
         
         # Test interface
-        iface = module.package.getInterface("TestInterface")
+        iface = module.getInterface("TestInterface")
         self.assertNotEqual(iface, None)
         
         # Can enums be method args ?
@@ -81,7 +81,7 @@ class EnumTest(unittest.TestCase):
         # Can enums be method return types ?
         self.assertEqual(iface.methods[0].ret.type, Type.ENUM)
         
-        struct = module.package.getStructure("TestStruct")
+        struct = module.getStructure("TestStruct")
         self.assertNotEqual(struct, None)
 
         # Can enums be struct fields ?

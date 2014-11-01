@@ -44,7 +44,7 @@ interface TestInterface{
         module = env.compileSource(source, 'testModule')
         
         # Structure number
-        structs = module.package.getTypes(Type.STRUCTURE)
+        structs = module.getTypes(Type.STRUCTURE)
         self.assertEqual(len(structs), 2)
         s1,s2= structs
         f1,f2 = s1.fields, s2.fields
@@ -82,7 +82,7 @@ interface TestInterface{
         
         
         # Verify method
-        interface = module.package.getTypes(Type.INTERFACE)[0]
+        interface = module.getTypes(Type.INTERFACE)[0]
         
         methods = interface.methods
         self.assertEqual(len(methods), 1)

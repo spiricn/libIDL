@@ -32,17 +32,17 @@ class TypedefTest(TestBase):
         
         module = env.compileSource(src, 'testModule')
         
-        self.assertEqual(len(module.package.types), 4)
+        self.assertEqual(len(module.types), 4)
         
         # Defined ok ?
-        self.assertEqual(module.package.types[0].id, Type.TYPEDEF)
-        self.assertEqual(module.package.types[0].name, "DummyType1")
+        self.assertEqual(module.types[0].id, Type.TYPEDEF)
+        self.assertEqual(module.types[0].name, "DummyType1")
         
         # Defined ok?
-        self.assertEqual(module.package.types[1].id, Type.TYPEDEF)
-        self.assertEqual(module.package.types[1].name, "DummyType2")
+        self.assertEqual(module.types[1].id, Type.TYPEDEF)
+        self.assertEqual(module.types[1].name, "DummyType2")
         
-        iface = module.package.getInterface("TestInterface")
+        iface = module.getInterface("TestInterface")
         
         # Typedefs can be return types ?
         self.assertEqual(iface.methods[0].ret.type, Type.TYPEDEF)

@@ -46,7 +46,7 @@ class Struct(Type):
                 raise IDLSyntaxError(self.module, field.line, e.message)
             
             if not fieldType:
-                raise IDLTypeError(self.module, field.line, 'Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.typeName, self.name))
+                raise IDLTypeError(self.module, field.line, 'Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.pathStr, self.name))
             
             newField = Struct.Field(self, fieldType, field.name, Variable._resolveModifiers(fieldType, field.typeInfo.mods))
             

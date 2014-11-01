@@ -50,33 +50,33 @@ class AnnotationTest(unittest.TestCase):
         
 
         # Enum
-        self.assertEqual(module.package.getType("TestEnum").annotations[0].name, "Enum")
+        self.assertEqual(module.getType("TestEnum").annotations[0].name, "Enum")
 
         
-        self.assertEqual(module.package.getType("TestEnum").fields[0].annotations[0].name, "Val")
+        self.assertEqual(module.getType("TestEnum").fields[0].annotations[0].name, "Val")
         
         # Struct
-        self.assertEqual(module.package.getType("TestStruct").annotations[0].name, "Struct")
+        self.assertEqual(module.getType("TestStruct").annotations[0].name, "Struct")
         
         # Field
-        self.assertEqual(module.package.getType("TestStruct").fields[0].annotations[0].name, "Field")
+        self.assertEqual(module.getType("TestStruct").fields[0].annotations[0].name, "Field")
         
         # Interface
-        self.assertEqual(module.package.getType("TestIface").annotations[0].name, "Interface")
+        self.assertEqual(module.getType("TestIface").annotations[0].name, "Interface")
         
         # Method
-        self.assertEqual(module.package.getType("TestIface").methods[0].annotations[0].name, "Method")
+        self.assertEqual(module.getType("TestIface").methods[0].annotations[0].name, "Method")
         
         # Annotation values
-        self.assertEqual(module.package.getType('dummyType').annotations[0].name, "name")
+        self.assertEqual(module.getType('dummyType').annotations[0].name, "name")
         
-        self.assertEqual(module.package.getType('dummyType').annotations[0].value, "value")
+        self.assertEqual(module.getType('dummyType').annotations[0].value, "value")
         
-        self.assertEqual(module.package.getType('dummyType').getAnnotation('name'), module.package.getType('dummyType').annotations[0])
+        self.assertEqual(module.getType('dummyType').getAnnotation('name'), module.getType('dummyType').annotations[0])
         
-        self.assertEqual(module.package.getType('dummyType').getAnnotationVal('name'), module.package.getType('dummyType').annotations[0].value)
+        self.assertEqual(module.getType('dummyType').getAnnotationVal('name'), module.getType('dummyType').annotations[0].value)
         
-        self.assertEqual(module.package.getType('dummyType2').getAnnotationVal('stringValue'), 'stringValue')
+        self.assertEqual(module.getType('dummyType2').getAnnotationVal('stringValue'), 'stringValue')
         
 if __name__ == '__main__':
     unittest.main()

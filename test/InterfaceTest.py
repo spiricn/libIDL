@@ -35,7 +35,7 @@ interface TestInterface{
         
         module = env.compileSource(source, 'testModule')
         
-        interfaces = module.package.getTypes(Type.INTERFACE)
+        interfaces = module.getTypes(Type.INTERFACE)
         
         self.assertEqual(len(interfaces), 1)
         
@@ -63,7 +63,7 @@ interface BasicInterface{
         module = env.compileSource(source, 'testModule')
          
         # Check the interface name
-        interface = module.package.getTypes(Type.INTERFACE)
+        interface = module.getTypes(Type.INTERFACE)
         self.assertEqual(len(interface), 1)
         
         interface = interface[0]
@@ -178,11 +178,11 @@ interface BasicInterface{
         
         module = env.compileSource(source, 'testModule')
         
-        self.assertEqual(len(module.package.types), 2)
+        self.assertEqual(len(module.types), 2)
         
-        iface1 = module.package.getInterface('TestInterface1')
+        iface1 = module.getInterface('TestInterface1')
         
-        iface2 = module.package.getInterface('TestInterface2')
+        iface2 = module.getInterface('TestInterface2')
         
         # Array of interfaces
         self.assertEqual(iface2.methods[0].args[1].type, iface1)

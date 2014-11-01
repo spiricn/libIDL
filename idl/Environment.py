@@ -23,9 +23,74 @@ class Environment(Package):
     def __init__(self):
         Package.__init__(self, self, None, '')
         
-        # Add primitives to the list
+        self._createLangPackage()
+            
+    def _createLangPackage(self):
+        '''
+        Creates a package containing all primitive types.
+        '''
+        
+        # Create primitives package
+        langPackage = self._createChildTree(['idl'])
+        
+        langModule = Module('Lang', None, langPackage)
+        
         for typeId in Type.primitives:
-            self._addType( Type(self, typeId) )
+            langModule._addType( Type(self, typeId) )
+            
+        self._langModule = langModule
+         
+    def _getLangModule(self):
+        return self._langModule
+    
+    def resolvePath(self, path):
+        # Package
+        package = self.getPackageByPath(path)
+        
+        if package:
+            return package
+            
+        # Module
+        module = self.getModuleByPath(path)
+        
+        if module:
+            return module
+        
+        # Type
+        typeObj = self.getTypeByPath(path)
+        
+        if typeObj:
+            return typeObj
+        
+        # It's neither
+        return None
+        
+    def getModuleByPath(self, path):
+        if len(path) == 1:
+            parentPackage = self
+            
+        else:
+            parentPackage = self.getPackageByPath( path[:-1] )
+            
+        if not parentPackage:
+            return None
+        else:
+            return parentPackage.getModule(path[-1])
+        
+    def getTypeByPath(self, path):
+        if len(path) == 1:
+            # At least two path components necessary (i.e. module.type)
+            return None
+        
+        module = self.getModuleByPath(path[:-1])
+        
+        if not module:
+            return None
+        else:
+            return module.getType(path[-1])
+        
+    def getPackageByPath(self, path):
+        return self.getChildByPath(path)
 
     def compileSource(self, source, moduleName):
         '''

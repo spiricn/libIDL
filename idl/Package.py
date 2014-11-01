@@ -1,17 +1,15 @@
-from idl.IDLTypeError import IDLTypeError
 from idl.TypeGetter import TypeGetter
 
 from idl.IDLError import IDLError
 
 
-class Package(TypeGetter):
+class Package():
     def __init__(self, env, parent, name):
         TypeGetter.__init__(self)
         
         self._env = env
         self._parent = parent
         self._modules = []
-        self._types = []
         self._name = name
         self._children = []
         
@@ -28,10 +26,6 @@ class Package(TypeGetter):
         self._children.append( package )
         
         return package
-        
-    @property
-    def types(self):
-        return self._types
     
     @property
     def module(self):
@@ -86,27 +80,30 @@ class Package(TypeGetter):
         
         self._modules.append( module )
         
-    def _addType(self, typeObj):
-        '''
-        Adds a new type to the list of types.
-        '''
-         
-        if self.getType(typeObj.name):
-            raise IDLTypeError(typeObj.module, 0, "Type named %r already exists" % typeObj.name)
-         
-        self._types.append( typeObj )
-        
     def getChild(self, arg):
         if isinstance(arg, str):
-            return self._getChildByName(arg)
+            return self.getChildByName(arg)
         
         elif isinstance(arg, list):
-            return self._getChildByPath(arg)
+            return self.getChildByPath(arg)
         
         else:
             raise RuntimeError('Invalid child search parameter %s' % str(arg))
 
-    def _getChildByPath(self, path):
+    def isBase(self, path):
+        '''
+        Checks if given path is in base of this package.
+        
+        e.g. for package 'com.test.package', 'com.test' is in base
+        '''
+        
+        if len(path) < len(self.path):
+            return False
+        
+        else:
+            return path[:len(self.path)] == self.path
+        
+    def getChildByPath(self, path):
         # Copy list
         path = [i for i in path]
         
@@ -122,7 +119,7 @@ class Package(TypeGetter):
             
         return package
     
-    def _getChildByName(self, name):
+    def getChildByName(self, name):
         for child in self._children:
             if child.name == name:
                 return child

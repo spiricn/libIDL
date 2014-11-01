@@ -24,6 +24,8 @@ KEYWORD_PACKAGE = r'package'
 
 KEYWORD_IMPORT = r'import'
 
+KEYWORD_FROM = r'from'
+
 # Type names
 TYPE_INT64 = r'int64'
 
@@ -91,6 +93,7 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'\=', Token.PUNCTUATION, True),
                 TokenTypeInfo(r'\,', Token.PUNCTUATION, True),
                 TokenTypeInfo(r'\.', Token.PUNCTUATION, True),
+                TokenTypeInfo(r'\*', Token.PUNCTUATION, True),
                 
                 # Keywords
                 TokenTypeInfo(r'^' + KEYWORD_INTERFACE + r'$', Token.KEYWORD, True),
@@ -103,6 +106,7 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'^' + KEYWORD_CALLBACK_UNREG + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_PACKAGE + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_IMPORT + r'$', Token.KEYWORD, True),
+                TokenTypeInfo(r'^' + KEYWORD_FROM + r'$', Token.KEYWORD, True),
                 
                 # ID
                 TokenTypeInfo(r'^[a-zA-Z]+[a-zA-Z0-9_]*$', Token.ID, True),

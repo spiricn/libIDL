@@ -108,6 +108,7 @@ class Compiler:
             try:
                 info = typeParser.parserClass(tokens).parse()
             except ParserError as e:
+                raise e
                 # Re-reaise the parser exception as public IDLSyntaxError
                 raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
             
@@ -119,16 +120,13 @@ class Compiler:
             
             # Add type global environment types
             try:
-                self._module.package._addType( typeObj )
+                self._module._addType( typeObj )
             except IDLTypeError as e:
                 # Re-raise it with added line
                 raise IDLTypeError(self._module, startToken.location[0], e.message)
             
             # Add type to our types (used later for linking)
             self._types.append( typeObj )
-            
-            # Add type to module types
-            self._module.types.append( typeObj )
             
     def _findParser(self):
         '''

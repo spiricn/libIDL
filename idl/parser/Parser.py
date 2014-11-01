@@ -1,15 +1,19 @@
 from idl.lexer import Lang
-from idl.lexer.Lang import KEYWORD_PACKAGE, KEYWORD_IMPORT
+from idl.lexer.Lang import KEYWORD_PACKAGE, KEYWORD_IMPORT, KEYWORD_FROM
 from idl.lexer.Token import Token
 from idl.parser.ParserError import ParserError
 
 
 class Parser(object):
     class TypeInfo:
-        def __init__(self, typeName='', mods=[], arraySize=None):
-            self.typeName = typeName
+        def __init__(self, path=[], mods=[], arraySize=None):
+            self.path = path
             self.arraySize = arraySize
             self.mods = mods
+            
+        @property
+        def pathStr(self):
+            return '.'.join(self.path)
             
     class VariableInfo:
         def __init__(self, typeInfo, name):
@@ -25,9 +29,19 @@ class Parser(object):
         def __init__(self, package):
             self.package = package
             
+            
+    class ImportInfo:
+        def __init__(self, source, path):
+            self.source = source
+            self.path = path
+            
+        @property
+        def pathStr(self):
+            return '.'.join(self.path)
+            
     class ImportsInfo:
-        def __init__(self, imports):
-            self.imports = imports
+        def __init__(self):
+            self.imports = []
              
     def __init__(self, tokens):
         self.tokens = tokens
@@ -139,6 +153,23 @@ class Parser(object):
         
         return Parser.VariableInfo(typeInfo, name)
     
+    def eatTypePath(self):
+        path = []
+        
+        while True:
+            if self.isNext(Token.ID):
+                path.append( self.pop().body )
+                
+                if self.isNext(Token.PUNCTUATION, '.'):
+                    self.pop()
+                else:
+                    break
+                 
+            else:   
+                break
+        
+        return path
+    
     def eatTypeInfo(self):
         keywords = []
             
@@ -151,7 +182,7 @@ class Parser(object):
                 break
             
         # Type name
-        name = self.eat(Token.ID).body
+        path = self.eatTypePath()
         
         # Is it an array ?
         arraySize = None
@@ -175,29 +206,42 @@ class Parser(object):
                 raise ParserError('Unexpected keyword while parsing type', keyword)
             
             
-        return Parser.TypeInfo(name, [i.body for i in keywords], arraySize)
+        return Parser.TypeInfo(path, [i.body for i in keywords], arraySize)
+    
+    def isNext(self, tokenId, body=None):
+        if self.tokens:
+            if self.next.id == tokenId:
+                if body != None:
+                    return self.next.body == body
+                else:
+                    return True
+                
+        return False
     
     def _eatImportPathInfo(self):
-        importInfo = []
+        path = []
         
         while True:
+            if not self.isNext(Token.ID):
+                break
+            
             # Eat package component
-            importInfo.append( self.eat(Token.ID).body )
+            path.append( self.eat(Token.ID).body )
+            
+            if self.isNext(Token.PUNCTUATION, ';') or self.isNext(Token.KEYWORD, 'import'):
+                break
             
             if self.next.id == Token.PUNCTUATION:
                 if self.next.body == '.':
                     self.pop()
                     
-                elif self.next.body == ';':
-                    break
-                
                 else:
                     raise ParserError('Unexpected token while parsing package declaration', self.next)
                 
             else:
                 raise ParserError('Unexpected token while parsing package declaration', self.next)
-            
-        return importInfo
+
+        return path            
         
     def eatPackageInfo(self):
         if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_PACKAGE ):
@@ -216,7 +260,7 @@ class Parser(object):
             return None
         
     def eatImportsInfo(self):
-        imports = []
+        info = Parser.ImportsInfo()
         
         while True:
             if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_IMPORT ):
@@ -226,15 +270,31 @@ class Parser(object):
                 # Eat the package we're importing
                 package = self._eatImportPathInfo()
                 
-                imports.append(package)
+                info.imports.append( Parser.ImportInfo(None, package) )
                 
                 # Eat semicolon
                 self.eat(Token.PUNCTUATION, ';')
+                
+            elif self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_FROM ):
+                # Eat from keyword
+                self.pop()
+                
+                source = self._eatImportPathInfo()
+                
+                # Eat import keyword
+                self.eat(Token.KEYWORD, 'import')
+                
+                package = self._eatImportPathInfo()
+                
+                # Eat semicolon
+                self.eat(Token.PUNCTUATION, ';')
+                
+                info.imports.append( Parser.ImportInfo(source, package) )
 
             else:
                 break
             
-        return Parser.ImportsInfo(imports)
+        return info
     
     def _debug(self, numTokens=1):
         print([str(self.tokens[index]) for index in range(numTokens)])

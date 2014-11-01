@@ -29,16 +29,16 @@ class PackageTest(TestBase):
         import com.test1;
         
         interface  Test{
-            void test(Src1Type arg1);
+            void test(com.test1.module1.Src1Type arg1);
         };
         '''
         
         
         env = Environment()
         
-        env.compileSource(src1, 'test1')
+        env.compileSource(src1, 'module1')
         
-        env.compileSource(src2, 'test2')
+        env.compileSource(src2, 'module2')
         
     def test_errors(self):
         '''

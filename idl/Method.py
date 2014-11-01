@@ -95,7 +95,7 @@ class Method(Annotatable):
             raise IDLSyntaxError(self._interface.module, self._info.line, e.message)
         
         if not returnType:
-            raise IDLTypeError(self.interface.module, self._info.line, 'Could not resolve return type %r of method %s::%s' % (self._info.returnTypeInfo.typeName, self._interface.name, self._name))
+            raise IDLTypeError(self.interface.module, self._info.line, 'Could not resolve return type %r of method %s::%s' % (self._info.returnTypeInfo.pathStr, self._interface.name, self._name))
         
         # Modifiers
         try:
@@ -113,7 +113,7 @@ class Method(Annotatable):
             raise IDLSyntaxError(self._interface.module, arg.line, e.message)
         
         if not argType:
-            raise IDLTypeError(self._interface.module, arg.line, 'Could not resolve #%d argument type %r of method %s::%s' % (index + 1, arg.varInfo.typeInfo.typeName, self._interface.name, self._name))
+            raise IDLTypeError(self._interface.module, arg.line, 'Could not resolve #%d argument type %r of method %s::%s' % (index + 1, '.'.join(arg.varInfo.typeInfo.path), self._interface.name, self._name))
         
         # Argument modifiers
         try:
