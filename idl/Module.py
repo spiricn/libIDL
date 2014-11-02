@@ -10,6 +10,12 @@ from idl.Trace import Trace
 
 
 class Module(TypeGetter):
+    class Alias:
+        def __init__(self, name, path, loc):
+            self.name = name
+            self.path = path
+            self.loc = loc
+        
     def __init__(self, name, filePath, package=None):
         TypeGetter.__init__(self)
         
@@ -22,6 +28,8 @@ class Module(TypeGetter):
         self._importedPackages = []
         self._importedTypes = []
         self._importedModules = []
+        
+        self._aliases = {}
         
     @property
     def path(self):
@@ -85,43 +93,66 @@ class Module(TypeGetter):
         return False
     
     def _resolveType(self, typeInfo):
-        # Check imported types
-        typeName = typeInfo.path[-1]
-        
-        # package.module.type
-        
-        if len(typeInfo.path) > 3:
-            typePackage = typeInfo.path[:-2]
+        # Is the reference aliased ?
+        aliasName = typeInfo.path[0]
+        if aliasName in self._aliases:
+            alias = self._aliases[aliasName]
             
-            typeModule = typeInfo.path[-2]
-            
-            packageImported = self._isPackageImported(typePackage)
-            
-            modulePath = [i for i in typePackage]
-            
-            modulePath.append(typeModule)
-            
-            moduleImported = self._isModuleImported(modulePath)
-            
-            if moduleImported or packageImported:
-                typePackage = self.package.env.getPackageByPath(typePackage)
+            if isinstance(alias.loc, Module):
+                assert(len(typeInfo.path) == 2)
                 
-            else:
-                return None
-  
-            typeModule = typePackage.getModule(typeModule)
+                return alias.loc.getType(typeInfo.path[1])
             
-            if not typeModule:
-                return None
-             
-            typeObj = typeModule.getType(typeName)
-             
-            return typeObj
-         
-        elif len(typeInfo.path) == 1:
+            elif isinstance(alias.loc, Package):
+                return alias.loc.resolvePath(typeInfo.path[1:])
+            
+            else:
+                assert(0)
+            
+        else:
+            # Try without aliases
+            return self._resolvePath(typeInfo.path)
+        
+    def _resolvePath(self, path):
+        # Check imported types
+        typeName = path[-1]
+        
+                 
+        if len(path) == 1:
+            # Go trough all the imported types and try to find it
             for typeObj in self._importedTypes:
                 if typeObj.name == typeName:
                     return typeObj
+                
+            return None
+                    
+        elif len(path) >= 3:
+            typePackage = path[:-2]
+             
+            typeModule = path[-2]
+             
+            packageImported = self._isPackageImported(typePackage)
+             
+            modulePath = [i for i in typePackage]
+             
+            modulePath.append(typeModule)
+             
+            moduleImported = self._isModuleImported(modulePath)
+             
+            if moduleImported or packageImported:
+                typePackage = self.package.env.getPackageByPath(typePackage)
+                 
+            else:
+                return None
+   
+            typeModule = typePackage.getModule(typeModule)
+             
+            if not typeModule:
+                return None
+              
+            typeObj = typeModule.getType(typeName)
+              
+            return typeObj
                 
                     
         return None
@@ -165,24 +196,27 @@ class Module(TypeGetter):
         
         for importInfo in self._importsInfo.imports:
             if not importInfo.source:
-                
                 loc = self.package.env.resolvePath(importInfo.path)
                 
                 if not loc:
                     raise IDLError('Could not resolve import %r' % importInfo.pathStr)
                 
-                if isinstance(loc, Package):
-                    self._importedPackages.append( loc )
-                    
-                elif isinstance(loc, Module):
-                    self._importedModules.append( loc )
-                    
-                elif isinstance(loc, Type):
-                    raise RuntimeError('%r is not a package' % importInfo.pathStr)
+                if importInfo.alias:
+                    self._aliases[importInfo.alias] = Module.Alias(importInfo.alias, importInfo.path, loc) 
                     
                 else:
-                    # Sanity check
-                    assert(0)
+                    if isinstance(loc, Package):
+                        self._importedPackages.append( loc )
+                    
+                    elif isinstance(loc, Module):
+                        self._importedModules.append( loc )
+                    
+                    elif isinstance(loc, Type):
+                        raise RuntimeError('%r is not a package' % importInfo.pathStr)  
+                    
+                    else:
+                        # Sanity check
+                        assert(0)
             else:
                 loc = self.package.env.resolvePath(importInfo.source)
                 
@@ -191,12 +225,16 @@ class Module(TypeGetter):
                 
                 name = importInfo.path[0]
                 
+                alias = name if not importInfo.alias else importInfo.alias
+                
                 if isinstance(loc, Package):
                     package = loc.getChild(name)
                     
                     if package:
                         # it's another package
-                        self._importedPackages.append( package )
+                        path = importInfo.source + importInfo.path
+                        
+                        self._aliases[alias] = Module.Alias(name, path, package)
                         
                         continue
                     
@@ -204,13 +242,17 @@ class Module(TypeGetter):
                     module = loc.getModule(name)
                     
                     if module:
-                        self._importedModules.append( module )
+                        self._aliases[alias] = Module.Alias(name, module.path, module)
+                        
                         continue
                         
                     # Unresolved
                     raise RuntimeError('Unresolved import %r' % importInfo.pathStr)
                     
                 elif isinstance(loc, Module):
+                    if importInfo.alias:
+                        raise RuntimeError('Type aliases not supported')
+                    
                     typeObj = loc.getType(name)
                     
                     if typeObj:

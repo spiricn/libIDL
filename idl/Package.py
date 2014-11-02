@@ -143,4 +143,57 @@ class Package():
             package = newPackage
             
         return package
+    
+    def resolvePath(self, path):
+        # Package
+        package = self.getPackageByPath(path)
+        
+        if package:
+            return package
+            
+        # Module
+        module = self.getModuleByPath(path)
+        
+        if module:
+            return module
+        
+        # Type
+        typeObj = self.getTypeByPath(path)
+        
+        if typeObj:
+            return typeObj
+        
+        # It's neither
+        return None
+        
+    def getModuleByPath(self, path):
+        moduleName = path[-1]
+        
+        if len(path) == 1:
+            package = self
+            
+        else:
+            packagePath = path[:-1]
+            
+            package = self.getChildByPath(packagePath)
+            
+        if not package:
+            return None
+        else:
+            return package.getModule(moduleName)
+        
+    def getTypeByPath(self, path):
+        if len(path) == 1:
+            # At least two path components necessary (i.e. module.type)
+            return None
+        
+        module = self.getModuleByPath(path[:-1])
+        
+        if not module:
+            return None
+        else:
+            return module.getType(path[-1])
+        
+    def getPackageByPath(self, path):
+        return self.getChildByPath(path)
 

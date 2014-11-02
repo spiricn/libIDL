@@ -87,6 +87,67 @@ class PackageTest(TestBase):
         
         env.compileSource(src2, 'module2')
         
+    def test_from1(self):
+        '''
+        Basic module import test.
+        '''
+        
+        
+        src1 = '''
+        package com.test1;
+
+        typedef Src1Type;
+        
+        '''
+        
+        
+        src2 = '''
+        package com.test2;
+        
+        from com import test1;
+        
+        interface Test{
+            void test(test1.module1.Src1Type arg1);
+        };
+        '''
+        
+        
+        env = Environment()
+        
+        env.compileSource(src1, 'module1')
+        
+        env.compileSource(src2, 'module2')
+        
+    def test_from2(self):
+        '''
+        Basic module import test.
+        '''
+        
+        
+        src1 = '''
+        package com.test1;
+
+        typedef Src1Type;
+        
+        '''
+        
+        src2 = '''
+        package com.test2;
+        
+        from com.test1 import module1;
+        
+        interface Test{
+            void test(module1.Src1Type arg1);
+        };
+        '''
+        
+        
+        env = Environment()
+        
+        env.compileSource(src1, 'module1')
+        
+        env.compileSource(src2, 'module2')
+        
     def test_type_import(self):
         '''
         Basic type import test.

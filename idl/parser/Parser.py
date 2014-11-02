@@ -1,5 +1,6 @@
 from idl.lexer import Lang
-from idl.lexer.Lang import KEYWORD_PACKAGE, KEYWORD_IMPORT, KEYWORD_FROM
+from idl.lexer.Lang import KEYWORD_PACKAGE, KEYWORD_IMPORT, KEYWORD_FROM, \
+    KEYWORD_AS
 from idl.lexer.Token import Token
 from idl.parser.ParserError import ParserError
 
@@ -31,9 +32,10 @@ class Parser(object):
             
             
     class ImportInfo:
-        def __init__(self, source, path):
+        def __init__(self, source, path, alias):
             self.source = source
             self.path = path
+            self.alias = alias
             
         @property
         def pathStr(self):
@@ -228,7 +230,7 @@ class Parser(object):
             # Eat package component
             path.append( self.eat(Token.ID).body )
             
-            if self.isNext(Token.PUNCTUATION, ';') or self.isNext(Token.KEYWORD, 'import'):
+            if self.isNext(Token.PUNCTUATION, ';') or self.isNext(Token.KEYWORD, KEYWORD_IMPORT) or self.isNext(Token.KEYWORD, KEYWORD_AS):
                 break
             
             if self.next.id == Token.PUNCTUATION:
@@ -270,7 +272,10 @@ class Parser(object):
                 # Eat the package we're importing
                 package = self._eatImportPathInfo()
                 
-                info.imports.append( Parser.ImportInfo(None, package) )
+                info.imports.append( Parser.ImportInfo(None, package, None) )
+                
+                if self.isNext(Token.KEYWORD, KEYWORD_AS):
+                    assert(0)
                 
                 # Eat semicolon
                 self.eat(Token.PUNCTUATION, ';')
@@ -282,14 +287,22 @@ class Parser(object):
                 source = self._eatImportPathInfo()
                 
                 # Eat import keyword
-                self.eat(Token.KEYWORD, 'import')
+                self.eat(Token.KEYWORD, KEYWORD_IMPORT)
                 
                 package = self._eatImportPathInfo()
+                
+                alias = None
+                if self.isNext(Token.KEYWORD, KEYWORD_AS):
+                    # Eat as keyword
+                    self.pop()
+                    
+                    # Eat alias
+                    alias = self.eat(Token.ID).body
                 
                 # Eat semicolon
                 self.eat(Token.PUNCTUATION, ';')
                 
-                info.imports.append( Parser.ImportInfo(source, package) )
+                info.imports.append( Parser.ImportInfo(source, package, alias) )
 
             else:
                 break

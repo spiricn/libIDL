@@ -43,55 +43,6 @@ class Environment(Package):
     def _getLangModule(self):
         return self._langModule
     
-    def resolvePath(self, path):
-        # Package
-        package = self.getPackageByPath(path)
-        
-        if package:
-            return package
-            
-        # Module
-        module = self.getModuleByPath(path)
-        
-        if module:
-            return module
-        
-        # Type
-        typeObj = self.getTypeByPath(path)
-        
-        if typeObj:
-            return typeObj
-        
-        # It's neither
-        return None
-        
-    def getModuleByPath(self, path):
-        if len(path) == 1:
-            parentPackage = self
-            
-        else:
-            parentPackage = self.getPackageByPath( path[:-1] )
-            
-        if not parentPackage:
-            return None
-        else:
-            return parentPackage.getModule(path[-1])
-        
-    def getTypeByPath(self, path):
-        if len(path) == 1:
-            # At least two path components necessary (i.e. module.type)
-            return None
-        
-        module = self.getModuleByPath(path[:-1])
-        
-        if not module:
-            return None
-        else:
-            return module.getType(path[-1])
-        
-    def getPackageByPath(self, path):
-        return self.getChildByPath(path)
-
     def compileSource(self, source, moduleName):
         '''
         Compiles given source code into a module with the given name.
