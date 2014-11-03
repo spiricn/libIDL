@@ -315,5 +315,33 @@ interface BasicInterface{
         except IDLSyntaxError as e:
             self.assertEqual(e.line, 3)
             
+    def test_dependencies(self):
+        '''
+        Interface dependency detection test.
+        '''
+        
+        
+        src = '''\
+        package com.test;
+        
+        typedef TypeA;
+        
+        struct TypeB{
+        };
+        
+        interface TypeC{
+        };
+        
+        interface TestInterface{
+            TypeA test(TypeB arg1, TypeC arg2);
+        };
+        
+        '''
+        
+        
+        module = Environment().compileSource(src, 'module')
+        
+        self.assertEqual(len(module.getType('TestInterface').dependencies), 3)
+        
 if __name__ == '__main__':
     unittest.main()
