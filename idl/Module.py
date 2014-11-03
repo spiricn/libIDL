@@ -47,6 +47,21 @@ class Module(TypeGetter):
         self._aliases = {}
         
     @property
+    def dependencies(self):
+        '''
+        Compiles a list of all the types this module is dependent on
+        '''
+        
+        res = []
+        
+        for typeObj in self._types:
+            for i in typeObj.dependencies:
+                if i not in res:
+                    res.append(i)
+                    
+        return res
+    
+    @property
     def path(self):
         '''
         Module package path.

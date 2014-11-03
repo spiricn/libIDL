@@ -15,28 +15,58 @@ class Package():
         
     @property
     def env(self):
+        '''
+        Parent environment of this package.
+        '''
+        
         return self._env
     
-    def _createChildPackage(self, name):
-        package = Package(self.env, self, name) 
+    @property
+    def modules(self):
+        '''
+        List of modules contained in this package.
+        '''
         
-        if self.getChild(name):
-            raise RuntimeError('Package with name %r already exists' % name)
-        
-        self._children.append( package )
-        
-        return package
+        return self._modules
     
     @property
-    def module(self):
-        return self._modules
+    def dependencies(self):
+        '''
+        List of type dependencies this package is dependant on.
+        '''
+        
+        res = []
+        
+        todo = [self]
+        
+        while todo:
+            package = todo.pop(0)
+            
+            print('proc %r' % package.name)
+            
+            for module in package.modules:
+                for i in module.dependencies:
+                    if i not in res:
+                        res.append(i)
+                        
+            todo += package._children
+            
+        return res
 
     @property
     def name(self):
+        '''
+        Name of this package.
+        '''
+        
         return self._name
     
     @property
     def path(self):
+        '''
+        Path of this package.
+        '''
+        
         path = []
         
         package = self
@@ -64,23 +94,25 @@ class Package():
     
     @property
     def parent(self):
+        '''
+        Parent package.
+        '''
+        
         return self._parent
     
     @property
     def packageStr(self):
+        '''
+        Package string (e.g. com.example.packge)
+        '''
+        
         return '.'.join( self.path )
     
-    def _addModule(self, module):
-        # Duplicate name check
-        for i in self._modules:
-            if i.name == module.name:
-                raise IDLError('Module named %r already exists in package %r' % (module.name, self.packageStr))
-            
-        module._setPackage(self)
-        
-        self._modules.append( module )
-        
     def getChild(self, arg):
+        '''
+        Gets a child package by name or path.
+        '''
+        
         if isinstance(arg, str):
             return self.getChildByName(arg)
         
@@ -89,7 +121,7 @@ class Package():
         
         else:
             raise RuntimeError('Invalid child search parameter %s' % str(arg))
-
+    
     def isBase(self, path):
         '''
         Checks if given path is in base of this package.
@@ -104,6 +136,10 @@ class Package():
             return path[:len(self.path)] == self.path
         
     def getChildByPath(self, path):
+        '''
+        Gets a child packge by path
+        '''
+        
         # Copy list
         path = [i for i in path]
         
@@ -120,31 +156,21 @@ class Package():
         return package
     
     def getChildByName(self, name):
+        '''
+        Gets a child package by name.
+        '''
+        
         for child in self._children:
             if child.name == name:
                 return child
             
         return None
     
-    def _createChildTree(self, path):
-        # Copy list
-        path = [i for i in path]
-        
-        package = self
-        
-        while path:
-            name = path.pop(0)
-            
-            newPackage = package.getChild(name)
-            
-            if not newPackage:
-                newPackage = package._createChildPackage(name)
-        
-            package = newPackage
-            
-        return package
-    
     def resolvePath(self, path):
+        '''
+        Resolves an entity path in the context of this package.
+        '''
+        
         # Package
         package = self.getPackageByPath(path)
         
@@ -167,6 +193,10 @@ class Package():
         return None
         
     def getModuleByPath(self, path):
+        '''
+        Gets a child module by path.
+        '''
+        
         moduleName = path[-1]
         
         if len(path) == 1:
@@ -183,6 +213,10 @@ class Package():
             return package.getModule(moduleName)
         
     def getTypeByPath(self, path):
+        '''
+        Gets a chlid type by path.
+        '''
+        
         if len(path) == 1:
             # At least two path components necessary (i.e. module.type)
             return None
@@ -195,5 +229,58 @@ class Package():
             return module.getType(path[-1])
         
     def getPackageByPath(self, path):
+        '''
+        Gets a child package by path.
+        '''
+        
         return self.getChildByPath(path)
-
+    
+    def _createChildTree(self, path):
+        '''
+        Creates a child tree structure. If a child already exists it simply returns a reference to it.
+        '''
+        
+        # Copy list
+        path = [i for i in path]
+        
+        package = self
+        
+        while path:
+            name = path.pop(0)
+            
+            newPackage = package.getChild(name)
+            
+            if not newPackage:
+                newPackage = package._createChildPackage(name)
+        
+            package = newPackage
+            
+        return package
+    
+    def _addModule(self, module):
+        '''
+        Adds a new module to the list of modules.
+        '''
+        
+        # Duplicate name check
+        for i in self._modules:
+            if i.name == module.name:
+                raise IDLError('Module named %r already exists in package %r' % (module.name, self.packageStr))
+            
+        module._setPackage(self)
+        
+        self._modules.append( module )
+        
+    def _createChildPackage(self, name):
+        '''
+        Creates a child package with a given name.
+        '''
+        
+        package = Package(self.env, self, name) 
+        
+        if self.getChild(name):
+            raise RuntimeError('Package with name %r already exists' % name)
+        
+        self._children.append( package )
+        
+        return package
