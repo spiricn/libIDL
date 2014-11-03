@@ -32,10 +32,11 @@ class Parser(object):
             
             
     class ImportInfo:
-        def __init__(self, source, path, alias):
+        def __init__(self, source, path, alias, line):
             self.source = source
             self.path = path
             self.alias = alias
+            self.line = line
             
         @property
         def pathStr(self):
@@ -266,13 +267,15 @@ class Parser(object):
         
         while True:
             if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_IMPORT ):
+                line = self.next.location[0]
+                
                 # Eat import keyword
                 self.pop()
                 
                 # Eat the package we're importing
                 package = self._eatImportPathInfo()
                 
-                info.imports.append( Parser.ImportInfo(None, package, None) )
+                info.imports.append( Parser.ImportInfo(None, package, None, line) )
                 
                 if self.isNext(Token.KEYWORD, KEYWORD_AS):
                     assert(0)
@@ -281,6 +284,8 @@ class Parser(object):
                 self.eat(Token.PUNCTUATION, ';')
                 
             elif self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_FROM ):
+                line = self.next.location[0]
+                
                 # Eat from keyword
                 self.pop()
                 
@@ -302,7 +307,7 @@ class Parser(object):
                 # Eat semicolon
                 self.eat(Token.PUNCTUATION, ';')
                 
-                info.imports.append( Parser.ImportInfo(source, package, alias) )
+                info.imports.append( Parser.ImportInfo(source, package, alias, line) )
 
             else:
                 break

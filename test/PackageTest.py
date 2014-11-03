@@ -1,10 +1,9 @@
-from idl.Environment import Environment 
-from idl.IDLSyntaxError import IDLSyntaxError
-from idl.IDLTypeError import IDLTypeError
-import os
 import unittest
 
+from idl.Environment import Environment 
 from idl.IDLError import IDLError
+
+from idl.IDLImportError import IDLImportError
 from test.TestBase import TestBase
 
 
@@ -195,8 +194,8 @@ class PackageTest(TestBase):
             Environment().compileSource(src, 'test1')
             
             self.fail()
-        except IDLError:
-            pass
+        except IDLImportError as e:
+            self.assertEqual(e.line, 2)
         
         # Missing package declaration
         src = '''\
@@ -209,30 +208,6 @@ class PackageTest(TestBase):
             
             self.fail()
         except IDLError:
-            pass
-        
-        # Import type
-        # Missing package declaration
-        src1 = '''\
-        package com.test;
-        
-        typedef Src1Type;
-        '''
-        
-        src2 = '''\
-        package com.test;
-        
-        import com.test.module1.Src1Type;
-             
-        '''
-
-        try:        
-            env = Environment() 
-            env.compileSource(src1, 'module1')
-            env.compileSource(src2, 'module2')
-            
-            self.fail()
-        except:
             pass
     
 if __name__ == '__main__':
