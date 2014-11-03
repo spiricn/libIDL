@@ -175,6 +175,35 @@ interface TestInterface{
             self.fail()
         except IDLTypeError as e:
             self.assertEqual(e.line, 3)
+            
+    def test_dependencies(self):
+        '''
+        Structure dependency property test.
+        '''
+        
+        src ='''\
+        package com.test;
+        
+        typedef TypeA;
+        
+        interface TypeB{
+        };
+        
+        struct TypeC{
+        };
+        
+        struct TestStruct{
+            TypeA fieldA;
+            TypeB fieldB;
+            TypeC fieldC;
+        };
+        '''
+        
+        module = Environment().compileSource(src, 'module')
+        
+        deps = module.getType('TestStruct').dependencies
+        
+        self.assertEqual(len(deps), 3)
 
 if __name__ == '__main__':
     unittest.main()

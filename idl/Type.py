@@ -134,6 +134,14 @@ class Type(Annotatable):
         
         return self._id
     
+    @property
+    def dependencies(self):
+        '''
+        List of types this type is dependent on.
+        '''
+        
+        return []
+    
     def isPrimitive(self):
         return self._id in Type.primitives
         

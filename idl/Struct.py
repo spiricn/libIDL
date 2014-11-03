@@ -36,6 +36,16 @@ class Struct(Type):
         
         return self._fields
     
+    @property
+    def dependencies(self):
+        res = []
+        
+        for field in self._fields:
+            if field.type not in res:
+                res.append( field.type )
+                
+        return res
+    
     def _link(self):
         for field in self._info.fields:
             # Resolve field type
