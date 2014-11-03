@@ -1,12 +1,13 @@
-from idl.Compiler import Compiler
-from idl.IDLTypeError import IDLTypeError
-from idl.Module import Module
-from idl.Type import Type
-from idl.TypeGetter import TypeGetter
+import fnmatch
 import os
 
+from idl.Compiler import Compiler
 from idl.IDLError import IDLError
+from idl.IDLTypeError import IDLTypeError
+from idl.Module import Module
 from idl.Package import Package
+from idl.Type import Type
+from idl.TypeGetter import TypeGetter
 
 
 class Environment(Package):
@@ -43,6 +44,22 @@ class Environment(Package):
     def _getLangModule(self):
         return self._langModule
     
+    def compileTree(self, root, filterExpr='*.idl'):
+        '''
+        Walks a directory recursively and compiles all encountered IDL files.
+        
+        @param root: Root directory
+        @param filterExpr: Idl file name filter
+        '''
+        
+        idlFiles = []
+        
+        for root, dirs, files in os.walk(root):
+            for fileName in fnmatch.filter(files, filterExpr):
+                idlFiles.append(fileName)
+                
+        return self.compileFiles(idlFiles)
+            
     def compileSource(self, source, moduleName):
         '''
         Compiles given source code into a module with the given name.
