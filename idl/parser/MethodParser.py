@@ -1,5 +1,4 @@
 from idl.lexer.Token import Token
-
 from idl.parser.Parser import Parser
 from idl.parser.ParserError import ParserError
 

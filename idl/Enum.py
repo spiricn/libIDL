@@ -1,7 +1,6 @@
 from idl.Annotatable import Annotatable
-from idl.Type import Type
-
 from idl.IDLSyntaxError import IDLSyntaxError
+from idl.Type import Type
 
 
 class Enum(Type):

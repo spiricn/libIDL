@@ -1,8 +1,6 @@
-
 from idl.lexer import Lang
-from idl.lexer.Token import Token
-
 from idl.lexer.LexerError import LexerError
+from idl.lexer.Token import Token
 
 
 class Tokenizer:

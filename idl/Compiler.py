@@ -1,14 +1,13 @@
 from idl.Enum import Enum
+from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 from idl.Interface import Interface
 from idl.Struct import Struct
 from idl.Typedef import Typedef
 from idl.lexer import Lang
+from idl.lexer.LexerError import LexerError
 from idl.lexer.Token import Token
 from idl.lexer.Tokenizer import Tokenizer
-
-from idl.IDLSyntaxError import IDLSyntaxError
-from idl.IDLTypeError import IDLTypeError
-from idl.lexer.LexerError import LexerError
 from idl.parser.EnumParser import EnumParser
 from idl.parser.InterfaceParser import InterfaceParser
 from idl.parser.Parser import Parser

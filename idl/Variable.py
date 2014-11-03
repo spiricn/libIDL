@@ -1,8 +1,7 @@
 from idl.Annotatable import Annotatable
+from idl.IDLSyntaxError import IDLSyntaxError
 from idl.Type import Type
 from idl.lexer import Lang
-
-from idl.IDLSyntaxError import IDLSyntaxError
 
 
 class Variable(Annotatable):

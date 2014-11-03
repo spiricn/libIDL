@@ -1,8 +1,8 @@
 import unittest
 
+from idl.Environment import Environment 
 from idl.Type import Type
 
-from idl.Environment import Environment 
 from test.TestBase import TestBase
 
 

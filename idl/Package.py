@@ -1,6 +1,5 @@
-from idl.TypeGetter import TypeGetter
-
 from idl.IDLError import IDLError
+from idl.TypeGetter import TypeGetter
 
 
 class Package():

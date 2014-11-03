@@ -1,12 +1,12 @@
 import unittest
 
 from idl.Environment import Environment
+from idl.IDLSyntaxError import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 from idl.Method import Method
 from idl.Module import Module 
 from idl.Type import Type
 
-from idl.IDLSyntaxError import IDLSyntaxError
-from idl.IDLTypeError import IDLTypeError
 from test.TestBase import TestBase
 
 

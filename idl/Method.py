@@ -1,9 +1,8 @@
 from idl.Annotatable import Annotatable
-from idl.Type import Type
-from idl.Variable import Variable
-
 from idl.IDLSyntaxError import IDLSyntaxError
 from idl.IDLTypeError import IDLTypeError
+from idl.Type import Type
+from idl.Variable import Variable
 
 
 class Method(Annotatable):

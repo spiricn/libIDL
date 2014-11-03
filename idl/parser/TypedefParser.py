@@ -1,6 +1,5 @@
 from idl.lexer import Lang
 from idl.lexer.Token import Token
-
 from idl.parser.Parser import Parser
 
 

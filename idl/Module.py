@@ -1,6 +1,5 @@
 import os
 
-from idl.IDLError import IDLError
 from idl.IDLTypeError import IDLTypeError
 from idl.Package import Package
 from idl.Type import Type

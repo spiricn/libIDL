@@ -2,9 +2,9 @@ import os
 import unittest
 
 from idl.Environment import Environment 
-
 from idl.IDLSyntaxError import IDLSyntaxError
 from idl.IDLTypeError import IDLTypeError
+
 from test.TestBase import TestBase
 
 

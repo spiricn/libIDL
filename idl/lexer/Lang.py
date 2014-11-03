@@ -2,7 +2,6 @@ import re
 
 from idl.lexer.Token import Token
 
-
 # Keywords
 KEYWORD_INTERFACE = r'interface'
 

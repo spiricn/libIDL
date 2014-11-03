@@ -1,8 +1,9 @@
+import os
+import unittest
+
 from idl.Environment import Environment
 from idl.IDLSyntaxError import IDLSyntaxError
 from idl.Type import Type
-import os
-import unittest
 
 
 RESOURCE_DIR = os.path.abspath('./rsrc')

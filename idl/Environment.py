@@ -3,11 +3,9 @@ import os
 
 from idl.Compiler import Compiler
 from idl.IDLError import IDLError
-from idl.IDLTypeError import IDLTypeError
 from idl.Module import Module
 from idl.Package import Package
 from idl.Type import Type
-from idl.TypeGetter import TypeGetter
 
 
 class Environment(Package):

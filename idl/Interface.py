@@ -1,7 +1,6 @@
+from idl.IDLSyntaxError import IDLSyntaxError
 from idl.Method import Method
 from idl.Type import Type
-
-from idl.IDLSyntaxError import IDLSyntaxError
 
 
 class Interface(Type):
