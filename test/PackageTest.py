@@ -28,7 +28,7 @@ class PackageTest(TestBase):
         import com.test1;
         
         interface  Test{
-            void test(com.test1.module1.Src1Type arg1);
+            void test(Src1Type arg1);
         };
         
         typedef Src2Type;
@@ -37,12 +37,14 @@ class PackageTest(TestBase):
         src3 = '''
         package other.test;
         
-        import com;
+        import com.test1;
+        
+        import com.test2;
         
         struct Test{
-            com.test1.module1.Src1Type field1;
+            Src1Type field1;
             
-            com.test2.module2.Src2Type field2;
+            Src2Type field2;
         };
         
         '''
@@ -54,98 +56,6 @@ class PackageTest(TestBase):
         env.compileSource(src2, 'module2')
         
         env.compileSource(src3, 'module3')
-        
-    def test_module_import(self):
-        '''
-        Basic module import test.
-        '''
-        
-        
-        src1 = '''
-        package com.test1;
-
-        typedef Src1Type;
-        
-        '''
-        
-        
-        src2 = '''
-        package com.test2;
-        
-        import com.test1.module1;
-        
-        interface Test{
-            void test(com.test1.module1.Src1Type arg1);
-        };
-        '''
-        
-        
-        env = Environment()
-        
-        env.compileSource(src1, 'module1')
-        
-        env.compileSource(src2, 'module2')
-        
-    def test_from1(self):
-        '''
-        Basic module import test.
-        '''
-        
-        
-        src1 = '''
-        package com.test1;
-
-        typedef Src1Type;
-        
-        '''
-        
-        
-        src2 = '''
-        package com.test2;
-        
-        from com import test1;
-        
-        interface Test{
-            void test(test1.module1.Src1Type arg1);
-        };
-        '''
-        
-        
-        env = Environment()
-        
-        env.compileSource(src1, 'module1')
-        
-        env.compileSource(src2, 'module2')
-        
-    def test_from2(self):
-        '''
-        Basic module import test.
-        '''
-        
-        
-        src1 = '''
-        package com.test1;
-
-        typedef Src1Type;
-        
-        '''
-        
-        src2 = '''
-        package com.test2;
-        
-        from com.test1 import module1;
-        
-        interface Test{
-            void test(module1.Src1Type arg1);
-        };
-        '''
-        
-        
-        env = Environment()
-        
-        env.compileSource(src1, 'module1')
-        
-        env.compileSource(src2, 'module2')
         
     def test_type_import(self):
         '''
@@ -164,7 +74,7 @@ class PackageTest(TestBase):
         src2 = '''
         package com.test2;
         
-        from com.test1.module1 import Src1Type;
+        import com.test1.Src1Type;
         
         interface  Test{
             void test(Src1Type arg1);

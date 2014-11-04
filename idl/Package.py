@@ -13,6 +13,19 @@ class Package():
         self._children = []
         
     @property
+    def types(self):
+        '''
+        List of types exposed by modules contained in this package.
+        '''
+        
+        res = []
+        
+        for module in self._modules:
+            res += module.types
+            
+        return res
+    
+    @property
     def env(self):
         '''
         Parent environment of this package.
@@ -175,12 +188,6 @@ class Package():
         
         if package:
             return package
-            
-        # Module
-        module = self.getModuleByPath(path)
-        
-        if module:
-            return module
         
         # Type
         typeObj = self.getTypeByPath(path)
@@ -191,41 +198,25 @@ class Package():
         # It's neither
         return None
         
-    def getModuleByPath(self, path):
-        '''
-        Gets a child module by path.
-        '''
-        
-        moduleName = path[-1]
-        
-        if len(path) == 1:
-            package = self
-            
-        else:
-            packagePath = path[:-1]
-            
-            package = self.getChildByPath(packagePath)
-            
-        if not package:
-            return None
-        else:
-            return package.getModule(moduleName)
-        
     def getTypeByPath(self, path):
         '''
         Gets a chlid type by path.
         '''
-        
+      
         if len(path) == 1:
             # At least two path components necessary (i.e. module.type)
             return None
         
-        module = self.getModuleByPath(path[:-1])
+        package = self.getPackageByPath(path[:-1])
         
-        if not module:
+        if not package:
             return None
         else:
-            return module.getType(path[-1])
+            for typeObj in package.types:
+                if typeObj.name == path[-1]:
+                    return typeObj
+                
+        return None
         
     def getPackageByPath(self, path):
         '''

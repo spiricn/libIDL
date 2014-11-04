@@ -1,6 +1,5 @@
 from idl.lexer import Lang
-from idl.lexer.Lang import KEYWORD_PACKAGE, KEYWORD_IMPORT, KEYWORD_FROM, \
-    KEYWORD_AS
+from idl.lexer.Lang import KEYWORD_IMPORT, KEYWORD_PACKAGE
 from idl.lexer.Token import Token
 from idl.parser.ParserError import ParserError
 
@@ -32,10 +31,8 @@ class Parser(object):
             
             
     class ImportInfo:
-        def __init__(self, source, path, alias, line):
-            self.source = source
+        def __init__(self, path, line):
             self.path = path
-            self.alias = alias
             self.line = line
             
         @property
@@ -225,22 +222,14 @@ class Parser(object):
         path = []
         
         while True:
-            if not self.isNext(Token.ID):
-                break
-            
-            # Eat package component
             path.append( self.eat(Token.ID).body )
             
-            if self.isNext(Token.PUNCTUATION, ';') or self.isNext(Token.KEYWORD, KEYWORD_IMPORT) or self.isNext(Token.KEYWORD, KEYWORD_AS):
+            if self.isNext(Token.PUNCTUATION, '.'):
+                self.pop()
+                
+            elif self.isNext(Token.PUNCTUATION, ';'):
                 break
             
-            if self.next.id == Token.PUNCTUATION:
-                if self.next.body == '.':
-                    self.pop()
-                    
-                else:
-                    raise ParserError('Unexpected token while parsing package declaration', self.next)
-                
             else:
                 raise ParserError('Unexpected token while parsing package declaration', self.next)
 
@@ -275,39 +264,10 @@ class Parser(object):
                 # Eat the package we're importing
                 package = self._eatImportPathInfo()
                 
-                info.imports.append( Parser.ImportInfo(None, package, None, line) )
-                
-                if self.isNext(Token.KEYWORD, KEYWORD_AS):
-                    assert(0)
+                info.imports.append( Parser.ImportInfo(package, line) )
                 
                 # Eat semicolon
                 self.eat(Token.PUNCTUATION, ';')
-                
-            elif self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_FROM ):
-                line = self.next.location[0]
-                
-                # Eat from keyword
-                self.pop()
-                
-                source = self._eatImportPathInfo()
-                
-                # Eat import keyword
-                self.eat(Token.KEYWORD, KEYWORD_IMPORT)
-                
-                package = self._eatImportPathInfo()
-                
-                alias = None
-                if self.isNext(Token.KEYWORD, KEYWORD_AS):
-                    # Eat as keyword
-                    self.pop()
-                    
-                    # Eat alias
-                    alias = self.eat(Token.ID).body
-                
-                # Eat semicolon
-                self.eat(Token.PUNCTUATION, ';')
-                
-                info.imports.append( Parser.ImportInfo(source, package, alias, line) )
 
             else:
                 break

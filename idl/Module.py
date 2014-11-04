@@ -33,17 +33,8 @@ class Module(TypeGetter):
         # Imports information (recieved from the parser
         self._importsInfo = None
         
-        # List of imported packages
-        self._importedPackages = []
-        
         # List of imported types
         self._importedTypes = []
-        
-        # List of imported modules
-        self._importedModules = []
-        
-        # List of aliased imports
-        self._aliases = {}
         
     @property
     def dependencies(self):
@@ -111,110 +102,38 @@ class Module(TypeGetter):
         
         self._path = path
         
-    def _isPackageImported(self, path):
-        '''
-        Check if a package with the given path is imported by this modul.
-        '''
-        
-        for package in self._importedPackages:
-            if package.isBase(path):
-                return True
-            
-        return False
-    
-    def _isModuleImported(self, path):
-        '''
-        Check if the module with the given path is imported by this module.
-        '''
-        
-        for module in self._importedModules:
-            if module.path == path:
-                return True
-            
-        return False
-    
     def _resolveType(self, typeInfo):
-        # Is the reference aliased ?
-        aliasName = typeInfo.path[0]
-        
-        if aliasName in self._aliases:
-            # It's an alias
-            alias = self._aliases[aliasName]
-            
-            if isinstance(alias.loc, Module):
-                # Aliased entity is a module so the import must be:
-                #    module.type
-                assert(len(typeInfo.path) == 2)
-                
-                typeName = typeInfo.path[1]
-                
-                # Get the type from the module
-                return alias.loc.getType( typeName )
-            
-            elif isinstance(alias.loc, Package):
-                # Aliased entity is a package so the import must be:
-                #    package.com.....module.type
-                return alias.loc.resolvePath(typeInfo.path[1:])
-            
-            else:
-                # TODO
-                raise RuntimeError('Type aliases not implemented')
-            
-        else:
-            # Try without aliases
-            return self._resolvePath(typeInfo.path)
-        
-    def _resolvePath(self, path):
         '''
         Attempts to resolve the given path in the context of this module.
         '''
+        path = typeInfo.path
+        
+        typeName = path[-1]
         
         # Check imported types
-        typeName = path[-1]
-                 
         if len(path) == 1:
-            # Go trough all the imported types and try to find it
+            # Go trough all the imported types and try to find a type with this name
             for typeObj in self._importedTypes:
                 if typeObj.name == typeName:
                     return typeObj
                 
             return None
                     
-        elif len(path) >= 3:
+        else:
             # Package of the type we're trying to import
-            typePackage = path[:-2]
-             
-            # Module of the type we're trying to import
-            typeModule = path[-2]
-
-            # Check if the package is imported             
-            packageImported = self._isPackageImported(typePackage)
-             
-            # Now check if the module is imported
-            modulePath = [i for i in typePackage]
-             
-            modulePath.append(typeModule)
-             
-            moduleImported = self._isModuleImported(modulePath)
-
-            # If either of those are imported             
-            if moduleImported or packageImported:
-                # First resolve the package
-                typePackage = self.package.env.getPackageByPath(typePackage)
-                 
-            else:
-                # Neither are imported
+            typePackagePath = path[:-1]
+            
+            # Resolve package 
+            package = self.package.env.getPackageByPath(typePackagePath)
+            
+            if not package:
                 return None
-   
-            # Next resolve the module
-            typeModule = typePackage.getModule(typeModule)
-             
-            if not typeModule:
-                return None
-
-            # Finally get the type from the module
-            return typeModule.getType(typeName)              
-
+            
+            # Check all types in package
+            for typeObj in package.types:
+                if typeName == typeObj.name:
+                    return typeObj
+                
         return None
     
     def _setPackage(self, package):
@@ -241,121 +160,33 @@ class Module(TypeGetter):
          
         self._types.append( typeObj )
         
+    def _import(self, obj):
+        if isinstance(obj, Type):
+            if obj not in self._importedTypes:
+                self._importedTypes.append(obj)
+                
+        elif isinstance(obj, Package):
+            for typeObj in obj.types:
+                self._import(typeObj)
         
-    def _importFromModule(self, module, typeName):
-        '''
-        Imports a type name from a module. Type name may be a wildcard.
-        '''
-        
-        for typeObj in module.types:
-            if typeName == '*' or typeName == typeObj.name:
-                self._importedTypes.append( typeObj )
-        
+        else:
+            # Sanity check
+            assert(0)
+            
     def _link(self):
-        # Import all types from self
-        self._importFromModule(self, '*')
-        
-        # Import all primitive types from the environment
-        self._importFromModule(self.package.env._getLangModule(), '*')
-        
-        # Iterate over imports received from the parser
-        for importInfo in self._importsInfo.imports:
-            if not importInfo.source:
-                # It's an import of type:
-                #     import com.package.module
-                # or:
-                #    import com.package.module as alias
-                
-                # Resolve the given path
-                loc = self.package.env.resolvePath(importInfo.path)
-                
-                if not loc:
-                    # Path could not be resolved
-                    raise IDLImportError(self, importInfo.line, 'Could not resolve import %r' % importInfo.pathStr)
-                
-                # Is it an aliased import ?
-                if importInfo.alias:
-                    # Create an alias
-                    self._aliases[importInfo.alias] = Module.Alias(importInfo.alias, importInfo.path, loc) 
-                    
-                else:
-                    if isinstance(loc, Package):
-                        # The given path is a package
-                        self._importedPackages.append( loc )
-                    
-                    elif isinstance(loc, Module):
-                        # The given path is a module
-                        self._importedModules.append( loc )
-                    
-                    elif isinstance(loc, Type):
-                        # Type can't be imported like
-                        self._importedTypes.append( loc )
-                    
-                    else:
-                        # Sanity check (should never happen)
-                        assert(0)
-            else:
-                # It's an import of type:
-                #    from com.package.source import something
-                # or:
-                #     from com.package.source import something as alias
-                
-                # Resolve the given path
-                loc = self.package.env.resolvePath(importInfo.source)
-                
-                if len(importInfo.path) != 1:
-                    # The thing we're importing can only be a single module, package or type
-                    raise IDLImportError(self, importInfo.line, 'Invalid syntax')
-                
-                # Name of the thing we're trying to import
-                name = importInfo.path[0]
-                
-                # Alias ?
-                alias = name if not importInfo.alias else importInfo.alias
-                
-                if isinstance(loc, Package):
-                    # Source is a package
-                    
-                    # Check if the name is another package
-                    package = loc.getChild(name)
-                    
-                    if package:
-                        # It's another package
-                        path = importInfo.source + importInfo.path
-                        
-                        self._aliases[alias] = Module.Alias(name, path, package)
-                        
-                        continue
-                    
-                    # Check if the name is a module 
-                    module = loc.getModule(name)
-                    
-                    if module:
-                        # It's a module
-                        
-                        self._aliases[alias] = Module.Alias(name, module.path, module)
-                        
-                        continue
-                        
-                    # It's neither
-                    raise IDLImportError(self, importInfo.line, 'Could not resolve import %r' % importInfo.pathStr)
-                    
-                elif isinstance(loc, Module):
-                    # Source is a module, so we must be importing a type
-                    if importInfo.alias:
-                        # TODO
-                        raise RuntimeError('Type aliases not implemented')
+        # Import types from this package
+        self._import(self.package)
+            
+        # Import built-in types from lang module
+        self._import(self.package.env._getLangPackage())
 
-                    # Get the type object we're trying to import                    
-                    typeObj = loc.getType(name)
-                    
-                    if typeObj:
-                        # Import it
-                        self._importedTypes.append( typeObj )
-                        
-                    else:
-                        raise IDLImportError(self, importInfo.line, 'Could not resolve import %r' % importInfo.pathStr)
-                    
-                else:
-                    raise IDLImportError(self, importInfo.line, 'Could not resolve import %r' % importInfo.pathStr)
-                    
+        for importInfo in self._importsInfo.imports:
+            path = importInfo.path
+            
+            # Does it resolve to a type ?
+            obj = self.package.env.resolvePath(path)
+            
+            if not obj:
+                raise IDLImportError(self, importInfo.line, 'Could not resolve import %r' % importInfo.pathStr)
+                 
+            self._import(obj)

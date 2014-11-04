@@ -147,7 +147,10 @@ class Type(Annotatable):
         
     def __eq__(self, other):
         if isinstance(other, Type):
-            return self._id == other.id
+            if self.isPrimitive():
+                return self._id == other.id
+            else:
+                return self._id == other.id and self.name == other.name
         
         elif isinstance(other, int):
             return self._id == other

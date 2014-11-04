@@ -37,10 +37,12 @@ class Environment(Package):
         for typeId in Type.primitives:
             langModule._addType( Type(self, typeId) )
             
-        self._langModule = langModule
+        langPackage._addModule(langModule)
+        
+        self._langPackage = langPackage
          
-    def _getLangModule(self):
-        return self._langModule
+    def _getLangPackage(self):
+        return self._langPackage
     
     def compileTree(self, root, filterExpr='*.idl'):
         '''

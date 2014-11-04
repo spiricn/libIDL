@@ -1,7 +1,5 @@
 package com.test;
 
-from com.test.module2 import Module2Type;
-
 interface Module3Interface {
 	
 	void method1(Module2Type arg1);
