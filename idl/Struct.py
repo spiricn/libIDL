@@ -6,8 +6,8 @@ from idl.Variable import Variable
 
 class Struct(Type):
     class Field(Variable):
-        def __init__(self, struct, fieldType, name, mods):
-            Variable.__init__(self, fieldType, name, mods)
+        def __init__(self, struct, fieldType, name, mods, arraySize):
+            Variable.__init__(self, fieldType, name, mods, arraySize)
             
             self._struct = struct
             
@@ -56,7 +56,7 @@ class Struct(Type):
             if not fieldType:
                 raise IDLTypeError(self.module, field.line, 'Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.pathStr, self.name))
             
-            newField = Struct.Field(self, fieldType, field.name, Variable._resolveModifiers(fieldType, field.typeInfo.mods))
+            newField = Struct.Field(self, fieldType, field.name, Variable._resolveModifiers(fieldType, field.typeInfo.mods), field.typeInfo.arraySize)
             
             # Duplicate check
             for i in self._fields:
