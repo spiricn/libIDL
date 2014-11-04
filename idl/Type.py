@@ -101,7 +101,7 @@ class Type(Annotatable):
             
         else:
             raise NotImplementedError('Invalid type id')
-        
+    
     @property
     def path(self):
         modulePath = self.module.path
@@ -142,12 +142,13 @@ class Type(Annotatable):
         
         return []
     
+    @property
     def isPrimitive(self):
         return self._id in Type.primitives
         
     def __eq__(self, other):
         if isinstance(other, Type):
-            if self.isPrimitive():
+            if self.isPrimitive:
                 return self._id == other.id
             else:
                 return self._id == other.id and self.name == other.name

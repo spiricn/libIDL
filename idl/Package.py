@@ -12,6 +12,26 @@ class Package():
         self._name = name
         self._children = []
         
+    
+    @property
+    def children(self):
+        '''
+        List of all children (infinite depth) of this package.
+        '''
+        
+        packages = [self]
+        
+        res = []
+        
+        while packages:
+            package = packages.pop(0)
+            
+            res.append(package)
+            
+            packages += package._children
+        
+        return res
+        
     @property
     def types(self):
         '''
