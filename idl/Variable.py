@@ -92,3 +92,13 @@ class Variable(Annotatable):
         '''
         
         return False if self._mods & modId == 0 else True
+    
+    def __eq__(self, other):
+        if isinstance(other, Variable):
+            return self._type == other._type and self._isArray == other._isArray \
+                and self._mods == other._mods and self._arraySize == other._arraySize  
+        else:
+            raise RuntimeError('Invalid type comparison')
+    
+    def __ne__(self, other):
+        return not ( self == other ) 

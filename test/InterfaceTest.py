@@ -224,22 +224,6 @@ interface BasicInterface{
         Test interface related syntax errors.
         '''
         
-        # Duplicate method name test
-        src = '''\
-            package com.test;
-            
-            interface Test{
-                void test();
-                void test();
-            };
-        '''
-        
-        try:
-            Environment().compileSource(src, 'testModule')
-            self.fail()
-        except IDLSyntaxError as e:
-            self.assertEqual(e.line, 4)
-            
         # Duplicate argument name test
         src = '''\
             package com.test;

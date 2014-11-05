@@ -151,7 +151,8 @@ class Type(Annotatable):
             if self.isPrimitive:
                 return self._id == other.id
             else:
-                return self._id == other.id and self.name == other.name
+                return self._id == other.id and self.name == other.name and \
+                    self.module.package == other.module.package
         
         elif isinstance(other, int):
             return self._id == other
