@@ -56,7 +56,7 @@ class Environment(Package):
         
         for root, dirs, files in os.walk(root):
             for fileName in fnmatch.filter(files, filterExpr):
-                idlFiles.append(fileName)
+                idlFiles.append(os.path.join(root, fileName))
                 
         return self.compileFiles(idlFiles)
             
