@@ -1,11 +1,12 @@
 import fnmatch
-import os
-
 from idl.Compiler import Compiler
 from idl.IDLError import IDLError
 from idl.Module import Module
 from idl.Package import Package
 from idl.Type import Type
+import os
+
+from idl.linter.Linter import Linter
 
 
 class Environment(Package):
@@ -44,7 +45,7 @@ class Environment(Package):
     def _getLangPackage(self):
         return self._langPackage
     
-    def compileTree(self, root, filterExpr='*.idl'):
+    def compileTree(self, treePath, filterExpr='*.idl', enforcePackageConvention=True):
         '''
         Walks a directory recursively and compiles all encountered IDL files.
         
@@ -54,11 +55,19 @@ class Environment(Package):
         
         idlFiles = []
         
-        for root, dirs, files in os.walk(root):
+        for root, dirs, files in os.walk(treePath):
             for fileName in fnmatch.filter(files, filterExpr):
                 idlFiles.append(os.path.join(root, fileName))
                 
-        return self.compileFiles(idlFiles)
+        if enforcePackageConvention:
+            for path in idlFiles:
+                if not Linter.verifyModulePackage(treePath, path ):
+                    # TODO LinterError
+                    assert(0)
+        
+        modules = self.compileFiles(idlFiles)
+            
+        return modules 
             
     def compileSource(self, source, moduleName):
         '''
