@@ -107,7 +107,6 @@ class Compiler:
             try:
                 info = typeParser.parserClass(tokens).parse()
             except ParserError as e:
-                raise e
                 # Re-reaise the parser exception as public IDLSyntaxError
                 raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
             
