@@ -1,5 +1,5 @@
 class IDLError(Exception):
-    def __init__(self, name, baseMessage, module, line):
+    def __init__(self, name, baseMessage, module=None, line=None):
         
         message = '%s error' % name
         

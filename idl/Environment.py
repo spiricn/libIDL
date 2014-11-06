@@ -61,9 +61,8 @@ class Environment(Package):
                 
         if enforcePackageConvention:
             for path in idlFiles:
-                if not Linter.verifyModulePackage(treePath, path ):
-                    # TODO LinterError
-                    assert(0)
+                if not Linter.verifyModulePackage(treePath, path):
+                    raise IDLError('Lint', 'Package declaration-path mismatch in module %r' % path)
         
         modules = self.compileFiles(idlFiles)
             
