@@ -74,8 +74,6 @@ class Package():
         while todo:
             package = todo.pop(0)
             
-            print('proc %r' % package.name)
-            
             for module in package.modules:
                 for i in module.dependencies:
                     if i not in res:
