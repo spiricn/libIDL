@@ -1,4 +1,5 @@
-from idl.IDLSyntaxError import IDLSyntaxError
+from idl import IDLSyntaxError
+from idl.IDLTypeError import IDLTypeError
 from idl.Method import Method
 from idl.Type import Type
 
@@ -15,6 +16,12 @@ class Interface(Type):
         for methodInfo in info.methods:
             # Add it to the list
             self._methods.append( Method(self, methodInfo) )
+            
+        self._bases = []
+        
+    @property
+    def bases(self):
+        return self._bases
 
     @property
     def dependencies(self):
@@ -48,3 +55,26 @@ class Interface(Type):
         
         for method in self._methods:
             method._link()
+            
+        # Resolve bases
+        for baseTypeInfo in self._info.bases:
+            try:
+                baseType  = self.module._resolveType(baseTypeInfo)
+                
+                if baseType == None:
+                    raise IDLTypeError(self.module, self._info.line, 'Could not resolve interface base interface %r' % '.'.join(baseTypeInfo.path))
+                
+                elif baseType.id != Type.INTERFACE:
+                    raise IDLTypeError(self.module, self._info.line, 'Interface %r can\'t extend type %r only other interfaces.' % (self._info.name, baseType.name))
+                
+                else:
+                    # Duplicate inheritance check
+                    for i in self._bases:
+                        if i == baseType:
+                            raise IDLTypeError(self.module, self._info.line, 'Duplicate interface inheritance %r' % ('.'.join(i.path)))
+                        
+                    self._bases.append( baseType )
+
+            except IDLSyntaxError as e:
+                # Re-raise exception with module/line information
+                raise IDLSyntaxError(self.module, self._info.line, e.message)

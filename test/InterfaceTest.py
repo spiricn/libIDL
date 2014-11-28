@@ -327,5 +327,86 @@ interface BasicInterface{
         
         self.assertEqual(len(module.getType('TestInterface').dependencies), 3)
         
+    def test_extends(self):
+        '''
+        Interface inheritance test.
+        '''
+        
+        src = '''\
+        package com.test;
+        
+        interface Base1{
+        };
+        
+        interface Base2{
+        };
+        
+        interface Derived1 extends Base1{
+        };
+        
+        interface Derived2 extends Base1, Base2 {
+        };
+        '''
+        
+        module = Environment().compileSource(src, 'module')
+        
+        self.assertEqual( module.getType('Derived1').bases[0], module.getType('Base1') )
+        
+        self.assertEqual( module.getType('Derived2').bases[0], module.getType('Base1') )
+        self.assertEqual( module.getType('Derived2').bases[1], module.getType('Base2') )
+        
+    def test_extendsError(self):
+        '''
+        Interface inheritance errors.
+        '''
+        
+        # Interface extends struct
+        src = '''\
+        package com.test;
+        
+        struct TestStruct{
+        };
+        
+        interface Error extends TestStruct{
+        };
+        '''
+        
+        try:
+            Environment().compileSource(src, 'module')
+            self.fail()
+        except IDLTypeError:
+            pass
+        
+        # Unresolved type
+        src = '''\
+        package com.test;
+        
+        interface Error extends Unresolved{
+        };
+        '''
+        
+        try:
+            Environment().compileSource(src, 'module')
+            self.fail()
+        except IDLTypeError:
+            pass
+        
+        # Duplicate inheritance
+        src = '''\
+        package com.test;
+        
+        interface Base{
+        };
+        
+        interface Error extends Base, Base{
+        };
+        '''
+        
+        try:
+            Environment().compileSource(src, 'module')
+            self.fail()
+        except IDLTypeError:
+            pass
+        
 if __name__ == '__main__':
     unittest.main()

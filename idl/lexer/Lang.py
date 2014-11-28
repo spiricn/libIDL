@@ -23,6 +23,8 @@ KEYWORD_PACKAGE = r'package'
 
 KEYWORD_IMPORT = r'import'
 
+KEYWORD_EXTENDS = r'extends'
+
 # Type names
 TYPE_INT64 = r'int64'
 
@@ -103,6 +105,7 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'^' + KEYWORD_CALLBACK_UNREG + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_PACKAGE + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_IMPORT + r'$', Token.KEYWORD, True),
+                TokenTypeInfo(r'^' + KEYWORD_EXTENDS + r'$', Token.KEYWORD, True),
                 
                 # ID
                 TokenTypeInfo(r'^[a-zA-Z]+[a-zA-Z0-9_]*$', Token.ID, True),
