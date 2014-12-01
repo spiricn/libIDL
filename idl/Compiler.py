@@ -15,6 +15,8 @@ from idl.parser.ParserError import ParserError
 from idl.parser.StructParser import StructParser
 from idl.parser.TypedefParser import TypedefParser
 
+from idl.Preprocessor import Preprocessor
+
 
 class ParserInfo:
     '''
@@ -60,6 +62,10 @@ class Compiler:
         except LexerError as e:
             # Re-reaise the lexer exception as public IDLSyntaxError
             raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
+        
+        # Preprocess
+        
+        tokens = Preprocessor.process(tokens)
         
         # Parser used for generating type annotations & package info
         self._tokenParser = Parser(tokens)
