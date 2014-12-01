@@ -4,9 +4,10 @@ from idl.IDLError import IDLError
 from idl.Module import Module
 from idl.Package import Package
 from idl.Type import Type
+from idl.linter.Linter import Linter
 import os
 
-from idl.linter.Linter import Linter
+from idl.LangConfig import LangConfig
 
 
 class Environment(Package):
@@ -20,11 +21,21 @@ class Environment(Package):
             self.source = source
             self.filePath = filePath
             
-    def __init__(self):
+    def __init__(self, config=None):
         Package.__init__(self, self, None, '')
         
         self._createLangPackage()
+        
+        if not config:
+            self._config = LangConfig()
             
+        else:
+            self._config = config
+
+    @property
+    def config(self):
+        return self._config
+                
     def _createLangPackage(self):
         '''
         Creates a package containing all primitive types.
