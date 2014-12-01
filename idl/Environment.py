@@ -11,6 +11,8 @@ from idl.LangConfig import LangConfig
 
 
 class Environment(Package):
+    _defaultConfig = LangConfig()
+    
     class BuildEntry:
         '''
         Helper class used for compiling.
@@ -27,11 +29,15 @@ class Environment(Package):
         self._createLangPackage()
         
         if not config:
-            self._config = LangConfig()
+            self._config = Environment._defaultConfig
             
         else:
             self._config = config
 
+    @staticmethod
+    def setDefaultConfig(config):
+        Environment._defaultConfig = config
+        
     @property
     def config(self):
         return self._config
