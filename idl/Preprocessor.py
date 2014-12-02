@@ -2,6 +2,8 @@ from idl.lexer import Lang
 from idl.lexer.Token import Token
 from idl.parser.Parser import Parser
 
+from idl.IDLNotSupportedError import IDLNotSupportedError
+
 
 class Node:
     def __init__(self, proc, parent, tokens):
@@ -172,6 +174,13 @@ class Preprocessor:
     def __init__(self, env, tokens):
         self._tokens = tokens
         self._env = env
+        
+        # Check if preprocessor is enabled
+        if not self._env.config.preprocessor:
+            # Check for preprocesor tokens if not
+            for token in tokens:
+                if token.id == Token.KEYWORD and token.body in [Lang.KEYWORD_IFDEF, Lang.KEYWORD_ELIF, Lang.KEYWORD_ELSE, Lang.KEYWORD_ENDIF]:
+                    raise IDLNotSupportedError(None, token.location[0], 'Preprocessor not enabled')
         
     @staticmethod
     def process(env, tokens):

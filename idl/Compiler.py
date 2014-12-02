@@ -64,7 +64,6 @@ class Compiler:
             raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
         
         # Preprocess
-        
         tokens = Preprocessor.process(self._env, tokens)
         
         # Parser used for generating type annotations & package info

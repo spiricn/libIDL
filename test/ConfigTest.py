@@ -53,5 +53,30 @@ class ConfigTest(TestBase):
         except IDLNotSupportedError:
             pass
         
+    def test_preprocessor(self):
+        '''
+        Operator overloading LangConfig test.
+        '''
+        
+        src = ''' \
+        package com.test;
+        
+        #ifdef ( test )
+        interface Test{
+            void test(int32 arg1);
+            
+            void test();
+        };
+        #endif
+        '''
+        
+        
+        try:
+            Environment(LangConfig(preprocessor=False)).compileSource(src, 'module1')
+            self.fail()
+            
+        except IDLNotSupportedError:
+            pass
+        
 if __name__ == '__main__':
     unittest.main()
