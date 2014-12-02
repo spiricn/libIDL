@@ -25,6 +25,14 @@ KEYWORD_IMPORT = r'import'
 
 KEYWORD_EXTENDS = r'extends'
 
+KEYWORD_IFDEF = r'#ifdef'
+
+KEYWORD_ELIF = r'#elif'
+
+KEYWORD_ELSE = r'#else'
+
+KEYWORD_ENDIF = r'#endif'
+
 # Type names
 TYPE_INT64 = r'int64'
 
@@ -106,6 +114,11 @@ TOKEN_TYPES = [
                 TokenTypeInfo(r'^' + KEYWORD_PACKAGE + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_IMPORT + r'$', Token.KEYWORD, True),
                 TokenTypeInfo(r'^' + KEYWORD_EXTENDS + r'$', Token.KEYWORD, True),
+                
+                TokenTypeInfo(r'^' + KEYWORD_IFDEF + r'$', Token.KEYWORD, True),
+                TokenTypeInfo(r'^' + KEYWORD_ELIF + r'$', Token.KEYWORD, True),
+                TokenTypeInfo(r'^' + KEYWORD_ELSE + r'$', Token.KEYWORD, True),
+                TokenTypeInfo(r'^' + KEYWORD_ENDIF + r'$', Token.KEYWORD, True),
                 
                 # ID
                 TokenTypeInfo(r'^[a-zA-Z]+[a-zA-Z0-9_]*$', Token.ID, True),

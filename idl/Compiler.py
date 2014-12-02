@@ -65,7 +65,7 @@ class Compiler:
         
         # Preprocess
         
-        tokens = Preprocessor.process(tokens)
+        tokens = Preprocessor.process(self._env, tokens)
         
         # Parser used for generating type annotations & package info
         self._tokenParser = Parser(tokens)

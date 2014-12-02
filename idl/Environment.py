@@ -33,7 +33,15 @@ class Environment(Package):
             
         else:
             self._config = config
+            
+        self._defines = []
 
+    def define(self, name):
+        self._defines.append(name)
+        
+    def isDefined(self, name):
+        return name in self._defines
+        
     @staticmethod
     def setDefaultConfig(config):
         Environment._defaultConfig = config
