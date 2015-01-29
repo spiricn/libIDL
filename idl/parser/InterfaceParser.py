@@ -51,8 +51,7 @@ class InterfaceParser(Parser):
 
                 else:
                     raise ParserError('Unexpected token', self.next())
-            
-    
+
     def _parseBody(self):
         # Body start
         self.eat(Token.PUNCTUATION , '{')

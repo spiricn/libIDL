@@ -76,7 +76,7 @@ TOKEN_TYPES = [
                 # Comments
                 TokenTypeInfo(r'\/\/[^\n]*', Token.COMMENT, False, re.DOTALL),
                 
-                TokenTypeInfo(r'/\*' + r'.*?' + r'\*/', Token.BLOCK_COMMENT, False, re.DOTALL),
+                TokenTypeInfo(r'/\*' + r'.*?' + r'\*/', Token.BLOCK_COMMENT, True, re.DOTALL),
                 
                 # String literals
                 TokenTypeInfo(r'\"[^\"]*\"', Token.STRING_LIT, True),
