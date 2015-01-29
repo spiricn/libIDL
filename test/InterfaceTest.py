@@ -27,7 +27,7 @@ test
 
 // Comment 1
 interface TestInterface{
-    void methodName(int32 arg1, uint32 arg2, /* comment block 1 */string arg3);
+    void methodName(int32 arg1, uint32 arg2, string arg3);
 };
 // Comment 2
 '''

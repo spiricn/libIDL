@@ -21,9 +21,10 @@ class Parser(object):
             self.name = name
             
     class AnnotationInfo:
-        def __init__(self, name='', value=''):
+        def __init__(self, name='', value='', isComment=False):
             self.name = name
             self.value = value
+            self.isComment = isComment
             
     class PackageInfo:
         def __init__(self, package):
@@ -102,12 +103,27 @@ class Parser(object):
     
     def eatAnnotations(self):
         while True:
+            comment = self._eatComment()
+            
+            if comment:
+                self.annotations.append( comment )
+                
             annotation = self._eatAnnotation()
             
             if annotation:
                 self.annotations.append( annotation  )
             else:
                 break
+            
+    def _eatComment(self):
+        if not len(self.tokens):
+            return None
+        
+        if self.next.id == Token.BLOCK_COMMENT:
+            return Parser.AnnotationInfo(value=self.pop().body, isComment=True)
+        
+        else:
+            return None
 
     def _eatAnnotation(self):
         if not len(self.tokens):

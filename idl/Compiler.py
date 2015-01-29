@@ -69,6 +69,8 @@ class Compiler:
         # Parser used for generating type annotations & package info
         self._tokenParser = Parser(tokens)
         
+        self._tokenParser.eatAnnotations()
+        
         # Parse package
         try:
             packageInfo = self._tokenParser.eatPackageInfo()
