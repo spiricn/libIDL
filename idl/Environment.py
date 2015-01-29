@@ -4,12 +4,15 @@ from idl.IDLError import IDLError
 from idl.Module import Module
 from idl.Package import Package
 from idl.Type import Type
+from idl.linter.Linter import Linter
 import os
 
-from idl.linter.Linter import Linter
+from idl.LangConfig import LangConfig
 
 
 class Environment(Package):
+    _defaultConfig = LangConfig()
+    
     class BuildEntry:
         '''
         Helper class used for compiling.
@@ -20,11 +23,33 @@ class Environment(Package):
             self.source = source
             self.filePath = filePath
             
-    def __init__(self):
+    def __init__(self, config=None):
         Package.__init__(self, self, None, '')
         
         self._createLangPackage()
+        
+        if not config:
+            self._config = Environment._defaultConfig
             
+        else:
+            self._config = config
+            
+        self._defines = []
+
+    def define(self, name):
+        self._defines.append(name)
+        
+    def isDefined(self, name):
+        return name in self._defines
+        
+    @staticmethod
+    def setDefaultConfig(config):
+        Environment._defaultConfig = config
+        
+    @property
+    def config(self):
+        return self._config
+                
     def _createLangPackage(self):
         '''
         Creates a package containing all primitive types.

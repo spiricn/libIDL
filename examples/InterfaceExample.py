@@ -10,6 +10,7 @@ def sampleMain():
     '''
     Sample main function
     '''
+    
     # IDL source code
     inputSource = '''\
     package com.example.iface;
@@ -27,13 +28,13 @@ def sampleMain():
     # Compile the IDL source as a module
     module = env.compileSource( inputSource, 'InterfaceExample' )
     
-    # Get the interface from the module
+    # Get the interface object from the module
     interface = module.getInterface('TestInterface')
     
-    # Print the name
+    # Print name
     print('Interface name: %r' % interface.name)
     
-    # Print the methods
+    # Print methods
     print('Interface methods:')
     
     for method in interface.methods:
