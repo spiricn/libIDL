@@ -16,6 +16,8 @@ class IDLError(Exception):
         
         Exception.__init__(self, message)
         
+        self._message = baseMessage
+        
         self._module = module
         
         self._line = line
@@ -35,3 +37,11 @@ class IDLError(Exception):
         '''
         
         return self._module
+
+    @property
+    def message(self):
+        '''
+        Base exception message.
+        '''
+        
+        return self._message
