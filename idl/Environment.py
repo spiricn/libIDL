@@ -61,7 +61,7 @@ class Environment(Package):
         langModule = Module('Lang', None, langPackage)
         
         for typeId in Type.primitives:
-            langModule._addType( Type(self, typeId) )
+            langModule._addType( Type(langModule, typeId) )
             
         langPackage._addModule(langModule)
         
