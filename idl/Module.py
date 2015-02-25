@@ -52,18 +52,6 @@ class Module(TypeGetter):
         return res
     
     @property
-    def path(self):
-        '''
-        Module package path.
-        '''
-        
-        packagePath = self.package.path
-        
-        packagePath.append( self.name )
-        
-        return packagePath
-        
-    @property
     def package(self):
         '''
         The package object this module belongs to.

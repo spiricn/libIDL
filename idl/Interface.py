@@ -34,12 +34,12 @@ class Interface(Type):
         
         for method in self._methods:
             # Return type
-            if method.ret.type not in res:
+            if method.ret.type not in res and not method.ret.type.isPrimitive and not method.ret.isArray:
                 res.append( method.ret.type )
             
             # Arguments
             for arg in method.args:
-                if arg.type not in res:
+                if arg.type not in res and not arg.type.isPrimitive and not arg.isArray:
                     res.append( arg.type )
 
         return res

@@ -39,7 +39,7 @@ class Struct(Type):
         res = []
         
         for field in self._fields:
-            if field.type not in res:
+            if field.type not in res and not field.type.isPrimitive and not field.isArray:
                 res.append(field.type)
                 
         return res

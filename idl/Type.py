@@ -104,11 +104,11 @@ class Type(Annotatable):
     
     @property
     def path(self):
-        modulePath = self.module.path
+        path = self.module.package.path
         
-        modulePath.append( self.name )
+        path.append( self.name )
         
-        return modulePath
+        return path
     
     @property
     def name(self):
