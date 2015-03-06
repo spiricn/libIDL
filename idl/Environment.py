@@ -35,6 +35,10 @@ class Environment(Package):
             self._config = config
             
         self._defines = []
+        
+        self._fileCompileCallback = None
+        
+        self._fileScanCallback = None
 
     def define(self, name):
         self._defines.append(name)
@@ -70,19 +74,30 @@ class Environment(Package):
     def _getLangPackage(self):
         return self._langPackage
     
-    def compileTree(self, treePath, filterExpr='*.idl', enforcePackageConvention=True):
+    def compileTree(self, treePath, filterExpr='*.idl', enforcePackageConvention=True, fileCompileCallback=None, fileScanCallback=None):
         '''
         Walks a directory recursively and compiles all encountered IDL files.
         
         @param root: Root directory
         @param filterExpr: Idl file name filter
+        @param fileCompileCallback: Called before compiling a scanned file, may be None
+        @param fileScanCallback: Called when a file is scanned; if False is return by the called function file is discarded
         '''
         
         idlFiles = []
         
+        self._fileCompileCallback = fileCompileCallback
+        
+        _fileScanCallback = fileScanCallback
+        
         for root, dirs, files in os.walk(treePath):
             for fileName in fnmatch.filter(files, filterExpr):
-                idlFiles.append(os.path.join(root, fileName))
+                fullPath = os.path.join(root, fileName)
+                
+                if _fileScanCallback and not _fileScanCallback(fullPath):
+                    continue
+                
+                idlFiles.append(fullPath)
                 
         if enforcePackageConvention:
             for path in idlFiles:
@@ -130,6 +145,9 @@ class Environment(Package):
         createdModules = []
         
         for entry in entries:                        
+            if self._fileCompileCallback:
+                self._fileCompileCallback(entry.filePath)
+
             # Create module object
             module = Module(entry.moduleName, entry.filePath)
         
