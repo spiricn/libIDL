@@ -34,7 +34,7 @@ class MethodDesc:
         # Line at which this method was declared
         self.line = line
         
-class ArgDesc:
+class MethodArgDesc:
     '''
     Method argument description.
     '''

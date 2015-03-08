@@ -82,14 +82,7 @@ class Module(TypeGetter):
         '''
         
         return self._filePath
-    
-    def _setPath(self, path):
-        '''
-        Set the package path (called by the compiler)
-        '''
-        
-        self._path = path
-        
+
     def _resolveType(self, typeDesc):
         '''
         Attempts to resolve the given path in the context of this module.
@@ -178,3 +171,12 @@ class Module(TypeGetter):
                 raise IDLImportError(self, ImportDesc.line, 'Could not resolve import %r' % ImportDesc.pathStr)
                  
             self._import(obj)
+            
+        
+    def _setPath(self, path):
+        '''
+        Set the package path (called by the compiler)
+        '''
+        
+        self._path = path
+        

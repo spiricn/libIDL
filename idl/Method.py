@@ -5,21 +5,21 @@ from idl.Type import Type
 from idl.Variable import Variable
 
 
+class MethodArgument(Variable):
+    def __init__(self, method, argType, name, mods, arraySize):
+        Variable.__init__(self, argType, name, mods, arraySize)
+        
+        self._method = method
+        
+    @property
+    def method(self):
+        '''
+        Method this argument is associated with.
+        '''
+        
+        return self._method
+        
 class Method(Annotatable):
-    class Argument(Variable):
-        def __init__(self, method, argType, name, mods, arraySize):
-            Variable.__init__(self, argType, name, mods, arraySize)
-            
-            self._method = method
-            
-        @property
-        def method(self):
-            '''
-            Method this argument is associated with.
-            '''
-            
-            return self._method
-            
     # Method type enumeration
     NORMAL, \
     CALLBACK_REGISTER, \
@@ -51,12 +51,19 @@ class Method(Annotatable):
     
     @property
     def ret(self):
+        '''
+        Object contaning return type information.
+        '''
+        
         return self._returnType
     
     @property
     def type(self):
         '''
-        Type of method.
+        Type of method. May be one of the following:
+            Method.NORMAL - Regular method
+            Method.CALLBACK_REGISTER - Used to indicate that a method is used for callback listener registration.
+            Method.CALLBACK_UNREGISTER - Used to indicate that a method is used to unregister a callback listener.
         '''
         
         return self._type
@@ -120,7 +127,7 @@ class Method(Annotatable):
         except IDLSyntaxError as e:
             raise IDLSyntaxError(self._interface.module, arg.line, e.message)
         
-        newArg = Method.Argument(self, argType, arg.varDesc.name, mods, arg.varDesc.typeDesc.arraySize)
+        newArg = MethodArgument(self, argType, arg.varDesc.name, mods, arg.varDesc.typeDesc.arraySize)
         
         # Duplicate name check
         for i in self._args:

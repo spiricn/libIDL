@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from idl.Annotation import Annotation
 from idl.Environment import Environment 
 
 
@@ -78,5 +79,39 @@ class AnnotationTest(unittest.TestCase):
         
         self.assertEqual(module.getType('dummyType2').getAnnotationVal('stringValue'), 'stringValue')
         
+    def test_comments(self):
+        '''
+        Comment annotation test.
+        '''
+        
+              
+        comment = '''\
+/**
+            * Test comment
+            */'''
+        
+        source = '''\
+        package com.test;
+        
+
+        interface Interface{
+        
+            %s
+            void testMethod();
+        };
+        ''' % comment
+        
+        env = Environment()
+        
+        env.compileSource(source, 'testModule')
+        
+        method = env.env.types[0].methods[0]
+        
+        self.assertEqual(len(method.annotations), 1)
+        
+        self.assertEqual(method.annotations[0].type, Annotation.COMMENT)
+  
+        self.assertEqual(method.annotations[0].value, comment)
+    
 if __name__ == '__main__':
     unittest.main()

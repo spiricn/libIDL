@@ -1,3 +1,4 @@
+from idl.Trace import Trace
 from idl.lexer import Lang
 from idl.lexer.LexerError import LexerError
 from idl.lexer.Token import Token
@@ -24,7 +25,7 @@ class Tokenizer:
     @staticmethod
     def tokenize(source):
         if Tokenizer.DEBUG:
-            print('IN: %r' % source)
+            Trace.debug('IN: %r' % source)
             
         return Tokenizer(source)._tokenize()
     
@@ -34,8 +35,8 @@ class Tokenizer:
         
         while not self._done():
             if Tokenizer.DEBUG:
-                print('='*80)
-                print('IN: ', [str(i) for i in self._tokens])
+                Trace.debug('='*80)
+                Trace.debug('IN: ', [str(i) for i in self._tokens])
                 
             currIndex, currToken = self._findUnkown()
             
@@ -45,14 +46,14 @@ class Tokenizer:
             newTokens = self._splitUnkown(currToken)
             
             if Tokenizer.DEBUG:
-                print('NW: ', [str(i) for i in newTokens])
+                Trace.debug('NW: ', [str(i) for i in newTokens])
             
             for index, token in enumerate(newTokens):
                 # Insert the identified / new unknown tokens in its place
                 self._tokens.insert(currIndex + index, token)
                 
             if Tokenizer.DEBUG:
-                print('OUT: ', [str(i) for i in self._tokens])
+                Trace.debug('OUT: ', [str(i) for i in self._tokens])
                 
         return self._tokens
             

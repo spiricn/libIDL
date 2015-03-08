@@ -26,10 +26,18 @@ class Interface(Type):
         
     @property
     def bases(self):
+        '''
+        List of interfaces this interface is extending.
+        '''
+        
         return self._bases
 
     @property
     def dependencies(self):
+        '''
+        List of types this interface is using (either as method return type or argument type)
+        '''
+        
         res = []
         
         for method in self._methods:
@@ -76,7 +84,7 @@ class Interface(Type):
                                     break
                                 
                             if same:
-                                raise IDLTypeError(self.module, self._desc.line, 'Duplicate method detected %s::%s' % (self.name, method1.name))
+                                raise IDLTypeError(self.module, self._desc.line, 'Duplicate method detected %s::%s' % (self.pathStr, method1.name))
 
         # Resolve bases
         for baseTypeDesc in self._desc.bases:
@@ -84,7 +92,7 @@ class Interface(Type):
                 baseType  = self.module._resolveType(baseTypeDesc)
                 
                 if baseType == None:
-                    raise IDLTypeError(self.module, self._desc.line, 'Could not resolve interface base interface %r' % '.'.join(baseTypeDesc.path))
+                    raise IDLTypeError(self.module, self._desc.line, 'Could not resolve interface base %r' % '.'.join(baseTypeDesc.path))
                 
                 elif baseType.id != Type.INTERFACE:
                     raise IDLTypeError(self.module, self._desc.line, 'Interface %r can\'t extend type %r only other interfaces.' % (self._desc.name, baseType.name))

@@ -35,5 +35,5 @@ class LangConfig:
         '''
         Set to True to force explicit method argument modifiers (e.g. in, out, inout)
         '''
-        # TODO
-        pass
+
+        raise NotImplementedError()

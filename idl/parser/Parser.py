@@ -1,10 +1,10 @@
+from idl.Trace import Trace
 from idl.lexer import Lang
 from idl.lexer.Lang import KEYWORD_IMPORT, KEYWORD_PACKAGE
 from idl.lexer.Token import Token
-from idl.parser.ParserError import ParserError
-
 from idl.parser.Desc import PackageDesc, ImportDesc, ImportsDesc, VariableDesc, \
     TypeDesc, AnnotationDesc
+from idl.parser.ParserError import ParserError
 
 
 class Parser(object):
@@ -255,5 +255,5 @@ class Parser(object):
         return desc
     
     def _debug(self, numTokens=1):
-        print([str(self.tokens[index]) for index in range(numTokens)])
+        Trace.debug([str(self.tokens[index]) for index in range(numTokens)])
         

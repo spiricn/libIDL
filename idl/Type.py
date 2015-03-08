@@ -136,6 +136,14 @@ class Type(Annotatable):
         return self._module
     
     @property
+    def package(self):
+        '''
+        Type parent package.
+        '''
+
+        return self._module.package
+    
+    @property
     def id(self):
         '''
         Type identification integer.

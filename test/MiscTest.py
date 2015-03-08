@@ -75,5 +75,62 @@ class MiscTest(TestBase):
         except IDLSyntaxError as e:
             self.assertEqual(e.line, 2)        
     
+    def test_serialization(self):
+        packageName = ['com', 'test']
+        
+        interfaceName = 'TestInterface'
+        
+        
+        structName = 'TestStruct'
+        
+        enumName = 'TestEnum'
+        
+        src = ''' \
+        package %s;
+        
+        
+        enum %s{
+            a,
+            b,
+            c
+        };
+        
+        struct %s{
+            float32 testField;
+        };
+        
+        interface %s{
+            void testMethod();
+        }; ''' % ('.'.join(packageName), enumName, structName, interfaceName)
+        
+        env = Environment()
+        
+        moduleName = 'testModule'
+        
+        env.compileSource(src, moduleName)
+        
+        
+        filePath = os.path.join(TestBase.RESOURCE_DIR, '.__MiscTest_SavedEnvironment')
+        
+        env.save(filePath)
+        
+        loadedEnv = Environment.load(filePath)
+        
+        os.remove(filePath)
+        
+        self.assertEqual(isinstance(loadedEnv, Environment), True)
+        
+        self.assertEqual(len(loadedEnv.types), 3)
+
+                
+        self.assertEqual(loadedEnv.types[0].package.path, packageName)
+        
+        self.assertEqual(loadedEnv.types[0].name, enumName)
+        
+        self.assertEqual(loadedEnv.types[1].name, structName)
+        
+        self.assertEqual(loadedEnv.types[2].name, interfaceName)
+        
+        
 if __name__ == '__main__':
     unittest.main()

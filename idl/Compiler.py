@@ -18,30 +18,30 @@ from idl.parser.TypedefParser import TypedefParser
 from idl.Preprocessor import Preprocessor
 
 
-class ParserInfo:
-    '''
-    Helper class used by the compiler.
-    '''
-    
-    def __init__(self, typeClass, parserClass, startTokenID, startTokenBody):
-        self.typeClass = typeClass
-        self.parserClass = parserClass
-        self.startTokenID = startTokenID
-        self.startTokenName = startTokenBody
-
 class Compiler:
+    class _ParserInfo:
+        '''
+        Private helper class used by the compiler.
+        '''
+        
+        def __init__(self, typeClass, parserClass, startTokenID, startTokenBody):
+            self.typeClass = typeClass
+            self.parserClass = parserClass
+            self.startTokenID = startTokenID
+            self.startTokenName = startTokenBody
+            
     PARSERS = [
             # Interface
-            ParserInfo(Interface, InterfaceParser, Token.KEYWORD, Lang.KEYWORD_INTERFACE),
+            _ParserInfo(Interface, InterfaceParser, Token.KEYWORD, Lang.KEYWORD_INTERFACE),
             
             # Enum
-            ParserInfo(Enum, EnumParser, Token.KEYWORD, Lang.KEYWORD_ENUM),
+            _ParserInfo(Enum, EnumParser, Token.KEYWORD, Lang.KEYWORD_ENUM),
             
             # Struct
-            ParserInfo(Struct, StructParser, Token.KEYWORD, Lang.KEYWORD_STRUCT),
+            _ParserInfo(Struct, StructParser, Token.KEYWORD, Lang.KEYWORD_STRUCT),
             
             # Typedef
-            ParserInfo(Typedef, TypedefParser, Token.KEYWORD, Lang.KEYWORD_TYPEDEF),
+            _ParserInfo(Typedef, TypedefParser, Token.KEYWORD, Lang.KEYWORD_TYPEDEF),
     ]
     
     def __init__(self, env, module):
@@ -133,6 +133,15 @@ class Compiler:
             # Add type to our types (used later for linking)
             self._types.append( typeObj )
             
+    def link(self):
+        '''
+        Links type created by self.compile
+        '''
+        
+        # Just iterate over all the types we created and link them
+        for typeObj in self._types:
+            typeObj._link()
+            
     def _findParser(self):
         '''
         Finds a suitable parser for the next token in the queue.
@@ -143,13 +152,3 @@ class Compiler:
                 return parser
             
         return None
-    
-    def link(self):
-        '''
-        Links type created by self.compile
-        '''
-        
-        # Just iterate over all the types we created and link them
-        for typeObj in self._types:
-            typeObj._link()
-    

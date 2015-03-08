@@ -1,21 +1,26 @@
 import fnmatch
+from os import path
+import os
+import pickle
+
+import idl
 from idl.Compiler import Compiler
 from idl.IDLError import IDLError
+from idl.LangConfig import LangConfig
 from idl.Module import Module
 from idl.Package import Package
 from idl.Type import Type
 from idl.linter.Linter import Linter
-import os
-
-from idl.LangConfig import LangConfig
 
 
 class Environment(Package):
     _defaultConfig = LangConfig()
     
-    class BuildEntry:
+    VERSION_KEY = '__version__'
+    
+    class _BuildEntry:
         '''
-        Helper class used for compiling.
+        Private helper class used for compiling.
         '''
         
         def __init__(self, moduleName, source, filePath):
@@ -39,41 +44,89 @@ class Environment(Package):
         self._fileCompileCallback = None
         
         self._fileScanCallback = None
+        
+    def save(self, path):
+        '''
+        Saves a compiled environment to a file. Can be loaded later using Environment.load method.
+        
+        @param path: Destination file path.
+        '''
+        
+        fileObj = open(path, 'wb')
+        
+        # Structure should NEVER change between library versions
+        fileHeader = {Environment.VERSION_KEY : idl.__version__}
+        
+        # Write header
+        pickle.dump(fileHeader, fileObj)
+        
+        # Write object
+        pickle.dump(self, fileObj)
+            
+        fileObj.close()
+            
+    @staticmethod
+    def load(path):
+        '''
+        Loads an environment object from a file saved via Environment.save method.
+        May throw RuntimeError if attempted to load a file saved with a different version of library.
+        
+        @param path: Source file path.
+        @return Environment object.
+        '''
+        
+        fileObj = open(path, 'rb')
+        
+        # Check version
+        fileHeader = pickle.load(fileObj)
+        
+        if Environment.VERSION_KEY not in fileHeader or fileHeader[Environment.VERSION_KEY] != idl.__version__:
+            raise RuntimeError('Invalid precompiled file')
+        
+        res = pickle.load(fileObj)
+            
+        fileObj.close()
+        
+        return res
 
     def define(self, name):
+        '''
+        Ads a preprocessor definition.
+        
+        @param name: Definition name.
+        '''
+        
         self._defines.append(name)
         
     def isDefined(self, name):
+        '''
+        Checks whether a preprocessor definition with given name exists.
+        
+        @param name: Definition name.
+        
+        @return: True if definition, exists False otherwise.
+        '''
+        
         return name in self._defines
         
     @staticmethod
     def setDefaultConfig(config):
+        '''
+        Sets default environment configuration used by every other Environment instantiated.
+        
+        @param config: Object of type idl.LangConfig 
+        '''
+        
         Environment._defaultConfig = config
         
     @property
     def config(self):
+        '''
+        Environment configuration.
+        '''
+        
         return self._config
                 
-    def _createLangPackage(self):
-        '''
-        Creates a package containing all primitive types.
-        '''
-        
-        # Create primitives package
-        langPackage = self._createChildTree(['idl'])
-        
-        langModule = Module('Lang', None, langPackage)
-        
-        for typeId in Type.primitives:
-            langModule._addType( Type(langModule, typeId) )
-            
-        langPackage._addModule(langModule)
-        
-        self._langPackage = langPackage
-         
-    def _getLangPackage(self):
-        return self._langPackage
-    
     def compileTree(self, treePath, filterExpr='*.idl', enforcePackageConvention=True, fileCompileCallback=None, fileScanCallback=None):
         '''
         Walks a directory recursively and compiles all encountered IDL files.
@@ -85,8 +138,6 @@ class Environment(Package):
         '''
         
         idlFiles = []
-        
-        self._fileCompileCallback = fileCompileCallback
         
         _fileScanCallback = fileScanCallback
         
@@ -104,8 +155,10 @@ class Environment(Package):
                 if not Linter.verifyModulePackage(treePath, path):
                     raise IDLError('Lint', 'Package declaration-path mismatch in module %r' % path)
         
-        modules = self.compileFiles(idlFiles)
+        modules = self.compileFiles(idlFiles, fileCompileCallback)
             
+        self._fileScanCallback = None
+        
         return modules 
             
     def compileSource(self, source, moduleName):
@@ -132,10 +185,89 @@ class Environment(Package):
                     break
                 
         # Compile source code
-        modules = self._build([Environment.BuildEntry(moduleName, source, None)])
+        modules = self._build([Environment._BuildEntry(moduleName, source, None)])
         
         return modules[0]
     
+    def compileFiles(self, paths, fileCompileCallback=None):
+        '''
+        Compiles a list of files. File are directly translated into module names (e.g. 'my_module.idl' becomes 'my_module'
+        
+        @param paths: List of paths of source files.
+        @param fileCompileCallback: Called before compiling a scanned file, may be None
+        
+        @return: List of modules created.
+        '''
+        
+        # Build entry list
+        entries = []
+        
+        self._fileCompileCallback = fileCompileCallback
+        
+        for path in paths:
+            # Try to open the file
+            try:
+                fileObj = open(path, 'r')
+            except Exception as e:
+                raise IDLError('Error opening idl file %r:\n %s' % (path, str(e)))
+            
+            # Get the source code
+            source = fileObj.read()
+            
+            fileObj.close()
+            
+            # Get file name
+            moduleName = os.path.basename(path)
+            
+            # Discard extension
+            moduleName = os.path.splitext(moduleName)[0]
+            
+            # Add it to the list of build entries
+            entries.append( Environment._BuildEntry(moduleName, source, path) )
+            
+        # Actually compile the sources
+        result = self._build( entries )
+        
+        self._fileCompileCallback = None
+        
+        return result        
+        
+    def compileFile(self, path):
+        '''
+        Compiles a single file. File name is translated into module name.
+        
+        @param path: Path to the source code.
+        
+        @return: Compiled module.
+        '''
+        
+        modules = self.compileFiles([path])
+        
+        return modules[0]
+
+    def _createLangPackage(self):
+        '''
+        Creates a package containing all primitive types.
+        '''
+        
+        # Create primitives package
+        langPackage = self._createChildTree(['idl'])
+        
+        langModule = Module('Lang', None, langPackage)
+        
+        for typeId in Type.primitives:
+            langModule._addType( Type(langModule, typeId) )
+            
+        langPackage._addModule(langModule)
+        
+        self._langPackage = langPackage
+         
+    def _getLangPackage(self):
+        '''
+        Default language package.
+        '''
+        return self._langPackage
+
     def _build(self, entries):
         '''
         Compiles a list of build entries.
@@ -170,54 +302,3 @@ class Environment(Package):
             entry.compiler.link()
             
         return createdModules
-
-    def compileFiles(self, paths):
-        '''
-        Compiles a list of files. File are directly translated into module names (e.g. 'my_module.idl' becomes 'my_module'
-        
-        @param paths: List of paths of source files.
-        
-        @return: List of modules created.
-        '''
-        
-        # Build entry list
-        entries = []
-        
-        for path in paths:
-            # Try to open the file
-            try:
-                fileObj = open(path, 'r')
-            except Exception as e:
-                raise IDLError('Error opening idl file %r:\n %s' % (path, str(e)))
-            
-            # Get the source code
-            source = fileObj.read()
-            
-            fileObj.close()
-            
-            # Get file name
-            moduleName = os.path.basename(path)
-            
-            # Discard extension
-            moduleName = os.path.splitext(moduleName)[0]
-            
-            # Add it to the list of build entries
-            entries.append( Environment.BuildEntry(moduleName, source, path) )
-            
-        # Actually compile the sources
-        return self._build( entries )        
-        
-    
-    def compileFile(self, path):
-        '''
-        Compiles a single file. File name is translated into module name.
-        
-        @param path: Path to the source code.
-        
-        @return: Compiled module.
-        '''
-        
-        modules = self.compileFiles([path])
-        
-        return modules[0]
-    

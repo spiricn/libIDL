@@ -2,7 +2,7 @@ from idl.lexer.Token import Token
 from idl.parser.Parser import Parser
 from idl.parser.ParserError import ParserError
 
-from idl.parser.Desc import MethodDesc, ArgDesc
+from idl.parser.Desc import MethodDesc, MethodArgDesc
 
 
 class MethodParser(Parser):
@@ -57,7 +57,7 @@ class MethodParser(Parser):
                 varDesc = self.eatVariableDesc()
                 
                 # Create description
-                self.method.args.append( ArgDesc(varDesc, argLine) )
+                self.method.args.append( MethodArgDesc(varDesc, argLine) )
                 
                 expectingArg = False
                 
