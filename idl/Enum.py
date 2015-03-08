@@ -38,14 +38,14 @@ class Enum(Type):
             
             return self._value
             
-    def __init__(self, module, info):
-        Type.__init__(self, module, Type.ENUM, info.name)
+    def __init__(self, module, desc):
+        Type.__init__(self, module, Type.ENUM, desc.name)
 
-        self._info = info
+        self._desc = desc
         
         self._fields = []
         
-        for field in self._info.fields:
+        for field in self._desc.fields:
             
             if field.value:
                 # Evaluate value
@@ -54,7 +54,10 @@ class Enum(Type):
                 # Duplicate value check
                 for i in self._fields:
                     if i.value == value:
-                        raise IDLSyntaxError(self.module, field.line, 'Enum %r duplicate explicit field value %d for field %r' % (self.name, value, field.name))
+                        raise IDLSyntaxError(self.module,
+                                             field.line,
+                                             'Duplicate explicit field value %d given for field %r in enumeration %r' % (value, field.name, self.pathStr)
+                        )
                 
             else:
                 value = self._generateFieldValue()
@@ -63,7 +66,10 @@ class Enum(Type):
             
             # Duplicate name check
             if self.getField(newField.name):
-                raise IDLSyntaxError(self.module, field.line, 'Enum %r duplicate field name %r' % (self.name, newField.name))
+                raise IDLSyntaxError(self.module,
+                                     field.line,
+                                     'Duplicate field name %r in enumeration %r' % (newField.name, self.pathStr)
+                )
             
             # Annotations
             newField._assignAnnotations(field.annotations)

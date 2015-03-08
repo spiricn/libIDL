@@ -3,32 +3,23 @@ from idl.lexer.Token import Token
 from idl.parser.Parser import Parser
 from idl.parser.ParserError import ParserError
 
+from idl.parser.Desc import StructDesc, StructFieldDesc
 
-class StructInfo:
-    class FieldInfo:
-        def __init__(self, line):
-            self.typeInfo = Parser.TypeInfo()
-            self.name = ''
-            self.line = line
 
-    def __init__(self):
-        self.name = ''
-        self.fields = []
-        
 class StructParser(Parser):
     def __init__(self, tokens):
         Parser.__init__(self, tokens)
         
-        self.info = StructInfo()
-        
     def parse(self):
+        self._desc = StructDesc()
+        
         self._parseHead()
         
         self._parseBody()
         
         self.eat(Token.PUNCTUATION, ';')
         
-        return self.info
+        return self._desc
     
 
     def _parseHead(self):
@@ -36,7 +27,7 @@ class StructParser(Parser):
         self.eat(Token.KEYWORD, Lang.KEYWORD_STRUCT)
         
         # Name
-        self.info.name = self.eat(Token.ID).body
+        self._desc.name = self.eat(Token.ID).body
     
     def _parseBody(self):
         # Body start
@@ -59,14 +50,14 @@ class StructParser(Parser):
                 raise ParserError('Unexpected token while parsing structure body', token)
             
     def _parseField(self):
-        info = StructInfo.FieldInfo(self.next.location[0])
+        desc = StructFieldDesc(line=self.next.location[0])
         
-        info.typeInfo = self.eatTypeInfo()
+        desc.typeDesc = self.eatTypeDesc()
         
-        info.name = self.eat(Token.ID).body
+        desc.name = self.eat(Token.ID).body
         
-        info.annotations = self.getAnnotations()
+        desc.annotations = self.getAnnotations()
         
-        self.info.fields.append( info )
+        self._desc.fields.append( desc )
         
         self.eat(Token.PUNCTUATION, ';')

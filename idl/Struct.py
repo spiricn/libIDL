@@ -19,10 +19,10 @@ class Struct(Type):
             
             return self._struct
 
-    def __init__(self, module, info):
-        Type.__init__(self, module, Type.STRUCTURE, info.name)
+    def __init__(self, module, desc):
+        Type.__init__(self, module, Type.STRUCTURE, desc.name)
 
-        self._info = info
+        self._desc = desc
 
         self._fields = []
         
@@ -45,18 +45,18 @@ class Struct(Type):
         return res
     
     def _link(self):
-        for field in self._info.fields:
+        for field in self._desc.fields:
             # Resolve field type
             try:
-                fieldType = self.module._resolveType(field.typeInfo)
+                fieldType = self.module._resolveType(field.typeDesc)
             except IDLSyntaxError as e:
                 # Re-raise exception with module/line information
                 raise IDLSyntaxError(self.module, field.line, e.message)
             
             if not fieldType:
-                raise IDLTypeError(self.module, field.line, 'Could not resolve field %r type %r of structure %r' % (field.name, field.typeInfo.pathStr, self.name))
+                raise IDLTypeError(self.module, field.line, 'Could not resolve field %r type %r of structure %r' % (field.name, field.typeDesc.pathStr, self.name))
             
-            newField = Struct.Field(self, fieldType, field.name, Variable._resolveModifiers(fieldType, field.typeInfo.mods), field.typeInfo.arraySize)
+            newField = Struct.Field(self, fieldType, field.name, Variable._resolveModifiers(fieldType, field.typeDesc.mods), field.typeDesc.arraySize)
             
             # Duplicate check
             for i in self._fields:

@@ -26,16 +26,16 @@ class Method(Annotatable):
     CALLBACK_UNREGISTER, \
     = range(3)
     
-    def __init__(self, interface, info):
+    def __init__(self, interface, desc):
         Annotatable.__init__(self)
         
         self._interface = interface
         
-        self._info = info
+        self._desc = desc
         
         self._type = Method.NORMAL
         
-        self._name = info.name
+        self._name = desc.name
         
         self._args = []
         
@@ -88,39 +88,39 @@ class Method(Annotatable):
     def _linkReturnType(self):
         # Resolve return type
         try:
-            returnType = self._interface.module._resolveType(self._info.returnTypeInfo)
+            returnType = self._interface.module._resolveType(self._desc.returnTypeDesc)
         except IDLSyntaxError as e:
             # Re-raise exception with module/line information
-            raise IDLSyntaxError(self._interface.module, self._info.line, e.message)
+            raise IDLSyntaxError(self._interface.module, self._desc.line, e.message)
         
         if not returnType:
-            raise IDLTypeError(self.interface.module, self._info.line, 'Could not resolve return type %r of method %s::%s' % (self._info.returnTypeInfo.pathStr, self._interface.name, self._name))
+            raise IDLTypeError(self.interface.module, self._desc.line, 'Could not resolve return type %r of method %s::%s' % (self._desc.returnTypeDesc.pathStr, self._interface.name, self._name))
         
         # Modifiers
         try:
-            mods = Variable._resolveModifiers(returnType, self._info.returnTypeInfo.mods)
+            mods = Variable._resolveModifiers(returnType, self._desc.returnTypeDesc.mods)
         except IDLSyntaxError as e:
-            raise IDLSyntaxError(self._interface.module, self._info.line, e.message)
+            raise IDLSyntaxError(self._interface.module, self._desc.line, e.message)
         
-        self._returnType = Variable(returnType, name=None, mods=mods, arraySize=self._info.returnTypeInfo.arraySize)
+        self._returnType = Variable(returnType, name=None, mods=mods, arraySize=self._desc.returnTypeDesc.arraySize)
 
     def _linkArg(self, index, arg):
         try:
-            argType = self._interface.module._resolveType(arg.varInfo.typeInfo)
+            argType = self._interface.module._resolveType(arg.varDesc.typeDesc)
         except IDLSyntaxError as e:
             # Re-raise exception with module/line information
             raise IDLSyntaxError(self._interface.module, arg.line, e.message)
         
         if not argType:
-            raise IDLTypeError(self._interface.module, arg.line, 'Could not resolve #%d argument type %r of method %s::%s' % (index + 1, '.'.join(arg.varInfo.typeInfo.path), self._interface.name, self._name))
+            raise IDLTypeError(self._interface.module, arg.line, 'Could not resolve #%d argument type %r of method %s::%s' % (index + 1, '.'.join(arg.varDesc.typeDesc.path), self._interface.name, self._name))
         
         # Argument modifiers
         try:
-            mods = Variable._resolveModifiers(argType, arg.varInfo.typeInfo.mods)
+            mods = Variable._resolveModifiers(argType, arg.varDesc.typeDesc.mods)
         except IDLSyntaxError as e:
             raise IDLSyntaxError(self._interface.module, arg.line, e.message)
         
-        newArg = Method.Argument(self, argType, arg.varInfo.name, mods, arg.varInfo.typeInfo.arraySize)
+        newArg = Method.Argument(self, argType, arg.varDesc.name, mods, arg.varDesc.typeDesc.arraySize)
         
         # Duplicate name check
         for i in self._args:
@@ -132,12 +132,12 @@ class Method(Annotatable):
     def _link(self):
         self._linkReturnType()
         
-        # Resolve args
-        for index, arg in enumerate(self._info.args):
+        # Resolve arguments
+        for index, arg in enumerate(self._desc.args):
             self._linkArg(index, arg)
             
         # Annotations
-        self._assignAnnotations(self._info.annotations)
+        self._assignAnnotations(self._desc.annotations)
         
         for arg in self._args:
             if arg.mod(Type.MOD_CALLBACK_REG):

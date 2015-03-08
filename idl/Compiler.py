@@ -66,27 +66,27 @@ class Compiler:
         # Preprocess
         tokens = Preprocessor.process(self._env, tokens)
         
-        # Parser used for generating type annotations & package info
+        # Parser used for generating type annotations & package desc
         self._tokenParser = Parser(tokens)
         
         self._tokenParser.eatAnnotations()
         
         # Parse package
         try:
-            packageInfo = self._tokenParser.eatPackageInfo()
+            PackageDesc = self._tokenParser.eatPackageDesc()
         except ParserError as e:
             raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
 
-        if not packageInfo:
+        if not PackageDesc:
             raise IDLSyntaxError(self._module, self._tokenParser.next.location[0] if self._tokenParser.tokens else 0, 'Missing package declaration in module')
         
         # Create or acquire package
-        package = self._env._createChildTree(packageInfo.package)
+        package = self._env._createChildTree(PackageDesc.package)
         
         # Imports
-        imports = self._tokenParser.eatImportsInfo()
+        imports = self._tokenParser.eatImportsDesc()
         
-        self._module._setImportsInfo( imports )
+        self._module._setImportsDesc( imports )
         
         # Add the module
         package._addModule(self._module)
@@ -110,15 +110,15 @@ class Compiler:
             # Save the starting token (we will need it if a type error ocurrs later)
             startToken = self._tokenParser.next
                     
-            # Instantiate a parser class and create type info (consumes tokens)
+            # Instantiate a parser class and create type desc (consumes tokens)
             try:
-                info = typeParser.parserClass(tokens).parse()
+                desc = typeParser.parserClass(tokens).parse()
             except ParserError as e:
                 # Re-reaise the parser exception as public IDLSyntaxError
                 raise IDLSyntaxError(self._module, e.token.location[0], e.token.locationStr)
             
             # Instantiate associated type object
-            typeObj = typeParser.typeClass(self._module, info)
+            typeObj = typeParser.typeClass(self._module, desc)
             
             # Assign previously accumulated annotations to the newly created type
             typeObj._assignAnnotations( self._tokenParser.getAnnotations() )  

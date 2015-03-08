@@ -9,9 +9,9 @@ class Annotatable(object):
     def __init__(self):
         self._annotations = []
         
-    def _assignAnnotations(self, annotationInfos):
-        for i in annotationInfos:
-            self.annotations.append( Annotation(i) )
+    def _assignAnnotations(self, annotationDescs):
+        for desc in annotationDescs:
+            self.annotations.append( Annotation(desc) )
         
     def getAnnotation(self, name):
         '''

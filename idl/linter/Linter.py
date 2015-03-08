@@ -22,7 +22,7 @@ class Linter:
             # Get declared package from file
             parser = Parser(Tokenizer.tokenize(source))
         
-            packageInfo = parser.eatPackageInfo()
+            packageDesc = parser.eatPackageDesc()
             
             # Verify
-            return packageInfo.package == packagePath
+            return packageDesc.package == packagePath

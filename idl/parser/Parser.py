@@ -3,47 +3,11 @@ from idl.lexer.Lang import KEYWORD_IMPORT, KEYWORD_PACKAGE
 from idl.lexer.Token import Token
 from idl.parser.ParserError import ParserError
 
+from idl.parser.Desc import PackageDesc, ImportDesc, ImportsDesc, VariableDesc, \
+    TypeDesc, AnnotationDesc
+
 
 class Parser(object):
-    class TypeInfo:
-        def __init__(self, path=[], mods=[], arraySize=None):
-            self.path = path
-            self.arraySize = arraySize
-            self.mods = mods
-            
-        @property
-        def pathStr(self):
-            return '.'.join(self.path)
-            
-    class VariableInfo:
-        def __init__(self, typeInfo, name):
-            self.typeInfo = typeInfo
-            self.name = name
-            
-    class AnnotationInfo:
-        def __init__(self, name='', value='', isComment=False):
-            self.name = name
-            self.value = value
-            self.isComment = isComment
-            
-    class PackageInfo:
-        def __init__(self, package):
-            self.package = package
-            
-            
-    class ImportInfo:
-        def __init__(self, path, line):
-            self.path = path
-            self.line = line
-            
-        @property
-        def pathStr(self):
-            return '.'.join(self.path)
-            
-    class ImportsInfo:
-        def __init__(self):
-            self.imports = []
-             
     def __init__(self, tokens):
         self.tokens = tokens
         self.annotations = []
@@ -120,7 +84,7 @@ class Parser(object):
             return None
         
         if self.next.id == Token.BLOCK_COMMENT:
-            return Parser.AnnotationInfo(value=self.pop().body, isComment=True)
+            return AnnotationDesc(value=self.pop().body, isComment=True)
         
         else:
             return None
@@ -155,20 +119,20 @@ class Parser(object):
             else:
                 value= ''
 
-            return Parser.AnnotationInfo(name, value)
+            return AnnotationDesc(name, value)
             
         else:
             return None
         
-    def eatVariableInfo(self):
+    def eatVariableDesc(self):
         # Eat variable type
-        typeInfo = self.eatTypeInfo()
+        typeDesc = self.eatTypeDesc()
         
         # Variable name
         name = self.eat(Token.ID).body
         
-        return Parser.VariableInfo(typeInfo, name)
-    
+        return VariableDesc(name, typeDesc)
+
     def eatTypePath(self):
         path = []
         
@@ -186,7 +150,7 @@ class Parser(object):
         
         return path
     
-    def eatTypeInfo(self):
+    def eatTypeDesc(self):
         keywords = []
             
         # Eat all keywords preceeding the type  
@@ -207,7 +171,7 @@ class Parser(object):
             arraySize = self.eatArraySize()
                 
             if arraySize == None:
-                raise ParserError('Unexpected token while parsing type info', self.next)
+                raise ParserError('Unexpected token while parsing type desc', self.next)
             
         # Check keywords
         validKeywords = [
@@ -222,7 +186,7 @@ class Parser(object):
                 raise ParserError('Unexpected keyword while parsing type', keyword)
             
             
-        return Parser.TypeInfo(path, [i.body for i in keywords], arraySize)
+        return TypeDesc(path, [i.body for i in keywords], arraySize)
     
     def isNext(self, tokenId, body=None):
         if self.tokens:
@@ -234,7 +198,7 @@ class Parser(object):
                 
         return False
     
-    def _eatImportPathInfo(self):
+    def _eatImportPathDesc(self):
         path = []
         
         while True:
@@ -251,24 +215,24 @@ class Parser(object):
 
         return path            
         
-    def eatPackageInfo(self):
+    def eatPackageDesc(self):
         if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_PACKAGE ):
             # Eat package keyword
             self.pop()
 
             # Eat the package we're declaring
-            package = self._eatImportPathInfo()
+            package = self._eatImportPathDesc()
             
             # Eat semicolon
             self.eat(Token.PUNCTUATION, ';')
             
-            return Parser.PackageInfo(package)
+            return PackageDesc(package)
         
         else:
             return None
         
-    def eatImportsInfo(self):
-        info = Parser.ImportsInfo()
+    def eatImportsDesc(self):
+        desc = ImportsDesc()
         
         while True:
             if self.tokens and ( self.next.id == Token.KEYWORD and self.next.body == KEYWORD_IMPORT ):
@@ -278,9 +242,9 @@ class Parser(object):
                 self.pop()
                 
                 # Eat the package we're importing
-                package = self._eatImportPathInfo()
+                package = self._eatImportPathDesc()
                 
-                info.imports.append( Parser.ImportInfo(package, line) )
+                desc.imports.append( ImportDesc(package, line) )
                 
                 # Eat semicolon
                 self.eat(Token.PUNCTUATION, ';')
@@ -288,7 +252,7 @@ class Parser(object):
             else:
                 break
             
-        return info
+        return desc
     
     def _debug(self, numTokens=1):
         print([str(self.tokens[index]) for index in range(numTokens)])

@@ -30,8 +30,8 @@ class Module(TypeGetter):
         # Module source file path
         self._filePath = '' if not filePath else os.path.abspath(filePath)
         
-        # Imports information (recieved from the parser
-        self._importsInfo = None
+        # Imports description (received from the parser
+        self._importsDesc = None
         
         # List of imported types
         self._importedTypes = []
@@ -90,11 +90,11 @@ class Module(TypeGetter):
         
         self._path = path
         
-    def _resolveType(self, typeInfo):
+    def _resolveType(self, typeDesc):
         '''
         Attempts to resolve the given path in the context of this module.
         '''
-        path = typeInfo.path
+        path = typeDesc.path
         
         typeName = path[-1]
         
@@ -131,12 +131,12 @@ class Module(TypeGetter):
         
         self._package = package
         
-    def _setImportsInfo(self, importsInfo):
+    def _setImportsDesc(self, ImportsDesc):
         '''
-        Sets the import information received from the parser, by the compiler.
+        Sets the imports description received from the parser, by the compiler.
         '''
         
-        self._importsInfo = importsInfo
+        self._importsDesc = ImportsDesc
         
     def _addType(self, typeObj):
         '''
@@ -168,13 +168,13 @@ class Module(TypeGetter):
         # Import built-in types from lang module
         self._import(self.package.env._getLangPackage())
 
-        for importInfo in self._importsInfo.imports:
-            path = importInfo.path
+        for ImportDesc in self._importsDesc.imports:
+            path = ImportDesc.path
             
             # Does it resolve to a type ?
             obj = self.package.env.resolvePath(path)
             
             if not obj:
-                raise IDLImportError(self, importInfo.line, 'Could not resolve import %r' % importInfo.pathStr)
+                raise IDLImportError(self, ImportDesc.line, 'Could not resolve import %r' % ImportDesc.pathStr)
                  
             self._import(obj)

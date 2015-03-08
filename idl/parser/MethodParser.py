@@ -2,18 +2,8 @@ from idl.lexer.Token import Token
 from idl.parser.Parser import Parser
 from idl.parser.ParserError import ParserError
 
+from idl.parser.Desc import MethodDesc, ArgDesc
 
-class MethodInfo:
-    class ArgInfo:
-        def __init__(self, varInfo, line):
-            self.varInfo = varInfo
-            self.line = line
-        
-    def __init__(self, line):
-        self.args = []
-        self.name = ''
-        self.line = line
-        self.returnTypeInfo = Parser.TypeInfo()
 
 class MethodParser(Parser):
     class Test:
@@ -24,7 +14,7 @@ class MethodParser(Parser):
         Parser.__init__(self, tokens)
         
     def parse(self):
-        self.method = MethodInfo(self.next.location[0])
+        self.method = MethodDesc(line=self.next.location[0])
         
         # Parse return type / name
         self._parseHead()
@@ -40,7 +30,7 @@ class MethodParser(Parser):
 
     def _parseHead(self):
         # Return type
-        self.method.returnTypeInfo = self.eatTypeInfo()
+        self.method.returnTypeDesc = self.eatTypeDesc()
         
         # Method name
         self.method.name = self.eat(Token.ID).body
@@ -64,10 +54,10 @@ class MethodParser(Parser):
                 argLine = self.next.location[0]
                 
                 # Argument type
-                varInfo = self.eatVariableInfo()
+                varDesc = self.eatVariableDesc()
                 
-                # Create info
-                self.method.args.append( MethodInfo.ArgInfo(varInfo, argLine) )
+                # Create description
+                self.method.args.append( ArgDesc(varDesc, argLine) )
                 
                 expectingArg = False
                 

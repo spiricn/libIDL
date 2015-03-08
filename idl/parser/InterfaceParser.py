@@ -4,21 +4,16 @@ from idl.parser.MethodParser import MethodParser
 from idl.parser.Parser import Parser
 from idl.parser.ParserError import ParserError
 
+from idl.parser.Desc import InterfaceDesc
 
-class InterfaceInfo:
-    def __init__(self):
-        self.name = []
-        self.methods = []
-        self.bases = []
-        self.line = 0
 
 class InterfaceParser(Parser):
     def __init__(self, tokens):
         Parser.__init__(self, tokens)
         
-        self.interface = InterfaceInfo()
-        
     def parse(self):
+        self.interface = InterfaceDesc()
+        
         self._parseHead()
         
         self._parseBody()
@@ -41,7 +36,7 @@ class InterfaceParser(Parser):
             
             while True:
                 # Eat interface bases
-                self.interface.bases.append( self.eatTypeInfo() )
+                self.interface.bases.append( self.eatTypeDesc() )
                 
                 if self.isNext(Token.PUNCTUATION, ','):
                     self.eat(Token.PUNCTUATION)

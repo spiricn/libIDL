@@ -109,7 +109,16 @@ class Type(Annotatable):
         path.append( self.name )
         
         return path
-    
+
+
+    @property
+    def pathStr(self):
+        '''
+        Path string for this type (e.g. com.exmple.TestInterface)
+        '''
+         
+        return '.'.join(self.path)
+        
     @property
     def name(self):
         '''

@@ -6,20 +6,20 @@ from idl.Type import Type
 
 
 class Interface(Type):
-    def __init__(self, module, info):
-        Type.__init__(self, module, Type.INTERFACE, info.name)
+    def __init__(self, module, desc):
+        Type.__init__(self, module, Type.INTERFACE, desc.name)
 
-        self._info = info
+        self._desc = desc
 
         self._methods = []
         
-        # Iterate over all method informations received from the parser
-        for methodInfo in info.methods:
+        # Iterate over all method descrmations received from the parser
+        for MethodDesc in desc.methods:
             # Add it to the list
-            self._methods.append( Method(self, methodInfo) )
+            self._methods.append( Method(self, MethodDesc) )
             
-        if self._info.bases and not self.module.package.env.config.inheritance:
-            raise IDLNotSupportedError(self.module, self._info.line, 'Interface inheritance not enabled')
+        if self._desc.bases and not self.module.package.env.config.inheritance:
+            raise IDLNotSupportedError(self.module, self._desc.line, 'Interface inheritance not enabled')
             
             
         self._bases = []
@@ -65,7 +65,7 @@ class Interface(Type):
             for method2 in self.methods[index+1:]:
                 if method1.name == method2.name:
                     if not self.module.package.env.config.operatorOverload:
-                        raise IDLNotSupportedError(self.module, self._info.methods[index].line, 'Operator overloading not enabled')
+                        raise IDLNotSupportedError(self.module, self._desc.methods[index].line, 'Operator overloading not enabled')
                     else:
                         if len(method1.args) == len(method2.args):
                             same = True
@@ -76,27 +76,27 @@ class Interface(Type):
                                     break
                                 
                             if same:
-                                raise IDLTypeError(self.module, self._info.line, 'Duplicate method detected %s::%s' % (self.name, method1.name))
+                                raise IDLTypeError(self.module, self._desc.line, 'Duplicate method detected %s::%s' % (self.name, method1.name))
 
         # Resolve bases
-        for baseTypeInfo in self._info.bases:
+        for baseTypeDesc in self._desc.bases:
             try:
-                baseType  = self.module._resolveType(baseTypeInfo)
+                baseType  = self.module._resolveType(baseTypeDesc)
                 
                 if baseType == None:
-                    raise IDLTypeError(self.module, self._info.line, 'Could not resolve interface base interface %r' % '.'.join(baseTypeInfo.path))
+                    raise IDLTypeError(self.module, self._desc.line, 'Could not resolve interface base interface %r' % '.'.join(baseTypeDesc.path))
                 
                 elif baseType.id != Type.INTERFACE:
-                    raise IDLTypeError(self.module, self._info.line, 'Interface %r can\'t extend type %r only other interfaces.' % (self._info.name, baseType.name))
+                    raise IDLTypeError(self.module, self._desc.line, 'Interface %r can\'t extend type %r only other interfaces.' % (self._desc.name, baseType.name))
                 
                 else:
                     # Duplicate inheritance check
                     for i in self._bases:
                         if i == baseType:
-                            raise IDLTypeError(self.module, self._info.line, 'Duplicate interface inheritance %r' % ('.'.join(i.path)))
+                            raise IDLTypeError(self.module, self._desc.line, 'Duplicate interface inheritance %r' % ('.'.join(i.path)))
                         
                     self._bases.append( baseType )
 
             except IDLSyntaxError as e:
                 # Re-raise exception with module/line information
-                raise IDLSyntaxError(self.module, self._info.line, e.message)
+                raise IDLSyntaxError(self.module, self._desc.line, e.message)

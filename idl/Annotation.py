@@ -4,12 +4,12 @@ class Annotation(object):
     COMMENT, \
     = range(3)
 
-    def __init__(self, info):
-        self._name = Annotation._stripLiteral( info.name )
+    def __init__(self, desc):
+        self._name = Annotation._stripLiteral( desc.name )
         
-        self._value = Annotation._stripLiteral( info.value )
+        self._value = Annotation._stripLiteral( desc.value )
         
-        if info.isComment:
+        if desc.isComment:
             self._type = Annotation.COMMENT
             
         elif  self._name and self._value:
