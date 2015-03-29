@@ -58,7 +58,11 @@ TYPE_VOID = r'void'
 
 TYPE_STRING = r'string'
 
-TYPE_BOOLEAN = r'boolean'
+TYPE_BOOL8 = r'bool8'
+
+TYPE_BOOL16 = r'bool16'
+
+TYPE_BOOL32 = r'bool32'
                
 class TokenTypeInfo:
     '''

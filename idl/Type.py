@@ -9,8 +9,9 @@ class Type(Annotatable):
     MOD_CALLBACK_REG = 1 << 2
     MOD_CULLBACK_UNREG = 1 << 3
 
-    # Possible types
-    BOOL, \
+    BOOL8, \
+    BOOL16, \
+    BOOL32, \
     INT64, \
     UINT64, \
     INT32, \
@@ -28,11 +29,13 @@ class Type(Annotatable):
     ENUM, \
     TYPEDEF, \
     INVALID, \
-    = range(18)
+    = range(20)
     
     # List of type primitives
     primitives = [
-        BOOL, \
+        BOOL8, \
+        BOOL16, \
+        BOOL32, \
         INT64, \
         UINT64, \
         INT32, \
@@ -69,7 +72,9 @@ class Type(Annotatable):
                Lang.TYPE_FLOAT64 : Type.FLOAT64,
                Lang.TYPE_VOID : Type.VOID,
                Lang.TYPE_STRING : Type.STRING,
-               Lang.TYPE_BOOLEAN : Type.BOOL,
+               Lang.TYPE_BOOL8 : Type.BOOL8,
+               Lang.TYPE_BOOL16 : Type.BOOL16,
+               Lang.TYPE_BOOL32  : Type.BOOL32,
             }
             
             if t in stringToType:
@@ -94,7 +99,9 @@ class Type(Annotatable):
                    Type.FLOAT64 : Lang.TYPE_FLOAT64,
                    Type.VOID : Lang.TYPE_VOID,
                    Type.STRING : Lang.TYPE_STRING,
-                   Type.BOOL : Lang.TYPE_BOOLEAN,
+                   Type.BOOL8 : Lang.TYPE_BOOL8,
+                   Type.BOOL16 : Lang.TYPE_BOOL16,
+                   Type.BOOL32 : Lang.TYPE_BOOL32,
                 }
                 
                 self._name = typeToName[t]
